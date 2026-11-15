@@ -1,5 +1,6 @@
 // SVG paths ported from the prototype's build.py (viewBox 0 0 24 24)
 export const ICONS = {
+ "cal": "<path fill=\"currentColor\" d=\"M7 2h2v2h6V2h2v2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2V2zM5 9v11h14V9H5zm2 2h4v4H7v-4z\"/>",
  "map": "<path fill=\"currentColor\" d=\"M15 5.1 9 3 3 5v16l6-2.1 6 2.1 6-2V3l-6 2.1zM15 19l-6-2.1V5l6 2.1V19z\"/>",
  "list": "<path fill=\"currentColor\" d=\"M3 5h4v4H3zm6 1h12v2H9zM3 10h4v4H3zm6 1h12v2H9zM3 15h4v4H3zm6 1h12v2H9z\"/>",
  "bell": "<path fill=\"currentColor\" d=\"M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6V11a6 6 0 0 0-5-5.9V4a1 1 0 0 0-2 0v1.1A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2z\"/>",

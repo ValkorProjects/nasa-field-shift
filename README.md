@@ -5,15 +5,58 @@ Field Shift is a free decision-support tool for farmers in São Paulo state. For
 
 > **Prototype:** every value in the app is sample data. Dotted (yellow) values will be replaced by real data.
 
-## Run
+## Repository layout
 
-```bash
-npm install
-npm run dev      # http://localhost:5173
-npm run build    # production build in dist/
+```
+frontend/   Vue 3 + Vite app (this README covers it)
+backend/    Python API with the NASA POWER client (issues #2–#5, coming)
+docs/       spec, data requirements, reference screens, API contract example
 ```
 
-Desktop only (reference width 1280 px). Deploys to Vercel as a static Vite app (`vercel.json` handles SPA routes).
+## Run
+
+From the repository root:
+
+```bash
+npm run setup      # installs the front-end dependencies (once)
+npm run dev        # front end with sample data (mock)  → http://localhost:5173
+npm run dev:api    # front end calling the backend at /api
+npm run build      # production build in frontend/dist/
+```
+
+**Front end + back end together:**
+
+1. Start the backend on port 8000. The command will be documented in `backend/` (issues #2/#3), for example `uvicorn app.main:app --reload --port 8000`.
+2. In another terminal, run `npm run dev:api`.
+
+In dev, Vite proxies every `/api/*` call to the backend, so the browser never sees a CORS error. To use another backend address, copy `frontend/.env.example` to `frontend/.env.local` and change `VITE_BACKEND_URL`. Never commit `.env` files.
+
+| Setting | Values | Default |
+|---|---|---|
+| `VITE_API_MODE` (or `npm run dev:api`) | `mock` · `api` | `mock` |
+| `VITE_BACKEND_URL` | backend used by the dev proxy | `http://localhost:8000` |
+
+If the backend is not running in `api` mode, the screen shows an error with **Try again** and **Use sample data**.
+
+Desktop only (reference width 1280 px). On Vercel, set the project's **Root Directory** to `frontend` (`frontend/vercel.json` handles SPA routes).
+
+## API contract: `GET /api/recommendation`
+
+Draft contract between back end and front end for the **When to plant** screen (`/planting`, issue #7). The example response is [`docs/contract-example.json`](docs/contract-example.json); the front-end mocks are `frontend/src/api/mock/corn.json` and `soybean.json`.
+
+Query: `lat`, `lon` (decimal degrees) and `crop` (`corn` | `soybean`).
+
+| Field | Meaning |
+|---|---|
+| `location` | `{ name, lat, lon }` |
+| `crop`, `crop_label` | crop id and display name |
+| `season` | `{ start, end }`, the date range drawn on the timeline (ISO dates) |
+| `recommendation` | `{ summary, explanation }`: one sentence plus why, in plain language |
+| `windows[]` | `{ start, end, level, explanation }` with `level` = `recommended` · `risky` · `avoid` |
+| `events[]` | `{ type, label, start, end, years_hit, years_total, threshold, explanation }`; `type` = `frost` · `white_mold` |
+| `source` | `{ dataset, url, parameters[], period, mode, generated_at, note }`; `mode` = `live` · `cache` · `mock` (shown as a badge) |
+
+Events are **past frequency** ("3 of the last 10 years"), never a forecast.
 
 ## Screens and routes
 
@@ -29,17 +72,21 @@ Desktop only (reference width 1280 px). Deploys to Vercel as a static Vite app (
 | 8 | How we calculated | `/how` |
 | 9 | Costs: your money | `/field/1/costs` |
 | 10 | Costs: big picture | `/field/1/costs/big-picture` |
+| 11 | When to plant (planting window + critical events) | `/planting?loc=…&crop=corn\|soybean` |
 
 Reference screens and the original spec are in [`docs/`](docs/) (`PROMPT.md`, `DATA_REQUIREMENTS.md`, `CHANGELOG.md`, `placeholders.csv`, `reference/*.png`).
 
-## Project layout
+## Front-end layout (`frontend/`)
 
 ```
-public/data/field-1.sample.json   sample data for Field 1 (all screens)
-public/img/                       illustrative images (map, crops)
+public/data/field-1.sample.json   sample data for Field 1 (screens 1–10)
+public/img/                       illustrative images (crops)
+src/api/index.js                  /api access with the mock/api flag, demo locations
+src/api/mock/                     sample /api/recommendation responses (corn, soybean)
 src/data/store.js                 loads the field JSON, keeps the farmer's answers,
                                   computes "Best for you" and "How sure are we?"
-src/components/                   AppShell, SideNav, Chip, SampleValue, StrategyCard, …
+src/data/fields.js                the farmer's fields (polygons), area, GeoJSON export
+src/components/                   AppShell, SideNav, Chip, SampleValue, StrategyCard, TimelineChart, …
 src/views/                        one file per screen
 src/i18n/en.json                  UI strings (add pt.json later)
 src/styles/prototype.css          visual rules ported 1:1 from the v3.3 prototype

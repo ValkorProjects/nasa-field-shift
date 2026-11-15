@@ -89,3 +89,45 @@ ol.chain{padding:0;margin:0}
 .tools button{background:none;border:0;color:#1f6b2c;font:700 13px Inter,sans-serif;cursor:pointer;text-decoration:underline;padding:4px 0}
 .legend .lnote{font-size:11.5px;font-weight:700;color:#8a978a;font-style:italic}
 .draftinfo{font-size:15px;background:#f5f7f3;border-radius:10px;padding:10px 12px;margin:4px 0 10px}
+/* ===== When to plant (issue #7) ===== */
+.plantpg{flex:1;padding:20px 26px 24px;display:flex;flex-direction:column;gap:14px}
+.pchoose{display:flex;gap:28px;align-items:flex-start}
+.pc-loc{display:flex;flex-direction:column;gap:8px;min-width:280px}
+.psel{font:700 16px Inter,sans-serif;padding:10px 12px;border:2.5px solid #d5ddd2;border-radius:12px;background:#fff;color:#16241a;min-height:48px}
+.psel:focus{border-color:#2e8b3d}
+.pc-coord{font-size:12.5px;color:#617061;font-weight:600}
+.pc-crop{display:flex;flex-direction:column;gap:8px;flex:1}
+.pcrops{display:flex;gap:12px}
+.pcrop{flex:1;display:flex;align-items:center;gap:12px;background:#fff;border:3px solid #e1e7dd;border-radius:14px;padding:8px 12px 8px 8px;cursor:pointer;font-family:Inter,sans-serif;text-align:left;color:inherit;position:relative}
+.pcrop.sel{border-color:#2e8b3d;background:#f1faef}
+.pcrop.sel::after{content:"✓";position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;background:#2e8b3d;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.pcimg{width:64px;height:52px;border-radius:10px;flex-shrink:0}
+.pcrop b{display:block;font-size:16px}.pcrop small{font-size:13px;color:#617061;font-weight:600}
+.pstate{display:flex;align-items:center;gap:14px;font-size:16px;font-weight:700;min-height:120px}
+.perr{background:#fdecec;border:2.5px solid #e04848;align-items:flex-start}
+.perr b{color:#a61f1f;font-size:17px}.perr p{margin:4px 0 8px;font-size:14px;font-weight:600;color:#5c2a2a}
+.perr .factions .btn{width:auto;padding:10px 18px}
+.spinner{width:28px;height:28px;border-radius:50%;border:4px solid #dfe6dc;border-top-color:#2e8b3d;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation-duration:3s}}
+.precom{display:flex;gap:16px;align-items:center;background:#e8f5e6;border:2px solid #2e8b3d;transition:opacity .2s}
+.precom.busy{opacity:.55}
+.precom .bstar{width:52px;height:52px}.precom .bstar .ic{width:28px;height:28px}
+.precom .k{font-size:12.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#1f6b2c}
+.psum{font-size:24px;font-weight:800;margin:2px 0 6px;color:#12301c}
+.pwin{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #eef1ec}
+.pwin:last-child{border:none}
+.pwin .lvl{min-width:96px;text-align:center;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.pwin b{display:block;font-size:15px}.pwin span{font-size:14px;color:#3c4c3e;line-height:1.4}
+.lvl .d{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
+.pevt{display:flex;gap:14px;align-items:flex-start;background:#f3f1fb;border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.pevt .fn{color:#4a3a8a;font-size:24px}
+.pevt b{display:block;font-size:15px}.pevt .pe-x{font-size:13.5px;color:#3c4c3e;line-height:1.4;margin:2px 0 4px}
+.pevt small{display:block;font-size:12px;color:#617061;font-weight:600;margin-bottom:4px}
+.nasa-src{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #a9bfe6;border-radius:14px;padding:12px 16px;font-size:14px;color:#2f4a70}
+.nasa-src>.ic{color:#2f5ea8;width:20px;height:20px}
+.nasa-src>span:nth-child(2){flex:1}
+.nasa-src a{color:#1f4d8a;text-decoration:underline}
+.rawjson{background:#fff;border-radius:14px;padding:10px 16px;font-size:13px}
+.rawjson summary{cursor:pointer;font-weight:800;color:#3c4c3e}
+.rawjson pre{max-height:320px;overflow:auto;font-size:12px;background:#f5f7f3;border-radius:10px;padding:10px;margin-top:8px}

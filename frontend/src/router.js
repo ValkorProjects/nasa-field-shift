@@ -11,6 +11,7 @@ const routes = [
   { path: '/field/1/results/:option', component: () => import('./views/Results.vue') },
   { path: '/field/1/costs', component: () => import('./views/CostsMoney.vue') },
   { path: '/field/1/costs/big-picture', component: () => import('./views/CostsBigPicture.vue') },
+  { path: '/planting', component: () => import('./views/Planting.vue') },
   { path: '/how', component: () => import('./views/HowWeCalculated.vue') },
   { path: '/:pathMatch(.*)*', redirect: '/farm' }
 ]

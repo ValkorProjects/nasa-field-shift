@@ -48,7 +48,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKey))
           <button ref="first" class="btn green" @click="emit('compare')">Compare 3 plans</button>
           <button class="btn ghost" style="width:170px" @click="emit('close')">OK, got it</button>
         </div>
-        <div class="tiny">Check with your agronomist before you decide.</div>
+        <div class="tiny">Check with your agronomist before you decide. · <router-link class="lnk" :to="{ path: '/planting', query: { loc: 'field-1', crop: 'corn' } }">See the best planting dates →</router-link></div>
       </div>
     </div>
   </div>
