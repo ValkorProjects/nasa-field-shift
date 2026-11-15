@@ -2,7 +2,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from datasets.clients.nasapower.nasapower_client import get_simplePoint, get_dailyPlot, Parameters
 from datasets.clients.opentopodata.open_topo_data import get_topoData
 from fastapi import FastAPI, HTTPException, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from array import array
 
 app = FastAPI()
@@ -112,17 +112,20 @@ def nasapower_plot(
 MAX_POINT_LIMIT_REQUEST = 5
 
 class Point(BaseModel):
-    latitude : float | None = None
-    longitude : float | None = None
+    latitude : float
+    longitude : float
 
 class elevationsPayload(BaseModel):
     #List of keypairs (e.g. [ [-23.953, -49.284], [-24.963, -47.524] ])
     #Where [0] = latitude and [1] = longitude
-    Elevations : list[Point] | None = None
+    Elevations : list[Point] = Field(min_length=1)
 
 @app.post("/elevations/")
 def opentopo_elevations(payload : elevationsPayload):
-    elevations = [get_topoData(el.latitude, el.longitude) for el in payload.Elevations[:MAX_POINT_LIMIT_REQUEST]]
+    # One batched call for all points (the API is rate limited to ~1 request/second)
+    elevations = get_topoData([(p.latitude, p.longitude) for p in payload.Elevations[:MAX_POINT_LIMIT_REQUEST]])
+    if elevations is None:
+        raise HTTPException(status_code=502, detail="OpenTopoData falhou")
     if len(payload.Elevations) > MAX_POINT_LIMIT_REQUEST:
         return {
             "detail":"Limite de posições por requisição é 5. Enviadas 5 primeiras posições.",

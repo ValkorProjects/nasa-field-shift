@@ -55,6 +55,4 @@ Body:
 { "Elevations": [ { "latitude": -23.953, "longitude": -49.284 } ] }
 ```
 
-Only the first 5 points are processed; the response `detail` says when the rest were dropped. Returns `{"detail": "...", "elevations": [...]}`.
-
-> **Known issue:** this endpoint currently returns 500 (see `opentopo_elevations` in `main.py`).
+Only the first 5 points are processed; the response `detail` says when the rest were dropped. Returns `{"detail": "...", "elevations": [...]}`. All points go to OpenTopoData in a single request; an elevation is `null` where the dataset has no value. Status: `422` for an empty/invalid body, `502` if OpenTopoData fails.
