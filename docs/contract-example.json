@@ -1,0 +1,51 @@
+{
+  "location": { "name": "Taquarituba, SP", "lat": -23.53, "lon": -49.24 },
+  "crop": "corn",
+  "crop_label": "Second-crop corn",
+  "season": { "start": "2027-01-01", "end": "2027-09-30" },
+  "recommendation": {
+    "summary": "Plant second-crop corn between Feb 1 and Feb 20.",
+    "explanation": "Corn planted in this window usually reaches grain fill before the June–July cold. Later plantings meet frost while the grain is still filling."
+  },
+  "windows": [
+    {
+      "start": "2027-02-01",
+      "end": "2027-02-20",
+      "level": "recommended",
+      "explanation": "Grain fill ends before late May in most past years, so June frost rarely hurts the crop."
+    },
+    {
+      "start": "2027-02-21",
+      "end": "2027-03-10",
+      "level": "risky",
+      "explanation": "Grain fill moves into June. In 3 of the last 10 years, frost reached this area in June."
+    },
+    {
+      "start": "2027-03-11",
+      "end": "2027-03-31",
+      "level": "avoid",
+      "explanation": "The crop would still be filling grain in July, the coldest month. Frost damage is likely."
+    }
+  ],
+  "events": [
+    {
+      "type": "frost",
+      "label": "Frost / cold",
+      "start": "2027-06-01",
+      "end": "2027-07-31",
+      "years_hit": 3,
+      "years_total": 10,
+      "threshold": "Daily minimum temperature ≤ 3 °C at 2 m",
+      "explanation": "Nights cold enough for frost happened in June or July in 3 of the last 10 years. Low spots in the field can be colder."
+    }
+  ],
+  "source": {
+    "dataset": "NASA POWER",
+    "url": "https://power.larc.nasa.gov/",
+    "parameters": ["T2M_MIN", "T2M", "RH2M", "PRECTOTCORR"],
+    "period": "2015–2024",
+    "mode": "mock",
+    "generated_at": "2027-01-15T00:00:00Z",
+    "note": "Past records, not a forecast. Risk = how often it happened in past years."
+  }
+}

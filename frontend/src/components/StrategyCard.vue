@@ -1,0 +1,53 @@
+<script setup>
+// One strategy: tag, name, traffic light, 2 photos, verdict, 5 indicator rows, priority fit, evidence.
+import Icon from './Icon.vue'
+import Chip from './Chip.vue'
+import Answer from './Answer.vue'
+import IllustrativeImg from './IllustrativeImg.vue'
+import SampleValue from './SampleValue.vue'
+import Tpl from './Tpl.vue'
+import { t } from '@/i18n'
+import { state } from '@/data/store.js'
+
+defineProps({ s: { type: Object, required: true }, best: { type: Boolean, default: false } })
+defineEmits(['details'])
+
+const FIT = { Good: ['g', '✓'], OK: ['y', '~'], Poor: ['r', '✗'] }
+const FIT_IC = { soil: 'erosion', water: 'drop', income: 'coin', cost: 'tool' }
+</script>
+
+<template>
+  <article :class="['c2', `o${s.light}`, { best }]" :aria-label="`${s.tag}: ${s.name.value}, ${s.lightTxt}`">
+    <div v-if="best" class="star">★ Best for you</div>
+    <div class="c2h">
+      <div><div class="k">{{ s.tag }}</div><div class="nm"><SampleValue :v="s.name" :dotted="false" /></div></div>
+      <div class="light">{{ s.lightTxt }}</div>
+    </div>
+    <div class="pics2">
+      <IllustrativeImg :src="s.photos[0].img" :alt="s.photos[0].cap" /><span aria-hidden="true">→</span>
+      <IllustrativeImg :src="s.photos[1].img" :alt="s.photos[1].cap" />
+    </div>
+    <div class="pcap2"><span>{{ s.photos[0].cap }}</span><span>{{ s.photos[1].cap }}</span></div>
+    <div class="verdict"><SampleValue :v="s.verdict" :dotted="false" /></div>
+
+    <div v-for="r in s.rows" :key="r.icon" class="r2">
+      <div class="r2l"><Icon :name="r.icon" /><span>{{ r.label }}</span></div>
+      <Answer :v="r.answer" :tone="r.tone" />
+      <Chip :scale="r.answer.scale" :source="r.answer.source" />
+    </div>
+
+    <div class="fitrow">
+      <span>Your priorities</span>
+      <span v-for="p in state.order" :key="p" :class="['f2', `f${FIT[s.fit[p]][0]}`]" :title="`${p}: ${s.fit[p]}`">
+        <Icon :name="FIT_IC[p]" />{{ FIT[s.fit[p]][1] }}<span class="sr-only">{{ p }}: {{ s.fit[p] }}</span>
+      </span>
+    </div>
+
+    <div class="ev2">
+      <span v-if="s.nodata" class="nd2">{{ t('common.noFieldData') }}</span>
+      <Chip :scale="s.evidence.scale" :source="s.evidence.source" />
+      <Tpl :text="' ' + s.evidence.text" :n="s.evidence.n" />
+    </div>
+    <button class="btn small ghost" @click="$emit('details', s.id)">{{ t('common.seeDetails') }}</button>
+  </article>
+</template>
