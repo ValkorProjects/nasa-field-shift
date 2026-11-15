@@ -56,7 +56,7 @@ def get_simplePoint(
             print("Acessando uma chave específica (Título):", dados_dict.get("title"))
             return plot
         else:
-            print(f"Erro na requisição. Status Code: {response.status_code}")
+            print(f"Erro na requisição. Status Code: {response.status_code} - {response.text[:300]}")
     except  requests.exceptions.RequestException as e:
         print(f"Ocorreu um erro: {e}")
 
@@ -76,7 +76,7 @@ def get_dailyPlot(
     date_end_formatted = datetime(year_end, month_end, day_end).strftime("%Y%m%d")
 
     try:
-        response = requests.get(f"https://power.larc.nasa.gov/api/projection/daily/plot?parameters={parameter}&community=SB&longitude={latitude}&latitude={longitude}&start={date_start_formatted}&end={date_end_formatted}&format=JSON&time-standard=UTC")
+        response = requests.get(f"https://power.larc.nasa.gov/api/projection/daily/plot?parameters={parameter}&community=SB&longitude={longitude}&latitude={latitude}&start={date_start_formatted}&end={date_end_formatted}&format=JSON&time-standard=UTC")
         if response.status_code == 200:
         
             dados_dict = response.json()
@@ -87,6 +87,6 @@ def get_dailyPlot(
             print("Acessando uma chave específica (Título):", dados_dict.get("title"))
             return plot
         else:
-            print(f"Erro na requisição. Status Code: {response.status_code}")
+            print(f"Erro na requisição. Status Code: {response.status_code} - {response.text[:300]}")
     except  requests.exceptions.RequestException as e:
         print(f"Ocorreu um erro: {e}")

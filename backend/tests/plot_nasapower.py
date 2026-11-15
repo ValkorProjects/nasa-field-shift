@@ -17,7 +17,7 @@ data = None
 parameters = {}
 for i in range(0, len(parameter_names), MAX_PARAMS_PER_REQUEST):
     batch = parameter_names[i:i + MAX_PARAMS_PER_REQUEST]
-    result = get_dailyPlot(",".join(batch), longitude=-23.9, latitude=-49.5)
+    result = get_dailyPlot(",".join(batch), longitude=-104.99, latitude=39.74)
     if result is None:
         continue
     data = data or result
@@ -27,10 +27,22 @@ try:
     if data is None:
         raise RuntimeError("No data returned from NASA POWER")
 
-    n = len(parameters)
-    if n == 0:
+    if not parameters:
         raise RuntimeError("Response contains no parameters")
 
+    where = f"lon {data.Geometry.Longitude}, lat {data.Geometry.Latitude}"
+    empty = [name for name, p in parameters.items() if not p.has_data()]
+    if len(empty) == len(parameters):
+        raise RuntimeError(
+            f"NASA POWER returned no data (all values are {NO_DATA}) for {where}. "
+            "The location may be outside the projection dataset's coverage, or the "
+            "dates may have no data. Try a different location or date range."
+        )
+    if empty:
+        print(f"Warning: no data for {', '.join(empty)} at {where}; skipping them.")
+        parameters = {name: p for name, p in parameters.items() if name not in empty}
+
+    n = len(parameters)
     fig, axes = plt.subplots(n, 1, figsize=(12, 3 * n), sharex=True, squeeze=False)
 
     for ax, (name, param) in zip(axes[:, 0], parameters.items()):

@@ -52,6 +52,9 @@ class Scenario:
     def valid_values(self) -> dict[str, float]:
         return {date: v for date, v in self.Values.items() if v != NO_DATA}
 
+    def has_data(self) -> bool:
+        return any(v != NO_DATA for v in self.Values.values())
+
     @classmethod
     def from_dict(cls, name: str, data: dict[str, float]) -> Scenario:
         return cls(Name=name, Values=dict(data))
@@ -64,6 +67,10 @@ class ParameterData:
     Scenarios: dict[str, Scenario]  # "ssp126" -> Scenario
     Script: str | None = None
     Div: str | None = None
+
+    def has_data(self) -> bool:
+        """True if at least one scenario has a value other than NO_DATA."""
+        return any(s.has_data() for s in self.Scenarios.values())
 
     @classmethod
     def from_dict(cls, name: str, data: dict[str, Any]) -> ParameterData:
@@ -99,6 +106,11 @@ class Plot:
     Type: str
     Geometry: Geometry
     Properties: Properties
+
+    def has_data(self) -> bool:
+        """False when the API answered but filled everything with NO_DATA
+        (e.g. the location is outside the dataset's coverage)."""
+        return any(p.has_data() for p in self.Properties.Parameter.values())
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Plot:
