@@ -122,7 +122,7 @@ class elevationsPayload(BaseModel):
 
 @app.post("/elevations/")
 def opentopo_elevations(payload : elevationsPayload):
-    elevations = [get_topoData(el[0], el[1]) for el in payload.Elevations[:MAX_POINT_LIMIT_REQUEST]]
+    elevations = [get_topoData(el.latitude, el.longitude) for el in payload.Elevations[:MAX_POINT_LIMIT_REQUEST]]
     if len(payload.Elevations) > MAX_POINT_LIMIT_REQUEST:
         return {
             "detail":"Limite de posições por requisição é 5. Enviadas 5 primeiras posições.",
@@ -133,6 +133,5 @@ def opentopo_elevations(payload : elevationsPayload):
             "detail":"Sucesso.",
             "elevations" : elevations
         }
-    pass
 
 #-----------------------
