@@ -161,8 +161,13 @@ onMounted(() => {
   setOverlay(props.layer)
   drawFields()
   fitAll()
+  // The side panel changes height (draw / edit / view), which resizes the map box.
+  // Keep the top-left corner fixed so what is under the cursor does not jump.
+  ro = new ResizeObserver(() => map.value?.invalidateSize({ pan: false }))
+  ro.observe(el.value)
 })
-onBeforeUnmount(() => map.value?.remove())
+let ro = null
+onBeforeUnmount(() => { ro?.disconnect(); map.value?.remove() })
 
 watch(() => props.layer, setOverlay)
 watch(() => [farm.fields, farm.selectedId, props.showFields], () => { drawFields() }, { deep: true })
