@@ -1,12 +1,12 @@
-key,name_pt,label_en,family,source
-black_oat,Aveia-preta,Black oat,Poaceae,Adubação verde
-millet,Milheto,Pearl millet,Poaceae,Adubação verde
-brachiaria,Braquiária (Urochloa spp.),Brachiaria (Urochloa),Poaceae,Adubação verde
-sunn_hemp,Crotalária-júncea,Sunn hemp (Crotalaria juncea),Fabaceae,Adubação verde
-showy_crotalaria,Crotalária-espectábilis,Showy crotalaria,Fabaceae,Adubação verde
-forage_radish,Nabo forrageiro,Forage radish,Brassicaceae,Adubação verde
-velvet_bean,Mucuna,Velvet bean (Mucuna),Fabaceae,Adubação verde
-millet_sunn_hemp,Milheto + crotalária-júncea,Pearl millet + sunn hemp,Poaceae + Fabaceae,Adubação verde
-spontaneous_cover,Cobertura espontânea,Spontaneous cover (mowed),,generic
-cover_grass,Gramínea de cobertura,Cover grass,Poaceae,generic
-cover_legume,Leguminosa de cobertura,Cover legume,Fabaceae,generic
+key,name_pt,label_en,family,source,mechanism_pt,management_pt,caveat_pt,url
+black_oat,Aveia-preta,Black oat,Poaceae,Adubação verde,Palhada e raízes fasciculadas; recicla nutrientes sem fixar N.,Opção de clima mais fresco onde houver água e janela.,Hortaliças transplantadas e rotação com leguminosas; não usar para quebrar patógeno que também hospeda.,https://www.infoteca.cnptia.embrapa.br/infoteca/handle/doc/1177047
+millet,Milheto,Pearl millet,Poaceae,Adubação verde,"Biomassa, raízes e ciclagem, especialmente K; não cria K.",Avaliar em janela quente com umidade para emergência; não semear no seco só por tolerância relativa.,Tomate ou outras hortaliças após manejo; verificar nematoides e demanda hídrica.,https://www.scielo.br/j/pab/a/jd7jz3fkHD9SHpCxQzyBtpp/?lang=pt
+brachiaria,Braquiária (Urochloa spp.),Brachiaria (Urochloa),Poaceae,Adubação verde,Palhada mais durável se bem estabelecida; raízes e reciclagem.,"Manejar antes da competição por água; em entrelinha, preservar faixa da cultura.",Grãos e entrelinhas de citros; espécie e cultivar importam para sanidade.,https://www.infoteca.cnptia.embrapa.br/infoteca/handle/doc/1084084
+sunn_hemp,Crotalária-júncea,Sunn hemp (Crotalaria juncea),Fabaceae,Adubação verde,Pode fixar N se nodulada; biomassa roçada devolve N e outros nutrientes.,Precisa de janela para formar massa e ser manejada antes da próxima cultura.,Cana na reforma; não usar como substituta automática de adubação ou de outra crotalária.,https://www.embrapa.br/en/web/agencia-de-informacao-tecnologica/cultivos/cana-de-acucar/producao/correcao-e-adubacao/diagnose-das-necessidades-nutricionais/recomendacao-de-correcao-e-adubacao/adubacao-verde
+showy_crotalaria,Crotalária-espectábilis,Showy crotalaria,Fabaceae,Adubação verde,Potencial de adubação verde e uso sanitário para alguns nematoides.,"Confirmar espécie do nematoide, hospedeiros e janela de manejo.",Candidata em área com diagnóstico compatível; não prometer controle generalizado.,https://www.embrapa.br/web/agencia-de-informacao-tecnologica/cultivos/pimenta/producao/doencas-e-pragas/doencas/nematoides
+forage_radish,Nabo forrageiro,Forage radish,Brassicaceae,Adubação verde,"Raiz pivotante, captura e reciclagem; resíduo de liberação relativamente rápida.",Opção a testar em janela fresca; não substituir análise de compactação.,Pode ser combinado com gramínea para persistência; evitar como quebra antes de repolho sem diagnóstico.,https://www.infoteca.cnptia.embrapa.br/handle/doc/1061748
+velvet_bean,Mucuna,Velvet bean (Mucuna),Fabaceae,Adubação verde,"Fixação de N se nodulada, biomassa e cobertura viva.","Checar água, duração e hábito trepador; manejar antes de interferir na cultura comercial.",Reforma de cana ou cobertura em janela própria; sem crédito automático de N.,https://www.embrapa.br/en/web/agencia-de-informacao-tecnologica/cultivos/cana-de-acucar/producao/correcao-e-adubacao/diagnose-das-necessidades-nutricionais/recomendacao-de-correcao-e-adubacao/adubacao-verde
+millet_sunn_hemp,Milheto + crotalária-júncea,Pearl millet + sunn hemp,Poaceae + Fabaceae,Adubação verde,"Combina objetivos de palha, ciclagem e possível entrada de N.",A proporção efetiva depende da implantação e da competição entre espécies.,Avaliar antes da cultura comercial com massa de resíduo medida; não somar benefícios automaticamente.,https://www.scielo.br/j/pab/a/jd7jz3fkHD9SHpCxQzyBtpp/?lang=pt
+spontaneous_cover,Cobertura espontânea,Spontaneous cover (mowed),,generic,,,,
+cover_grass,Gramínea de cobertura,Cover grass,Poaceae,generic,,,,
+cover_legume,Leguminosa de cobertura,Cover legume,Fabaceae,generic,,,,

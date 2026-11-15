@@ -5,6 +5,7 @@ Saídas (GERADAS, não editar à mão; ver docs/plano/ARQUITETURA.md, seção 3)
   crops.csv           55 culturas: chave, nomes, tipo, família, alternativas A/B, riscos, ressalvas, fonte
   rotation_edges.csv  sucessões: "Pares de partida" + alternativas A/B (coberturas entram como via_key)
   covers.csv          coberturas que aparecem como via_key ("Adubação verde" + coberturas genéricas)
+  climate_risks.csv   os 9 risk_keys com o texto da aba "Eventos climáticos" (o que medir, decisão, mensagem)
 
 Uso: cd backend && python -m scripts.build_crop_catalog [--check]
   --check  não grava; sai com erro se os CSVs estiverem desatualizados em relação à planilha.
@@ -173,6 +174,19 @@ RISK_RULES = [
 RISK_ORDER = ["frost", "establishment_drought", "reproductive_drought", "heat", "heavy_rain",
               "harvest_rain", "waterlogging", "hail_wind", "chill_hours"]
 
+# Aba "Eventos climáticos": evento → (risk_key, rótulo em inglês). Precisa cobrir os 9 de RISK_ORDER.
+RISK_EVENTS = {
+    "Seca na implantação": ("establishment_drought", "Drought at establishment"),
+    "Seca reprodutiva / veranico": ("reproductive_drought", "Drought at the reproductive stage (dry spell)"),
+    "Calor extremo": ("heat", "Extreme heat"),
+    "Geada": ("frost", "Frost"),
+    "Frio hibernal insuficiente": ("chill_hours", "Insufficient winter chill"),
+    "Chuva forte / erosão": ("heavy_rain", "Heavy rain / erosion"),
+    "Encharcamento": ("waterlogging", "Waterlogging"),
+    "Granizo e ventania": ("hail_wind", "Hail and strong wind"),
+    "Chuva na colheita / arranquio": ("harvest_rain", "Rain at harvest"),
+}
+
 
 def risk_keys(raw: str) -> str:
     keys = set()
@@ -194,7 +208,8 @@ def risk_keys(raw: str) -> str:
     return "; ".join(k for k in RISK_ORDER if k in keys)
 
 
-HEADERS = {"Culturas (55)": "Nº", "Pares de partida": "Par ou sequência", "Adubação verde": "Cobertura"}
+HEADERS = {"Culturas (55)": "Nº", "Pares de partida": "Par ou sequência", "Adubação verde": "Cobertura",
+           "Eventos climáticos": "Evento"}
 
 
 def sheet_rows(wb, name):
@@ -204,9 +219,10 @@ def sheet_rows(wb, name):
     return [r for r in rows[start:] if r[0] is not None]
 
 
-def chain_edges(start_key, text, origin, evidence, condition, url):
+def chain_edges(start_key, text, origin, evidence, condition, url, why=""):
     """'Aveia-preta → milho' depois de start_key → aresta start_key→corn via black_oat.
-    Cada '→' é um passo; 'ou' gera alternativas; coberturas entre duas culturas viram via_key."""
+    Cada '→' é um passo; 'ou' gera alternativas; coberturas entre duas culturas viram via_key.
+    `why` ("Por que avaliar") só existe nos pares documentados."""
     steps = [[s.strip() for s in re.split(r"\s+ou\s+", part)] for part in text.split("→")]
     nodes = [[("crop", start_key)]] if start_key else []
     for step in steps:
@@ -224,13 +240,13 @@ def chain_edges(start_key, text, origin, evidence, condition, url):
                 for t in crops:
                     for v in via or [""]:
                         edges.append({"from_key": f, "to_key": t, "via_key": v, "origin": origin,
-                                      "evidence": evidence, "condition": condition, "url": url})
+                                      "evidence": evidence, "condition": condition, "url": url, "why": why})
         prev, via = crops, []
     if via and prev is not None:  # termina numa cobertura (entrelinha): a cultura continua, com a cobertura
         for f in prev:
             for v in via:
                 edges.append({"from_key": f, "to_key": f, "via_key": v, "origin": origin,
-                              "evidence": evidence, "condition": condition, "url": url})
+                              "evidence": evidence, "condition": condition, "url": url, "why": why})
     return edges
 
 
@@ -252,22 +268,40 @@ def build(path=SOURCE):
             edges += chain_edges(key, alt, origin, evidence, caveat, url)
 
     for r in sheet_rows(wb, "Pares de partida"):
-        pair, _why, evidence, condition, url = r[:5]
+        pair, why, evidence, condition, url = r[:5]
         text = pair.replace("Cana encerrada", "Cana")
         m = re.match(r"(.+?) (?:→ palha )?na entrelinha de (citros|café)$", text)
         if m:  # manejo de entrelinha de pomar: a cultura continua, com a cobertura
             _, cover = resolve(m.group(1))
             targets = CITRUS if m.group(2) == "citros" else ["coffee"]
             edges += [{"from_key": t, "to_key": t, "via_key": cover, "origin": "documented_pair",
-                       "evidence": evidence, "condition": condition, "url": url} for t in targets]
+                       "evidence": evidence, "condition": condition, "url": url, "why": why} for t in targets]
             continue
-        edges += chain_edges(None, text, "documented_pair", evidence, condition, url)
+        edges += chain_edges(None, text, "documented_pair", evidence, condition, url, why)
 
-    covers = [{"key": k, "name_pt": n, "label_en": l, "family": fam, "source": "Adubação verde"}
-              for n, (k, l) in COVERS.items()
-              for fam in [next(r[1] for r in sheet_rows(wb, "Adubação verde") if r[0] == n)]]
-    covers += [{"key": k, "name_pt": n, "label_en": l, "family": fam, "source": "generic"}
+    # Aba "Adubação verde": Cobertura, Família, Mecanismo, Clima / manejo, Onde testar e cautelas, URL
+    green = {r[0]: r for r in sheet_rows(wb, "Adubação verde")}
+    unknown = set(green) - set(COVERS)
+    if unknown:
+        raise ValueError(f"cobertura nova na planilha: {sorted(unknown)} (acrescente em COVERS)")
+    covers = [{"key": k, "name_pt": n, "label_en": l, "family": green[n][1], "source": "Adubação verde",
+               "mechanism_pt": green[n][2], "management_pt": green[n][3], "caveat_pt": green[n][4], "url": green[n][5]}
+              for n, (k, l) in COVERS.items()]
+    covers += [{"key": k, "name_pt": n, "label_en": l, "family": fam, "source": "generic",
+                "mechanism_pt": "", "management_pt": "", "caveat_pt": "", "url": ""}
                for k, (n, l, fam) in GENERIC_COVERS.items()]
+
+    # Aba "Eventos climáticos": Evento, O que medir, Como muda a decisão, Exemplo de mensagem, URL 1, URL 2
+    risks = {}
+    for name, measure, decision, message, url_1, url_2 in (r[:6] for r in sheet_rows(wb, "Eventos climáticos")):
+        if name not in RISK_EVENTS:
+            raise ValueError(f"evento climático novo na planilha: {name!r} (acrescente em RISK_EVENTS)")
+        key, label = RISK_EVENTS[name]
+        risks[key] = {"key": key, "name_pt": name, "label_en": label, "measure_pt": measure,
+                      "decision_pt": decision, "message_pt": message, "url_1": url_1, "url_2": url_2 or ""}
+    if set(risks) != set(RISK_ORDER):
+        raise ValueError(f"aba 'Eventos climáticos' sem os riscos: {sorted(set(RISK_ORDER) - set(risks))}")
+    climate_risks = [risks[k] for k in RISK_ORDER]
 
     # sem duplicatas; ordem estável
     seen, uniq = set(), []
@@ -276,7 +310,7 @@ def build(path=SOURCE):
         if sig not in seen:
             seen.add(sig)
             uniq.append(e)
-    return {"crops.csv": crops, "rotation_edges.csv": uniq, "covers.csv": covers}
+    return {"crops.csv": crops, "rotation_edges.csv": uniq, "covers.csv": covers, "climate_risks.csv": climate_risks}
 
 
 def to_csv(rows) -> str:
