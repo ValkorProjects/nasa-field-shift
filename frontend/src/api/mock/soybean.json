@@ -1,0 +1,51 @@
+{
+  "location": { "name": "Taquarituba, SP", "lat": -23.53, "lon": -49.24 },
+  "crop": "soybean",
+  "crop_label": "Soybean",
+  "season": { "start": "2027-09-01", "end": "2028-03-31" },
+  "recommendation": {
+    "summary": "Plant soybean between Oct 10 and Nov 5.",
+    "explanation": "Soybean planted in this window flowers in December, before the cool and humid nights of January that favour white mold."
+  },
+  "windows": [
+    {
+      "start": "2027-10-10",
+      "end": "2027-11-05",
+      "level": "recommended",
+      "explanation": "Flowering ends before mid-January in most past years, when humid nights are most common."
+    },
+    {
+      "start": "2027-11-06",
+      "end": "2027-11-30",
+      "level": "risky",
+      "explanation": "Flowering moves into January. Cool, humid nights at flowering happened in 4 of the last 10 years."
+    },
+    {
+      "start": "2027-12-01",
+      "end": "2027-12-20",
+      "level": "avoid",
+      "explanation": "Flowering would fall in the period with the most humid nights. White mold is likely, and the harvest gets close to the second-crop window."
+    }
+  ],
+  "events": [
+    {
+      "type": "white_mold",
+      "label": "White mold conditions",
+      "start": "2028-01-10",
+      "end": "2028-02-20",
+      "years_hit": 4,
+      "years_total": 10,
+      "threshold": "3+ days in a row with mean temperature 15–22 °C and relative humidity ≥ 85 %",
+      "explanation": "Cool, humid spells that favour white mold (Sclerotinia) at flowering happened in 4 of the last 10 years."
+    }
+  ],
+  "source": {
+    "dataset": "NASA POWER",
+    "url": "https://power.larc.nasa.gov/",
+    "parameters": ["T2M_MIN", "T2M", "RH2M", "PRECTOTCORR"],
+    "period": "2015–2024",
+    "mode": "mock",
+    "generated_at": "2027-01-15T00:00:00Z",
+    "note": "Past records, not a forecast. Risk = how often it happened in past years."
+  }
+}

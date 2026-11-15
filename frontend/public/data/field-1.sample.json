@@ -1,0 +1,256 @@
+{
+  "meta": {
+    "schema": 1,
+    "fieldId": "1",
+    "note": "Sample data for the prototype. Every leaf shown on screen is { value, sample, source, scale }. scale: field | area | est | book. Replace with field-1.json computed by the Python pipeline."
+  },
+
+  "scenario": {
+    "today": { "value": "Jan 15, 2027", "sample": true, "source": "scenario", "scale": null }
+  },
+
+  "farm": {
+    "name": { "value": "Example Farm", "sample": true, "source": "user", "scale": null },
+    "region": { "value": "São Paulo state", "sample": true, "source": "user", "scale": null }
+  },
+
+  "map": {
+    "image": { "photo": "/img/map_rgb.jpg", "veg": "/img/map_ndvi.jpg", "moist": "/img/map_rgb.jpg" },
+    "width": 1796,
+    "height": 1300,
+    "viewBox": "440 0 1120 1300",
+    "fields": [
+      { "id": "1", "name": "Field 1", "status": "r", "points": "970,424 1116,420 1120,536 964,540", "label": [985, 490] },
+      { "id": "2", "name": "Field 2", "status": "g", "points": "994,312 1108,306 1112,412 990,416", "label": [1002, 370] },
+      { "id": "3", "name": "Field 3", "status": "y", "points": "1224,770 1400,730 1424,820 1250,850", "label": [1262, 800] },
+      { "id": "4", "name": "Field 4", "status": "g", "points": "785,715 862,700 872,780 792,792", "label": [790, 760] },
+      { "id": "5", "name": "Field 5", "status": "g", "points": "1384,356 1478,350 1482,462 1390,468", "label": [1390, 415] }
+    ]
+  },
+
+  "field": {
+    "name": { "value": "Field 1", "sample": true, "source": "user", "scale": null },
+    "area_ha": { "value": 42, "sample": true, "source": "your map", "scale": "field" },
+    "slope": { "value": "gentle", "sample": true, "source": "NASADEM 30 m", "scale": "field" },
+    "slope_pct": { "value": "[X]", "sample": true, "source": "NASADEM 30 m", "scale": "field" },
+    "summer": { "value": "Soybean", "sample": true, "source": "user", "scale": null },
+    "harvest": { "value": "early Feb", "sample": true, "source": "ZARC", "scale": "area" },
+    "next": { "value": "Second-crop corn", "sample": true, "source": "user", "scale": null },
+    "planting": { "value": "Feb 10", "sample": true, "source": "ZARC", "scale": "area" }
+  },
+
+  "crops": {
+    "summer": [
+      { "id": "soy", "name": "Soybean", "img": "/img/soja.jpg" },
+      { "id": "corn", "name": "Corn", "img": "/img/milho.jpg" },
+      { "id": "beans", "name": "Beans", "img": "/img/feijao.jpg" }
+    ],
+    "second": [
+      { "id": "corn", "name": "Corn", "img": "/img/milho.jpg" },
+      { "id": "wheat", "name": "Wheat", "img": "/img/trigo.jpg" },
+      { "id": "cover", "name": "Cover crop", "img": "/img/cover.jpg" },
+      { "id": "empty", "name": "Leave it empty", "img": "/img/palha.jpg" }
+    ],
+    "defaults": { "summer": "soy", "second": "corn" }
+  },
+
+  "soil": {
+    "texture_est": { "value": "medium", "sample": true, "source": "SoilGrids 250 m", "scale": "est" },
+    "drainage_est": { "value": "drains normally", "sample": true, "source": "SoilGrids 250 m", "scale": "est" },
+    "slope_sat": { "value": "gentle slope", "sample": true, "source": "NASADEM 30 m", "scale": "field" },
+    "slope_pct": { "value": "[X]", "sample": true, "source": "NASADEM 30 m", "scale": "field" },
+    "defaults": { "texture": "medium", "drainage": "idk", "slope": "gentle" }
+  },
+
+  "priorities": {
+    "items": [
+      { "id": "soil", "label": "Protect soil", "desc": "Less erosion, more straw, more life in the soil", "icon": "erosion" },
+      { "id": "water", "label": "Save water", "desc": "Choose crops that need less rain", "icon": "drop" },
+      { "id": "income", "label": "Income", "desc": "Crops that can earn more money", "icon": "coin" },
+      { "id": "cost", "label": "Low cost / equipment", "desc": "Fewer inputs, use the machines I have", "icon": "tool" }
+    ],
+    "defaultOrder": ["soil", "water", "income", "cost"],
+    "weights": [4, 3, 2, 1],
+    "points": { "Good": 2, "OK": 1, "Poor": 0 }
+  },
+
+  "strategies": [
+    {
+      "id": "current",
+      "tag": "Your current plan",
+      "name": { "value": "Soybean → Corn", "sample": true, "source": "user", "scale": null },
+      "longName": "soybean → corn",
+      "light": "r",
+      "lightTxt": "Risky",
+      "photos": [
+        { "img": "/img/soja.jpg", "cap": "Soybean" },
+        { "img": "/img/milho.jpg", "cap": "Corn" }
+      ],
+      "verdict": { "value": "Good income, but corn often gets too little rain in April–May.", "sample": true, "source": "model", "scale": null },
+      "rows": [
+        { "icon": "rain", "label": "Rain in April–May", "answer": { "value": "Often too little", "sample": true, "source": "GPM", "scale": "area" }, "tone": "r" },
+        { "icon": "frost", "label": "Frost", "answer": { "value": "Sometimes", "sample": true, "source": "POWER", "scale": "area" }, "tone": "y" },
+        { "icon": "erosion", "label": "Rain washing soil away", "answer": { "value": "Some risk", "sample": true, "source": "slope + cover", "scale": "est" }, "tone": "y" },
+        { "icon": "bare", "label": "Soil left bare", "answer": { "value": "1 month", "sample": true, "source": "HLS", "scale": "field" }, "tone": "y" },
+        { "icon": "nitro", "label": "Feeds the soil (nitrogen)", "answer": { "value": "Soybean only", "sample": true, "source": "crop fact", "scale": "book" }, "tone": "y" }
+      ],
+      "fit": { "soil": "OK", "water": "Poor", "income": "Good", "cost": "Poor" },
+      "evidence": {
+        "scale": "field",
+        "source": "HLS",
+        "text": "Corn seen on this field in {n} seasons.",
+        "n": { "value": "4 of the last 6", "sample": true, "source": "HLS 30 m", "scale": "field" }
+      },
+      "nodata": false,
+      "money": {
+        "dry": { "value": "[X]", "sample": true, "source": "FAO-33 + GPM", "scale": "est" },
+        "normal": { "value": "[X]", "sample": true, "source": "IBGE + CEPEA + CONAB", "scale": "area" },
+        "avg": { "value": "[X]", "sample": true, "source": "GPM 10 years", "scale": "est" },
+        "note": "Corn loses grain when April–May is dry."
+      }
+    },
+    {
+      "id": "a",
+      "tag": "Option A",
+      "name": { "value": "Soybean → Wheat", "sample": true, "source": "model", "scale": null },
+      "longName": "soybean → wheat",
+      "light": "y",
+      "lightTxt": "Caution",
+      "photos": [
+        { "img": "/img/soja.jpg", "cap": "Soybean" },
+        { "img": "/img/trigo.jpg", "cap": "Wheat" }
+      ],
+      "verdict": { "value": "Needs little rain, but frost and bare soil are risks.", "sample": true, "source": "model", "scale": null },
+      "rows": [
+        { "icon": "rain", "label": "Rain in April–May", "answer": { "value": "Usually enough", "sample": true, "source": "GPM", "scale": "area" }, "tone": "g" },
+        { "icon": "frost", "label": "Frost", "answer": { "value": "Often", "sample": true, "source": "POWER", "scale": "area" }, "tone": "r" },
+        { "icon": "erosion", "label": "Rain washing soil away", "answer": { "value": "High risk", "sample": true, "source": "slope + cover", "scale": "est" }, "tone": "r" },
+        { "icon": "bare", "label": "Soil left bare", "answer": { "value": "3 months", "sample": true, "source": "HLS", "scale": "field" }, "tone": "r" },
+        { "icon": "nitro", "label": "Feeds the soil (nitrogen)", "answer": { "value": "Soybean only", "sample": true, "source": "crop fact", "scale": "book" }, "tone": "y" }
+      ],
+      "fit": { "soil": "Poor", "water": "Good", "income": "OK", "cost": "OK" },
+      "evidence": { "scale": "area", "source": "GPM + crop facts", "text": "No wheat seen on this field before. Based on area data only." },
+      "nodata": true,
+      "money": {
+        "dry": { "value": "[X]", "sample": true, "source": "FAO-33 + GPM", "scale": "est" },
+        "normal": { "value": "[X]", "sample": true, "source": "IBGE + CEPEA + CONAB", "scale": "area" },
+        "avg": { "value": "[X]", "sample": true, "source": "GPM 10 years", "scale": "est" },
+        "note": "Wheat needs less rain. Frost can cut the harvest."
+      }
+    },
+    {
+      "id": "b",
+      "tag": "Option B",
+      "name": { "value": "Soybean → Cover crop", "sample": true, "source": "model", "scale": null },
+      "longName": "soybean → cover crop",
+      "light": "g",
+      "lightTxt": "Good",
+      "photos": [
+        { "img": "/img/soja.jpg", "cap": "Soybean" },
+        { "img": "/img/cover.jpg", "cap": "Millet + sunn hemp" }
+      ],
+      "verdict": { "value": "Best for soil and water. No grain to sell this season.", "sample": true, "source": "model", "scale": null },
+      "rows": [
+        { "icon": "rain", "label": "Rain in April–May", "answer": { "value": "Usually enough", "sample": true, "source": "GPM", "scale": "area" }, "tone": "g" },
+        { "icon": "frost", "label": "Frost", "answer": { "value": "Little harm", "sample": true, "source": "POWER", "scale": "area" }, "tone": "g" },
+        { "icon": "erosion", "label": "Rain washing soil away", "answer": { "value": "Low risk", "sample": true, "source": "slope + cover", "scale": "est" }, "tone": "g" },
+        { "icon": "bare", "label": "Soil left bare", "answer": { "value": "Never", "sample": true, "source": "HLS", "scale": "field" }, "tone": "g" },
+        { "icon": "nitro", "label": "Feeds the soil (nitrogen)", "answer": { "value": "Yes, sunn hemp too", "sample": true, "source": "crop fact", "scale": "book" }, "tone": "g" }
+      ],
+      "fit": { "soil": "Good", "water": "Good", "income": "Poor", "cost": "Good" },
+      "evidence": { "scale": "area", "source": "GPM + crop facts", "text": "No cover crop seen on this field before. Based on crop knowledge and area rain data." },
+      "nodata": true,
+      "money": {
+        "dry": { "value": "[X]", "sample": true, "source": "FAO-33 + GPM", "scale": "est" },
+        "normal": { "value": "[X]", "sample": true, "source": "IBGE + CEPEA + CONAB", "scale": "area" },
+        "avg": { "value": "[X]", "sample": true, "source": "GPM 10 years", "scale": "est" },
+        "note": "No grain to sell. Low cost, and the soil is protected."
+      }
+    }
+  ],
+
+  "details": {
+    "b": {
+      "why": "You chose <b>Protect soil</b> and <b>Save water</b>. This plan keeps the soil covered until the next soybean and needs little rain.",
+      "evidence": [
+        { "icon": "rain", "text": "Rain in April–May was too low in {n} years", "n": { "value": "7 of the last 10", "sample": true, "source": "GPM", "scale": "area" }, "chip": { "scale": "area", "source": "GPM ~10 km" } },
+        { "icon": "slope", "text": "Field slope: gentle ({n}%)", "n": { "value": "[X]", "sample": true, "source": "NASADEM", "scale": "field" }, "chip": { "scale": "field", "source": "NASADEM 30 m" } },
+        { "icon": "bare", "text": "Soil was bare about {n} days a year (last 5 years)", "n": { "value": "[X]", "sample": true, "source": "HLS", "scale": "field" }, "chip": { "scale": "field", "source": "HLS 30 m" } },
+        { "icon": "nitro", "text": "Sunn hemp feeds the soil with nitrogen", "chip": { "scale": "book", "source": "crop fact" } }
+      ],
+      "nodata": "No cover crop has been seen on this field. The rating uses crop knowledge and area rain data.",
+      "good": ["Soil covered all year", "Less soil washed away", "Nitrogen for next soybean", "Low cost"],
+      "watch": ["<b>No grain to sell</b> this season", "Frost can end the mix early", "Must be ended before soybean planting"],
+      "unknown": ["Your soil test", "Seed price near you", "Effect on next soybean yield"]
+    },
+    "a": {
+      "why": "Wheat needs less rain than corn in April–May. It still earns some grain income this season.",
+      "evidence": [
+        { "icon": "rain", "text": "Rain in April–May was too low in {n} years", "n": { "value": "7 of the last 10", "sample": true, "source": "GPM", "scale": "area" }, "chip": { "scale": "area", "source": "GPM ~10 km" } },
+        { "icon": "frost", "text": "Frost in June–August in {n} years", "n": { "value": "3 of the last 10", "sample": true, "source": "POWER", "scale": "area" }, "chip": { "scale": "area", "source": "POWER ~50 km" } },
+        { "icon": "bare", "text": "Soil would be bare about {n} months a year", "n": { "value": "3", "sample": true, "source": "crop calendar", "scale": "book" }, "chip": { "scale": "book", "source": "crop calendar" } },
+        { "icon": "slope", "text": "Field slope: gentle ({n}%)", "n": { "value": "[X]", "sample": true, "source": "NASADEM", "scale": "field" }, "chip": { "scale": "field", "source": "NASADEM 30 m" } }
+      ],
+      "nodata": "No wheat has been seen on this field. The rating uses crop knowledge and area data.",
+      "good": ["Needs little rain", "Some grain to sell", "Uses machines you have"],
+      "watch": ["<b>Frost</b> can cut the harvest", "Bare soil in Feb–Mar and Sep", "More soil washed away"],
+      "unknown": ["Your soil test", "Wheat price near you", "Frost in your low spots"]
+    },
+    "current": {
+      "why": "This is what you plan today. It earns the most in a normal year, but corn often gets too little rain in April–May.",
+      "evidence": [
+        { "icon": "rain", "text": "Rain in April–May was too low in {n} years", "n": { "value": "7 of the last 10", "sample": true, "source": "GPM", "scale": "area" }, "chip": { "scale": "area", "source": "GPM ~10 km" } },
+        { "icon": "leaf", "text": "Corn seen on this field in {n} seasons", "n": { "value": "4 of the last 6", "sample": true, "source": "HLS", "scale": "field" }, "chip": { "scale": "field", "source": "HLS 30 m" } },
+        { "icon": "frost", "text": "Frost in June in {n} years", "n": { "value": "3 of the last 10", "sample": true, "source": "POWER", "scale": "area" }, "chip": { "scale": "area", "source": "POWER ~50 km" } },
+        { "icon": "slope", "text": "Field slope: gentle ({n}%)", "n": { "value": "[X]", "sample": true, "source": "NASADEM", "scale": "field" }, "chip": { "scale": "field", "source": "NASADEM 30 m" } }
+      ],
+      "nodata": null,
+      "good": ["Best income in a normal year", "You know this crop", "Straw after harvest"],
+      "watch": ["<b>Dry April–May</b> cuts the grain", "Late corn can be hurt by frost", "Higher input cost"],
+      "unknown": ["Your soil test", "Corn price at harvest", "Rain this autumn"]
+    }
+  },
+
+  "confidence": {
+    "rules": [
+      { "ok": true, "text": "10+ years of rain data" },
+      { "ok": false, "text": "Some data is for the area, not the field" },
+      { "ok": true, "text": "Two rain sources agree" },
+      { "ok": false, "text": "No soil test (drainage estimated)" }
+    ],
+    "agree_pct": { "value": "[X]", "sample": true, "source": "GPM vs POWER", "scale": "area" }
+  },
+
+  "alert": {
+    "active": true,
+    "title": "Corn may get too little rain on Field 1",
+    "planting": { "value": "Feb 10", "sample": true, "source": "ZARC", "scale": "area" },
+    "weeks": { "value": "4", "sample": true, "source": "ZARC", "scale": "area" },
+    "rain_years": { "value": "7 of 10", "sample": true, "source": "GPM", "scale": "area" },
+    "frost_years": { "value": "3 of 10", "sample": true, "source": "POWER", "scale": "area" },
+    "smap_context": { "value": "Soil in your area is drier than a normal January.", "sample": true, "source": "SMAP · not your field", "scale": "area" }
+  },
+
+  "money": {
+    "at_risk_min": { "value": "[X]", "sample": true, "source": "FAO-33 + GPM", "scale": "est" },
+    "at_risk_max": { "value": "[X]", "sample": true, "source": "FAO-33 + GPM", "scale": "est" },
+    "dry_years": { "value": "7 of the last 10", "sample": true, "source": "GPM", "scale": "area" },
+    "inputs": [
+      { "id": "area", "label": "Area", "prefix": "", "suffix": " ha", "v": { "value": 42, "sample": true, "source": "your map", "scale": "field" } },
+      { "id": "yield", "label": "Corn yield", "prefix": "", "suffix": " bags/ha", "v": { "value": "[X]", "sample": true, "source": "IBGE", "scale": "area" } },
+      { "id": "price", "label": "Corn price", "prefix": "R$ ", "suffix": "/bag", "v": { "value": "[X]", "sample": true, "source": "CEPEA", "scale": "area" } },
+      { "id": "cost", "label": "Cost to grow", "prefix": "R$ ", "suffix": "/ha", "v": { "value": "[X]", "sample": true, "source": "CONAB", "scale": "area" } },
+      { "id": "loss", "label": "Loss in a dry autumn", "prefix": "", "suffix": "%", "v": { "value": "[X]", "sample": true, "source": "FAO + GPM", "scale": "est" } }
+    ]
+  },
+
+  "regional": {
+    "share": { "value": "[X]", "sample": true, "source": "scenario", "scale": "est" },
+    "area": { "value": "[X]", "sample": true, "source": "IBGE / CONAB", "scale": "area" },
+    "tonnes": { "value": "[X]", "sample": true, "source": "area × loss", "scale": "est" },
+    "share_br": { "value": "[X]", "sample": true, "source": "CONAB", "scale": "area" },
+    "past_year": { "value": "[X]", "sample": true, "source": "CONAB + CEPEA", "scale": "area" },
+    "past_drop": { "value": "[X]", "sample": true, "source": "CONAB", "scale": "area" },
+    "past_price": { "value": "[X]", "sample": true, "source": "CEPEA", "scale": "area" }
+  }
+}
