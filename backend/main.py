@@ -4,9 +4,13 @@ from typing import Literal
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
+from catalog import CATALOG, CATALOG_SOURCE, cover_payload, crop_detail, crop_summary, edge_payload, risk_payload
+from datasets.clients.appeears import STUDY_AREA_NAME, AppEEARSDataError, in_study_area, study_area_bbox
+from datasets.clients.modis.modis_client import get_lst, get_ndvi
 from datasets.clients.nasapower.nasapower_client import get_simplePoint, get_dailyPlot, Parameters
 from datasets.clients.nasapower.nasapower_typedef import NO_DATA, Plot
 from datasets.clients.opentopodata.open_topo_data import get_topoData
+from datasets.clients.smap.smap_client import get_soil_moisture
 from demo_points import HISTORY_END, HISTORY_START, find_demo_point
 from field_api import router as field_router
 from recommendation import recommend
@@ -234,4 +238,196 @@ def api_elevation(body: ElevationRequest):
         ],
         "source": {"dataset": "NASA SRTM 30 m (via OpenTopoData)", "url": "https://www.opentopodata.org/datasets/srtm/"},
     }
+#-----------------------
+
+
+#------------------------
+# NASA AppEEARS - MODIS (NDVI, surface temperature) and SMAP (soil moisture)
+#-----------------------
+# Offline 2025 extract for the Itaberá–Itapeva study area (backend/data/itabera-itapeva/).
+# Values are statistics over the whole study area, not the requested point: a point
+# outside the area gets 404.
+APPEEARS_START = date(2025, 1, 1)
+APPEEARS_END = date(2025, 12, 31)
+APPEEARS_UNAVAILABLE_MSG = "AppEEARS data files unavailable on the server"
+APPEEARS_NOTE = "Statistics over the whole study area (not the requested point); 2025 offline extract from NASA AppEEARS"
+
+
+def _check_appeears_request(lat: float, lon: float, start: date, end: date) -> None:
+    if start > end:
+        raise HTTPException(status_code=422, detail="start must be on or before end")
+    try:
+        inside = in_study_area(lat, lon)
+    except AppEEARSDataError:
+        raise HTTPException(status_code=503, detail=APPEEARS_UNAVAILABLE_MSG)
+    if not inside:
+        raise HTTPException(status_code=404, detail=f"No AppEEARS data for this location (only the {STUDY_AREA_NAME})")
+
+
+def _appeears_payload(lat: float, lon: float, start: date, end: date, dataset: str, url: str) -> dict:
+    min_lon, min_lat, max_lon, max_lat = study_area_bbox()
+    return {
+        "location": {"lat": lat, "lon": lon},
+        "area": {"name": STUDY_AREA_NAME, "bbox": {"min_lon": min_lon, "min_lat": min_lat, "max_lon": max_lon, "max_lat": max_lat}},
+        "start": start.isoformat(),
+        "end": end.isoformat(),
+        "source": {"dataset": dataset, "url": url, "note": APPEEARS_NOTE},
+    }
+
+
+def _area_stat(s) -> dict:
+    return {"mean": s.mean, "median": s.median, "minimum": s.minimum, "maximum": s.maximum,
+            "std": s.std, "pixel_count": s.pixel_count, "coverage": s.coverage}
+
+
+@app.get("/api/ndvi")
+def api_ndvi(
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+    start: date = Query(APPEEARS_START),
+    end: date = Query(APPEEARS_END),
+):
+    _check_appeears_request(lat, lon, start, end)
+    try:
+        stats = get_ndvi(start, end)
+    except AppEEARSDataError:
+        raise HTTPException(status_code=503, detail=APPEEARS_UNAVAILABLE_MSG)
+    if not stats:
+        raise HTTPException(status_code=404, detail="No NDVI composite in this period (data covers 2025)")
+    body = _appeears_payload(lat, lon, start, end, "NASA MODIS MOD13Q1 v061 NDVI 250 m, 16-day",
+                             "https://doi.org/10.5067/MODIS/MOD13Q1.061")
+    # One record per 16-day composite; `date` is the first day of the composite
+    body["composites"] = [{"date": s.day.isoformat(), **_area_stat(s)} for s in stats]
+    return body
+
+
+@app.get("/api/surface-temperature")
+def api_surface_temperature(
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+    start: date = Query(APPEEARS_START),
+    end: date = Query(APPEEARS_END),
+    min_coverage: float = Query(0.0, ge=0, le=1, description="Drop overpasses where less of the area had valid (cloud-free) pixels"),
+):
+    _check_appeears_request(lat, lon, start, end)
+    try:
+        day = {s.day: s for s in get_lst(start, end, "day", min_coverage)}
+        night = {s.day: s for s in get_lst(start, end, "night", min_coverage)}
+    except AppEEARSDataError:
+        raise HTTPException(status_code=503, detail=APPEEARS_UNAVAILABLE_MSG)
+    if not day and not night:
+        raise HTTPException(status_code=404, detail="No surface temperature in this period (data covers 2025)")
+    body = _appeears_payload(lat, lon, start, end, "NASA MODIS MYD11A1 v061 land surface temperature 1 km, daily",
+                             "https://doi.org/10.5067/MODIS/MYD11A1.061")
+    body["unit"] = "°C"
+    # Aqua overpasses: day ~13:30, night ~01:30 local time; `null` = cloudy or below min_coverage
+    body["daily"] = [
+        {"date": d.isoformat(),
+         "day": _area_stat(day[d]) if d in day else None,
+         "night": _area_stat(night[d]) if d in night else None}
+        for d in sorted(day.keys() | night.keys())
+    ]
+    return body
+
+
+@app.get("/api/soil-moisture")
+def api_soil_moisture(
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+    start: date = Query(APPEEARS_START),
+    end: date = Query(APPEEARS_END),
+):
+    _check_appeears_request(lat, lon, start, end)
+    try:
+        surface = {d.day: d for d in get_soil_moisture(start, end, "surface")}
+        rootzone = {d.day: d for d in get_soil_moisture(start, end, "rootzone")}
+    except AppEEARSDataError:
+        raise HTTPException(status_code=503, detail=APPEEARS_UNAVAILABLE_MSG)
+    if not surface and not rootzone:
+        raise HTTPException(status_code=404, detail="No soil moisture in this period (data covers 2025)")
+    body = _appeears_payload(lat, lon, start, end, "NASA SMAP L4 SPL4SMGP v008 soil moisture 9 km",
+                             "https://doi.org/10.5067/T5RUATAQREF8")
+    body["unit"] = "m³/m³"
+
+    def layer(d):
+        return None if d is None else {"mean": d.mean, "minimum": d.minimum, "maximum": d.maximum, "samples": d.samples}
+
+    # Daily (UTC) means of the 3-hourly values; surface = 0-5 cm, rootzone = 0-100 cm
+    body["daily"] = [
+        {"date": d.isoformat(), "surface": layer(surface.get(d)), "rootzone": layer(rootzone.get(d))}
+        for d in sorted(surface.keys() | rootzone.keys())
+    ]
+    return body
+#-----------------------
+
+
+#------------------------
+# Crop catalog - 55 crops of São Paulo, rotations, cover crops, climate risks
+#-----------------------
+# Static data from backend/data/crops/ (generated from the spreadsheet by scripts/build_crop_catalog.py),
+# loaded once in catalog.py. Data only: choosing rotations and alerts is done by the frontend (ADR-009).
+def _check_keys(kind: str, keys: list[str | None], valid) -> None:
+    unknown = [k for k in keys if k is not None and k not in valid]
+    if unknown:
+        raise HTTPException(status_code=422, detail=f"Unknown {kind}: {', '.join(unknown)}")
+
+
+@app.get("/api/crops")
+def api_crops(
+    crop_type: Literal["permanent", "temporary"] | None = None,
+    decision_type: Literal["succession", "interrow", "reform", "after_closure"] | None = None,
+    risk: str | None = Query(None, description="Only crops exposed to this climate risk key, e.g. frost"),
+    quantitative: bool | None = Query(None, description="Only the crops with numeric parameters (or only the others)"),
+):
+    _check_keys("risk", [risk], CATALOG.risks)
+    crops = [
+        c for c in CATALOG.crops.values()
+        if (crop_type is None or c.crop_type == crop_type)
+        and (decision_type is None or c.decision_type == decision_type)
+        and (risk is None or risk in c.risk_keys)
+        and (quantitative is None or c.quantitative == quantitative)
+    ]
+    return {"count": len(crops), "crops": [crop_summary(c) for c in crops], "source": CATALOG_SOURCE}
+
+
+@app.get("/api/crops/{key}")
+def api_crop(key: str):
+    crop = CATALOG.crops.get(key)
+    if crop is None:
+        raise HTTPException(status_code=404, detail=f"Unknown crop: {key}")
+    return {**crop_detail(crop), "source": CATALOG_SOURCE}
+
+
+@app.get("/api/rotations")
+def api_rotations(
+    from_key: str | None = Query(None, alias="from", description="Previous crop key"),
+    to_key: str | None = Query(None, alias="to", description="Next crop key"),
+    via: str | None = Query(None, description="Cover crop key between the two"),
+    origin: Literal["documented_pair", "alt_a", "alt_b"] | None = None,
+):
+    _check_keys("crop", [from_key, to_key], CATALOG.crops)
+    _check_keys("cover", [via], CATALOG.covers)
+    edges = [
+        e for e in CATALOG.edges
+        if (from_key is None or e.from_key == from_key)
+        and (to_key is None or e.to_key == to_key)
+        and (via is None or e.via_key == via)
+        and (origin is None or e.origin == origin)
+    ]
+    return {"count": len(edges), "rotations": [edge_payload(e) for e in edges], "source": CATALOG_SOURCE}
+
+
+@app.get("/api/covers")
+def api_covers():
+    covers = [cover_payload(v) for v in CATALOG.covers.values()]
+    return {"count": len(covers), "covers": covers, "source": CATALOG_SOURCE}
+
+
+@app.get("/api/climate-risks")
+def api_climate_risks():
+    risks = [
+        {**risk_payload(r), "crop_keys": [c.key for c in CATALOG.crops.values() if r.key in c.risk_keys]}
+        for r in CATALOG.risks.values()
+    ]
+    return {"count": len(risks), "risks": risks, "source": CATALOG_SOURCE}
 #-----------------------

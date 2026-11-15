@@ -5,6 +5,10 @@ dist
 .env
 .env.*
 !.env.example
+# per-mode settings without secrets (frontend): committed on purpose
+!.env.development
+!.env.production
+!.env.mock
 __pycache__/
 .venv/
 *.pyc

@@ -1,6 +1,8 @@
-// API access with a mock/real flag (issue #6).
-//   VITE_API_MODE=mock → sample JSON in ./mock (default)
-//   VITE_API_MODE=api  → GET /api/recommendation (Vite proxies /api to the backend in dev)
+// API access with a mock/real flag (issue #6). The mode comes from the .env file of each Vite mode:
+//   npm run dev       → api, local backend (Vite proxies /api to http://localhost:8000)
+//   npm run dev:mock  → mock, sample JSON in ./mock
+//   vite build        → api, https://rollcrop-backend.vercel.app (VITE_API_BASE); Vercel previews → localhost
+// Without VITE_API_MODE the app falls back to mock.
 // The contract is documented in docs/contract-example.json.
 import { ref } from 'vue'
 import corn from './mock/corn.json'

@@ -33,13 +33,14 @@ onMounted(() => loadCosts()) // money bar: public data (IBGE, NASA POWER)
       <div class="best2">
         <div class="bstar" aria-hidden="true">★</div>
         <div>
-          <b>Best for you: {{ best.tag }}, {{ best.longName }}.</b>
+          <b v-if="best">Best for you: {{ best.tag }}, {{ best.longName }}.</b>
+          <b v-else>No ranking yet: RollCrop has rules for fewer than two of these plans. Compare them with your agronomist.</b>
           You chose <u>{{ priorityLabel(state.order[0]) }}</u> and <u>{{ priorityLabel(state.order[1]) }}</u> first.
           <span>
-            <template v-if="state.order[0] !== 'income' && alt.id !== best.id">If Income came first, {{ alt.tag }} would be best. · </template>
+            <template v-if="best && alt && state.order[0] !== 'income' && alt.id !== best.id">If Income came first, {{ alt.tag }} would be best. · </template>
             How sure are we: <b class="sure">{{ confidence.level }}</b>
             (<span class="ex">{{ confidence.met }} of {{ confidence.total }}</span> checks)
-            <button class="lnk" @click="open(best.id)">why?</button>
+            <button v-if="best" class="lnk" @click="open(best.id)">why?</button>
           </span>
         </div>
         <button class="edit" @click="router.push(fieldPath('priorities'))"><Icon name="pencil" />Change priorities</button>
@@ -48,14 +49,14 @@ onMounted(() => loadCosts()) // money bar: public data (IBGE, NASA POWER)
       <ScaleLegend />
 
       <div class="cols2">
-        <StrategyCard v-for="s in state.data.strategies" :key="s.id" :s="s" :best="s.id === best.id" @details="open" />
+        <StrategyCard v-for="s in state.data.strategies" :key="s.id" :s="s" :best="s.id === best?.id" @details="open" />
       </div>
 
       <div class="moneybar">
         <Icon name="coin" />
         <div>
           <b>What if nothing changes?</b>
-          <span>If you keep corn and the autumn is dry, {{ selected?.name }} could lose
+          <span>If you plant second-crop corn and the autumn is dry, {{ selected?.name }} could lose
             <b>R$ <SampleValue :v="money.at_risk_min" /> – <SampleValue :v="money.at_risk_max" /></b>.</span>
         </div>
         <button class="btn red small" style="width:auto;padding:10px 18px" @click="router.push(fieldPath('costs'))">See the costs →</button>

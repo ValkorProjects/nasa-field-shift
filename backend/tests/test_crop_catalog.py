@@ -48,6 +48,37 @@ def test_edges_point_to_known_crops_and_covers():
     assert {("corn", "soybean"), ("soybean", "corn"), ("wheat", "soybean"), ("cotton", "corn")} <= pairs
 
 
+def test_climate_risks_and_covers_csv():
+    risks = read("climate_risks.csv")
+    assert [r["key"] for r in risks] == ["frost", "establishment_drought", "reproductive_drought", "heat", "heavy_rain",
+                                         "harvest_rain", "waterlogging", "hail_wind", "chill_hours"]
+    for r in risks:
+        assert r["label_en"] and r["measure_pt"] and r["decision_pt"] and r["message_pt"]
+        assert r["url_1"].startswith("http")
+    green = [c for c in read("covers.csv") if c["source"] == "Adubação verde"]
+    assert len(green) == 8
+    assert all(c["mechanism_pt"] and c["url"].startswith("http") for c in green)
+    documented = [e for e in read("rotation_edges.csv") if e["origin"] == "documented_pair"]
+    assert documented and all(e["why"] for e in documented)
+
+
+def test_runtime_catalog_rejects_inconsistent_csvs(tmp_path):
+    import shutil
+
+    import catalog
+
+    for name in ("crops.csv", "covers.csv", "rotation_edges.csv", "climate_risks.csv"):
+        shutil.copy(DATA / name, tmp_path / name)
+    assert len(catalog.load(tmp_path).crops) == 55
+    edges = (tmp_path / "rotation_edges.csv").read_text(encoding="utf-8")
+    (tmp_path / "rotation_edges.csv").write_text(edges.replace("\ncorn,", "\nmaize,", 1), encoding="utf-8")
+    with pytest.raises(catalog.CatalogError, match="unknown crop maize"):
+        catalog.load(tmp_path)
+    (tmp_path / "climate_risks.csv").unlink()
+    with pytest.raises(catalog.CatalogError, match="missing"):
+        catalog.load(tmp_path)
+
+
 def test_csvs_match_the_spreadsheet():
     """Os CSVs são gerados: se a planilha mudar, rode python -m scripts.build_crop_catalog."""
     pytest.importorskip("openpyxl")

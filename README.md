@@ -12,8 +12,8 @@ RollCrop is a free decision-support tool for farmers in São Paulo state. For ea
 
 ```
 frontend/   Vue 3 + Vite app (this README covers it)
-backend/    FastAPI app with the NASA POWER client (PR #10)
-docs/       spec, data requirements, reference screens, API contract example
+backend/    FastAPI app (NASA POWER, SoilGrids, crop catalog; see backend/README.md)
+docs/       API contract examples, reference screens, list of sample values
 ```
 
 ## Run
@@ -22,9 +22,9 @@ From the repository root:
 
 ```bash
 npm run setup      # installs the front-end dependencies (once)
-npm run dev        # front end with sample data (mock)  → http://localhost:5173
-npm run dev:api    # front end calling the backend at /api
-npm run build      # production build in frontend/dist/
+npm run dev        # front end + your local backend (http://localhost:8000) → http://localhost:5173
+npm run dev:mock   # front end with sample data only, no backend needed
+npm run build      # production build in frontend/dist/, calls https://rollcrop-backend.vercel.app
 ```
 
 ## Running the backend
@@ -33,24 +33,35 @@ npm run build      # production build in frontend/dist/
 
 1. Run `cd ./backend`
 2. Run `pip install "fastapi[standard]" requests` or `pip install fastapi requests`
-3. Run `fastapi dev main.py` or `uv fastapi run dev` (serves on http://localhost:8000, docs at `/docs`)
+3. Run `fastapi dev main.py` (serves on http://localhost:8000, docs at `/docs`)
 
 Every endpoint lives under `/api/`. The full list is in [`backend/README.md`](backend/README.md#endpoints); `GET /api/recommendation`, `GET /api/weather`, `GET /api/soil` and `POST /api/field/profile` are detailed in "Recommendation API" below.
 
 **Front end + back end together:**
 
 1. Start the backend as above (port 8000).
-2. In another terminal, run `npm run dev:api`.
+2. In another terminal, run `npm run dev`.
 
-In dev, Vite proxies every `/api/*` call to the backend, so the browser never sees a CORS error. To use another backend address, copy `frontend/.env.example` to `frontend/.env.local` and change `VITE_BACKEND_URL`. Never commit `.env` files.
+In dev, Vite proxies every `/api/*` call to the backend, so the browser never sees a CORS error.
 
-| Setting | Values | Default |
+**Which backend each build calls.** The settings live in committed files (no secrets) in `frontend/`:
+
+| Where | File | Backend |
 |---|---|---|
-| `VITE_API_MODE` (or `npm run dev:api`) | `mock` · `api` | `mock` |
-| `VITE_BACKEND_URL` | backend used by the dev proxy | `http://localhost:8000` |
-| `VITE_API_BASE` | backend URL for a **production build** (Vercel has no proxy); the backend allows CORS | empty (use the dev proxy) |
+| `npm run dev` (local development) | `.env.development` | your machine, `http://localhost:8000` (through the Vite proxy) |
+| `npm run dev:mock` | `.env.mock` | none: sample data |
+| `npm run build` / Vercel **production** (the `main` branch) | `.env.production` | `https://rollcrop-backend.vercel.app` |
+| Vercel **preview** (the `dev` branch and pull requests) | `vite.config.js` | `http://localhost:8000`: the backend on the machine of whoever opens the preview |
 
-**Production (e.g. Vercel):** build with `VITE_API_MODE=api` and `VITE_API_BASE=https://<backend>`. Without a backend, deploy with `VITE_API_MODE=mock` (plan B).
+Published front end: https://rollcropfrontend.vercel.app · back end: https://rollcrop-backend.vercel.app
+
+To override on your machine, copy `frontend/.env.example` to `frontend/.env.local` (never committed). A `VITE_API_BASE` set in the Vercel project settings wins over these files.
+
+| Setting | Values |
+|---|---|
+| `VITE_API_MODE` | `api` · `mock` (missing = `mock`) |
+| `VITE_BACKEND_URL` | backend used by the dev proxy |
+| `VITE_API_BASE` | backend URL called directly by a build (no proxy outside dev); the backend allows CORS |
 
 If the backend is not running in `api` mode, the screen shows an error with **Try again** and **Use sample data**.
 
@@ -90,7 +101,7 @@ Events are **past frequency** ("3 of the last 10 years"), never a forecast.
 | 10 | Costs: big picture | `/field/1/costs/big-picture` |
 | 11 | When to plant (planting window + critical events) | `/planting?loc=…&crop=corn\|soybean` |
 
-Reference screens and the original spec are in [`docs/`](docs/) (`PROMPT.md`, `DATA_REQUIREMENTS.md`, `CHANGELOG.md`, `placeholders.csv`, `reference/*.png`).
+Reference screens (`reference/*.png`), the list of values that are still sample data (`placeholders.csv`) and the API contract examples (`contract-*.json`) are in [`docs/`](docs/).
 
 ## Front-end layout (`frontend/`)
 
@@ -193,6 +204,7 @@ The Costs screens (`/field/1/costs`, `/field/1/costs/big-picture`) and the money
 
 ### Rules computed in the front end
 
+- **The 3 plans follow the farmer's crops** (`src/data/strategies.js`): the current plan is the summer and second crop the farmer chose. Options A and B are the crops our São Paulo catalog lists after that summer crop (`public/data/crop-catalog.json`, built from `backend/data/crops/` by `node scripts/build-crop-catalog-json.cjs`), documented pairs first. Each one shows its evidence status ("Documented" or "Hypothesis to validate") and the reference link. A cover crop fills the list when the catalog has fewer than 2 options. Only corn, wheat and the cover crop have RollCrop rules (rain/frost rows, Good/OK/Poor fit); any other crop is **Not rated**, with no invented scores, and is left out of "Best for you". The ranking needs at least 2 rated plans. The nitrogen row follows the plan's legumes (crop knowledge).
 - **Best for you:** Σ (Good=2, OK=1, Poor=0) × weight of the farmer's priority order (4-3-2-1). Re-ranked live on the Priorities screen.
 - **How sure are we?:** count of passed checks in `confidence.rules`: 4 = High, 2–3 = Medium, 0–1 = Low.
 
