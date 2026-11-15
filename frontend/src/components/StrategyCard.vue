@@ -24,10 +24,17 @@ const FIT_IC = { soil: 'erosion', water: 'drop', income: 'coin', cost: 'tool' }
       <div class="light">{{ s.lightTxt }}</div>
     </div>
     <div class="pics2">
-      <IllustrativeImg :src="s.photos[0].img" :alt="s.photos[0].cap" /><span aria-hidden="true">→</span>
-      <IllustrativeImg :src="s.photos[1].img" :alt="s.photos[1].cap" />
+      <template v-for="(ph, i) in s.photos" :key="i">
+        <span v-if="i" aria-hidden="true">→</span>
+        <IllustrativeImg v-if="ph.img" :src="ph.img" :alt="ph.cap" />
+        <div v-else class="img noimg" :aria-label="ph.cap">{{ ph.cap }}</div>
+      </template>
     </div>
     <div class="pcap2"><span>{{ s.photos[0].cap }}</span><span>{{ s.photos[1].cap }}</span></div>
+    <div v-if="s.catalog" :class="['catline', s.catalog.status]">
+      <b>{{ s.catalog.statusTxt }}</b> · {{ s.catalog.note }}
+      <a v-if="s.catalog.url" :href="s.catalog.url" target="_blank" rel="noopener">reference</a>
+    </div>
     <div class="verdict"><SampleValue :v="s.verdict" :dotted="!!(state.data.meta?.live || state.data.meta?.sampleOnly)" /></div>
 
     <div v-for="r in s.rows" :key="r.icon" class="r2">
@@ -36,7 +43,8 @@ const FIT_IC = { soil: 'erosion', water: 'drop', income: 'coin', cost: 'tool' }
       <Chip :scale="r.answer.scale" :source="r.answer.source" />
     </div>
 
-    <div class="fitrow">
+    <div v-if="!s.fit" class="fitrow"><span>Your priorities</span><span class="nr">Not rated yet: left out of “Best for you”</span></div>
+    <div v-else class="fitrow">
       <span>Your priorities</span>
       <span v-for="p in state.order" :key="p" :class="['f2', `f${FIT[s.fit[p]][0]}`]" :title="`${p}: ${s.fit[p]}`">
         <Icon :name="FIT_IC[p]" />{{ FIT[s.fit[p]][1] }}<span class="sr-only">{{ p }}: {{ s.fit[p] }}</span>

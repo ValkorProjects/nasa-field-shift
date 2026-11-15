@@ -77,7 +77,7 @@ const editValue = (inp) => {
       <div class="headline">
         <div class="hic"><Icon name="warn" /></div>
         <div>
-          <div class="hk">If you keep corn and the autumn is dry</div>
+          <div class="hk">If you plant second-crop corn and the autumn is dry</div>
           <div class="hv">{{ selected?.name }} could lose
             <b v-if="userLoss">R$ {{ userLoss }}</b>
             <b v-else>R$ <SampleValue :v="m.at_risk_min" /> – <SampleValue :v="m.at_risk_max" /></b>
