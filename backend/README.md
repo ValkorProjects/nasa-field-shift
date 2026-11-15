@@ -6,7 +6,7 @@ FastAPI service for RollCrop: NASA POWER (history + CMIP6 projections), SoilGrid
 
 ```bash
 cd backend
-pip install -r requirements.txt        # requirements-dev.txt adds pytest
+pip install -r requirements.txt        # requirements-dev.txt adds pytest and openpyxl
 fastapi dev main.py                    # http://localhost:8000 · docs at /docs
 pytest                                 # no network needed
 ```
@@ -56,3 +56,24 @@ The projection data currently covers North America only; elsewhere it returns `4
 ```
 
 Returns `{"points": [{"lat", "lon", "elevation_m"}], "source": {...}}`. All points go to OpenTopoData in one request; `elevation_m` is `null` where SRTM has no value.
+
+## Crop catalog (`data/crops/`)
+
+Qualitative agronomic base for São Paulo, from `data/crops/source/rotacoes_agricolas_SP_55_culturas.xlsx` (55 crops, starting rotation pairs, green manures, climate events). See `docs/plano/ARQUITETURA.md`, section 3.
+
+| File | What | Edit? |
+|---|---|---|
+| `source/rotacoes_agricolas_SP_55_culturas.xlsx` | versioned copy of the original spreadsheet | replace with a new version |
+| `crops.csv` | 55 crops: key, names, type, family, decision type, alternatives A/B, residue note, risks (`risk_keys`), caveat, evidence, URL, `quantitative` (the 9 crops with numeric parameters) | **generated** |
+| `rotation_edges.csv` | successions `from_key → to_key` (`via_key` = cover crop) from "Pares de partida" (`documented_pair`) and alternatives A/B (`alt_a`, `alt_b`); `from_key` empty = after any crop | **generated** |
+| `covers.csv` | cover crops used as `via_key` (the 8 from "Adubação verde" + 3 generic ones) | **generated** |
+
+Regenerate after changing the spreadsheet (needs `openpyxl` from `requirements-dev.txt`):
+
+```bash
+cd backend
+python -m scripts.build_crop_catalog          # writes the 3 CSVs
+python -m scripts.build_crop_catalog --check  # fails if the CSVs are out of date (also checked by pytest)
+```
+
+The script fails on any crop, cover or risk text it does not know, instead of guessing. Risk texts are mapped to `risk_keys` by keyword: "seca" without a stage counts as `reproductive_drought`, and "frio" counts as `frost` (except "frio insuficiente" → `chill_hours`). This is a qualitative base for screening, not a field recipe: the evidence column says when a pair is only a hypothesis.
