@@ -6,6 +6,7 @@ app = FastAPI()
 VALID_PARAMETERS = {v for k, v in vars(Parameters).items() if not k.startswith("_")}
 MAX_PLOT_PARAMETERS = 5  # the NASA plot endpoint rejects more than 5 parameters per request
 
+# TODO: Include more APIs for different NASA tools or datasets
 
 def _validate_parameters(parameter: str) -> None:
     """`parameter` may be a comma-separated list, e.g. "T2M,RH2M"."""
@@ -28,6 +29,17 @@ def _fetch(fetcher, parameter: str, **kwargs):
         raise HTTPException(status_code=422, detail=str(e))
     if result is None:
         raise HTTPException(status_code=502, detail="NASA POWER request failed")
+    if not result.has_data():
+        # NASA answers 200 but fills every value with -999 when it has no data
+        # for the location/dates (e.g. outside the dataset's coverage).
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                f"NASA POWER has no data for longitude {kwargs['longitude']}, "
+                f"latitude {kwargs['latitude']} in the requested period. The location may be "
+                "outside the projection dataset's coverage."
+            ),
+        )
     return result
 
 
