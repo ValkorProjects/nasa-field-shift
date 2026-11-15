@@ -1,7 +1,7 @@
 """Gera o catálogo de culturas em backend/data/crops/ a partir da planilha versionada.
 
 Entrada: data/crops/source/rotacoes_agricolas_SP_55_culturas.xlsx (base qualitativa, 55 produtos de SP).
-Saídas (GERADAS, não editar à mão; ver docs/plano/ARQUITETURA.md, seção 3):
+Saídas (GERADAS, não editar à mão):
   crops.csv           55 culturas: chave, nomes, tipo, família, alternativas A/B, riscos, ressalvas, fonte
   rotation_edges.csv  sucessões: "Pares de partida" + alternativas A/B (coberturas entram como via_key)
   covers.csv          coberturas que aparecem como via_key ("Adubação verde" + coberturas genéricas)
