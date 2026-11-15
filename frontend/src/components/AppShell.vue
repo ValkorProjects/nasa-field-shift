@@ -4,6 +4,7 @@
 import SideNav from './SideNav.vue'
 import SampleDataBanner from './SampleDataBanner.vue'
 import TopBar from './TopBar.vue'
+import DataNotice from './DataNotice.vue'
 defineProps({ active: String, crumb: String, title: String })
 </script>
 <template>
@@ -11,6 +12,7 @@ defineProps({ active: String, crumb: String, title: String })
     <SideNav :active="active" />
     <div class="main">
       <SampleDataBanner />
+      <DataNotice />
       <TopBar :crumb="crumb" :title="title"><slot name="top" /></TopBar>
       <slot />
     </div>

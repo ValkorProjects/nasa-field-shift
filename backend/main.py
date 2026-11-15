@@ -2,11 +2,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from datasets.clients.nasapower.nasapower_client import get_simplePoint, get_dailyPlot, Parameters
 from datasets.clients.opentopodata.open_topo_data import get_topoData
 from fastapi import FastAPI, HTTPException, Query
+from datetime import date
+from typing import Literal
+
+from demo_points import HISTORY_END, HISTORY_START, find_demo_point
+from field_api import router as field_router
+from recommendation import recommend
+from soil import SoilNoData, SoilUnavailable, get_soil, soil_payload
+from weather import WeatherUnavailable, get_weather
 from pydantic import BaseModel, Field
 from array import array
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.include_router(field_router)
 
 
 #USED DATASETS:
@@ -103,6 +112,85 @@ def nasapower_plot(
         month_start=month_start, month_end=month_end,
         day_start=day_start, day_end=day_end,
     )
+
+
+WEATHER_UNAVAILABLE_MSG = "NASA POWER unavailable and no offline data for this point/period"
+MIN_WEATHER_DATE = date(1981, 1, 1)
+MAX_WEATHER_DAYS = 20 * 365 + 5
+
+
+@app.get("/api/weather")
+def api_weather(
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+    start: date = Query(...),
+    end: date = Query(...),
+):
+    if start > end:
+        raise HTTPException(status_code=422, detail="start must be on or before end")
+    if start < MIN_WEATHER_DATE:
+        raise HTTPException(status_code=422, detail="start must be 1981-01-01 or later")
+    if end > date.today():
+        raise HTTPException(status_code=422, detail="end cannot be in the future")
+    if (end - start).days > MAX_WEATHER_DAYS:
+        raise HTTPException(status_code=422, detail="interval cannot exceed 20 years")
+    try:
+        result = get_weather(lat, lon, start, end)
+    except WeatherUnavailable:
+        raise HTTPException(status_code=503, detail=WEATHER_UNAVAILABLE_MSG)
+    return {
+        "location": {"lat": lat, "lon": lon},
+        "start": start.isoformat(),
+        "end": end.isoformat(),
+        "mode": result.mode,
+        "parameters": ["T2M", "T2M_MIN", "RH2M", "PRECTOTCORR"],
+        "daily": [
+            {
+                "date": r.day.isoformat(),
+                "T2M": r.t2m,
+                "T2M_MIN": r.t2m_min,
+                "RH2M": r.rh2m,
+                "PRECTOTCORR": r.prectotcorr,
+            }
+            for r in result.records
+        ],
+        "source": {"dataset": "NASA POWER", "url": "https://power.larc.nasa.gov/"},
+    }
+
+
+@app.get("/api/recommendation")
+def api_recommendation(
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+    crop: Literal["corn", "soybean"] = Query(...),
+):
+    try:
+        result = get_weather(lat, lon, HISTORY_START, HISTORY_END)
+    except WeatherUnavailable:
+        raise HTTPException(status_code=503, detail=WEATHER_UNAVAILABLE_MSG)
+    point = find_demo_point(lat, lon)
+    return recommend(
+        result.records, crop, lat, lon, result.mode,
+        today=date.today(), location_name=point.name if point else None,
+    )
+
+
+SOIL_UNAVAILABLE_MSG = "SoilGrids unavailable and no offline data for this point"
+SOIL_NO_DATA_MSG = "SoilGrids has no data for this location (water, urban or outside coverage)"
+
+
+@app.get("/api/soil")
+def api_soil(
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+):
+    try:
+        result = get_soil(lat, lon)
+    except SoilNoData:
+        raise HTTPException(status_code=404, detail=SOIL_NO_DATA_MSG)
+    except SoilUnavailable:
+        raise HTTPException(status_code=503, detail=SOIL_UNAVAILABLE_MSG)
+    return soil_payload(result, lat, lon)
 #-----------------------
 
 #------------------------

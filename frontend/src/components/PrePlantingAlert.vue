@@ -6,6 +6,7 @@ import Chip from './Chip.vue'
 import FieldThumb from './FieldThumb.vue'
 import SampleValue from './SampleValue.vue'
 import { state } from '@/data/store.js'
+import { farm, selected } from '@/data/fields.js'
 
 const emit = defineEmits(['close', 'compare'])
 const a = computed(() => state.data.alert)
@@ -21,29 +22,32 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKey))
   <div class="overlay" @click.self="emit('close')">
     <div class="modal m2" role="alertdialog" aria-modal="true" aria-labelledby="alert-title">
       <div class="mleft">
-        <FieldThumb field="1" w="300" h="520" layer="veg" :pad="30" />
+        <FieldThumb :key="farm.selectedId" :field="farm.selectedId" w="300" h="520" layer="veg" :pad="30" />
         <div class="mcap">
-          Field 1 · plant cover
+          {{ selected?.name }} · plant cover
           <div class="scale"><i v-for="c in NDVI" :key="c" :style="{ background: c }"></i></div>
           <div class="sl"><span>Bare</span><span>Dense</span></div>
           <div class="ill2">Illustrative image</div>
         </div>
       </div>
       <div class="mright">
-        <div class="redtop"><div class="aic"><Icon name="warn" /></div>Before planting · Field 1</div>
+        <div class="redtop"><div class="aic"><Icon name="warn" /></div>Before planting · {{ selected?.name }}</div>
         <h2 id="alert-title">{{ a.title }}</h2>
-        <p class="lead">Planting starts <SampleValue :v="a.planting" />, in about <SampleValue :v="a.weeks" /> weeks. You still have time to change.</p>
+        <p v-if="a.unavailable" class="lead">Pre-planting check not available: {{ a.unavailable }}</p>
+        <p v-else-if="a.weeks?.unavailable || a.planting?.unavailable" class="lead">Planting date: <SampleValue :v="a.planting" />. {{ a.planting.unavailable }}</p>
+        <p v-else-if="a.weeks.value === '0'" class="lead">The planting window is open now (from <SampleValue :v="a.planting" />). Decide before you buy seed.</p>
+        <p v-else class="lead">Planting starts <SampleValue :v="a.planting" />, in about <SampleValue :v="a.weeks" /> weeks. You still have time to change.</p>
         <div class="fact">
           <Icon name="rain" cls="fi" />
           <div class="fn"><SampleValue :v="a.rain_years" /></div>
-          <div><b>years had too little rain in April–May</b><span class="rsub">Past records, not a forecast</span><Chip scale="area" :source="a.rain_years.source" /></div>
+          <div><b>years had too little rain in April–May</b><span class="rsub">Past records, not a forecast<template v-if="state.data.info?.weatherNote"> · {{ state.data.info.weatherNote }}</template></span><Chip scale="area" :source="a.rain_years.source" /></div>
         </div>
         <div class="fact">
           <Icon name="frost" cls="fi" />
           <div class="fn"><SampleValue :v="a.frost_years" /></div>
-          <div><b>years had frost in June</b><span class="rsub">Late corn can be hurt</span><Chip scale="area" :source="a.frost_years.source" /></div>
+          <div><b>years had frost in {{ a.live ? 'June–August' : 'June' }}</b><span class="rsub">Late corn can be hurt</span><Chip scale="area" :source="a.frost_years.source" /></div>
         </div>
-        <div class="ctx"><Icon name="drop" /><span><SampleValue :v="a.smap_context" :dotted="false" /></span><Chip scale="area" :source="a.smap_context.source" /></div>
+        <div class="ctx"><Icon name="drop" /><span><SampleValue :v="a.smap_context" :dotted="!!a.live" /></span><Chip scale="area" :source="a.smap_context.source" /></div>
         <div class="btns">
           <button ref="first" class="btn green" @click="emit('compare')">Compare 3 plans</button>
           <button class="btn ghost" style="width:170px" @click="emit('close')">OK, got it</button>

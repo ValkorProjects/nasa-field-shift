@@ -28,7 +28,7 @@ const FIT_IC = { soil: 'erosion', water: 'drop', income: 'coin', cost: 'tool' }
       <IllustrativeImg :src="s.photos[1].img" :alt="s.photos[1].cap" />
     </div>
     <div class="pcap2"><span>{{ s.photos[0].cap }}</span><span>{{ s.photos[1].cap }}</span></div>
-    <div class="verdict"><SampleValue :v="s.verdict" :dotted="false" /></div>
+    <div class="verdict"><SampleValue :v="s.verdict" :dotted="!!(state.data.meta?.live || state.data.meta?.sampleOnly)" /></div>
 
     <div v-for="r in s.rows" :key="r.icon" class="r2">
       <div class="r2l"><Icon :name="r.icon" /><span>{{ r.label }}</span></div>
