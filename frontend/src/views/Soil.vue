@@ -7,6 +7,7 @@ import Icon from '@/components/Icon.vue'
 import Chip from '@/components/Chip.vue'
 import SampleValue from '@/components/SampleValue.vue'
 import { state } from '@/data/store.js'
+import { fieldPath, selected } from '@/data/fields.js'
 
 const router = useRouter()
 const IDK = { id: 'idk', b: "I don't know", s: 'We estimate it' }
@@ -42,11 +43,11 @@ const questions = [
 </script>
 
 <template>
-  <AppShell active="fields" crumb="My fields › Field 1" title="Tell us about your soil">
+  <AppShell active="fields" :crumb="`My fields › ${selected?.name}`" title="Tell us about your soil">
     <div class="wiz">
       <div class="wl">
         <Stepper :cur="3" />
-        <div class="q">Tell us about the soil on Field 1</div>
+        <div class="q">Tell us about the soil on {{ selected?.name }}</div>
         <p class="lead">If you are not sure, choose "I don't know". We will estimate it from public maps, with lower confidence.</p>
         <div v-for="q in questions" :key="q.key" class="qrow">
           <div class="ql" :id="`q-${q.key}`">{{ q.label }}</div>
@@ -65,16 +66,26 @@ const questions = [
           <!-- "I don't know" → estimate from public maps -->
           <div v-if="q.est && state.soil[q.key] === 'idk'" class="estnote">
             <Icon name="info" />Estimated from public maps:
-            <b><SampleValue :v="state.data.soil[q.est]" :dotted="false" /></b> · lower confidence
-            <Chip scale="est" source="SoilGrids 250 m" />
+            <template v-if="state.data.soil[q.est].unavailable">
+              <b>Not available for this field</b> · {{ state.data.soil[q.est].unavailable }}
+            </template>
+            <template v-else>
+              <b><SampleValue :v="state.data.soil[q.est]" :dotted="!!(state.data.meta?.live || state.data.meta?.sampleOnly)" /></b> · lower confidence
+              <Chip scale="est" source="SoilGrids 250 m" />
+              <span v-if="q.est === 'texture_est' && state.data.info?.soilNote"> · {{ state.data.info.soilNote }}</span>
+            </template>
           </div>
 
           <!-- Slope is always suggested from NASADEM -->
           <div v-if="q.key === 'slope'" class="estnote ok">
-            <Icon name="slope" />Satellite elevation suggests:
-            <b><SampleValue :v="state.data.soil.slope_sat" :dotted="false" /></b>
-            <span>(<SampleValue :v="state.data.soil.slope_pct" />% average)</span>
-            <Chip scale="field" source="NASADEM 30 m" />
+            <Icon name="slope" />
+            <template v-if="state.data.soil.slope_sat.pending">Satellite slope coming soon (terrain data in progress)</template>
+            <template v-else>
+              Satellite elevation suggests:
+              <b><SampleValue :v="state.data.soil.slope_sat" :dotted="false" /></b>
+              <span>(<SampleValue :v="state.data.soil.slope_pct" />% average)</span>
+              <Chip scale="field" source="NASADEM 30 m" />
+            </template>
           </div>
         </div>
       </div>
@@ -89,8 +100,8 @@ const questions = [
           <p class="pp">You can upload it later. It makes the result more certain.</p>
           <button class="btn ghost small" disabled>Upload soil test (coming soon)</button>
         </div>
-        <button class="btn green" style="margin-top:auto" @click="router.push('/field/1/priorities')">Next: priorities →</button>
-        <button class="btn ghost" @click="router.push('/field/1/crops')">← Back</button>
+        <button class="btn green" style="margin-top:auto" @click="router.push(fieldPath('priorities'))">Next: priorities →</button>
+        <button class="btn ghost" @click="router.push(fieldPath('crops'))">← Back</button>
       </div>
     </div>
   </AppShell>

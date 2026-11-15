@@ -10,7 +10,7 @@ import Icon from '@/components/Icon.vue'
 import Chip from '@/components/Chip.vue'
 import SampleValue from '@/components/SampleValue.vue'
 import { state } from '@/data/store.js'
-import { fieldById, areaHa, fmtHa } from '@/data/fields.js'
+import { areaHa, fmtHa, selected } from '@/data/fields.js'
 
 const m = computed(() => state.data.money)
 const plans = computed(() => state.data.strategies)
@@ -32,7 +32,7 @@ function commit(id, e) {
 }
 // Field area comes from the polygon drawn on the map (real, not sample).
 const mapArea = computed(() => {
-  const f = fieldById('1')
+  const f = selected.value
   return f ? { value: +fmtHa(areaHa(f.coords)), sample: false, source: 'your map', scale: 'field' } : null
 })
 const shown = (inp) => {
@@ -54,7 +54,7 @@ const userLoss = computed(() => {
 </script>
 
 <template>
-  <AppShell active="fields" crumb="My fields › Field 1 › Costs" title="What if nothing changes?">
+  <AppShell active="fields" :crumb="`My fields › ${selected?.name} › Costs`" title="What if nothing changes?">
     <div class="cost">
       <CostTabs active="money" />
 
@@ -62,14 +62,15 @@ const userLoss = computed(() => {
         <div class="hic"><Icon name="warn" /></div>
         <div>
           <div class="hk">If you keep corn and the autumn is dry</div>
-          <div class="hv">Field 1 could lose
+          <div class="hv">{{ selected?.name }} could lose
             <b v-if="userLoss">R$ {{ userLoss }}</b>
             <b v-else>R$ <SampleValue :v="m.at_risk_min" /> – <SampleValue :v="m.at_risk_max" /></b>
           </div>
           <div class="hs">
             <template v-if="userLoss">With your numbers. </template>
-            Compared with a normal year. Dry autumns happened in <SampleValue :v="m.dry_years" /> years.
-            <Chip scale="area" source="GPM" /> Past records, not a forecast.
+            Compared with a normal year. <template v-if="m.dry_years.unavailable">Dry autumns: <SampleValue :v="m.dry_years" />.</template>
+            <template v-else>Dry autumns happened in <SampleValue :v="m.dry_years" /> years.</template>
+            <Chip scale="area" :source="m.dry_years.source" /> Past records, not a forecast.
           </div>
         </div>
       </div>

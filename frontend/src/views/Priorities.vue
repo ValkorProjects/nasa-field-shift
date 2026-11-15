@@ -6,6 +6,7 @@ import AppShell from '@/components/AppShell.vue'
 import Stepper from '@/components/Stepper.vue'
 import Icon from '@/components/Icon.vue'
 import { state, bestId, bestIfIncomeFirst, strategy, priorityLabel } from '@/data/store.js'
+import { fieldPath, selected } from '@/data/fields.js'
 
 const router = useRouter()
 const items = computed(() => state.order.map((id) => state.data.priorities.items.find((p) => p.id === id)))
@@ -32,7 +33,7 @@ const label = (s) => `${s.tag} · ${s.name.value}`
 </script>
 
 <template>
-  <AppShell active="fields" crumb="My fields › Field 1" title="Choose your priorities">
+  <AppShell active="fields" :crumb="`My fields › ${selected?.name}`" title="Choose your priorities">
     <div class="wiz">
       <div class="wl">
         <Stepper :cur="4" />
@@ -65,8 +66,8 @@ const label = (s) => `${s.tag} · ${s.name.value}`
           </div>
           <div class="how">How we rank: each option gets Good / OK / Poor for each priority. Higher priorities count more (4, 3, 2, 1).</div>
         </div>
-        <button class="btn green" style="margin-top:auto" @click="router.push('/field/1/results')">See results →</button>
-        <button class="btn ghost" @click="router.push('/field/1/soil')">← Back</button>
+        <button class="btn green" style="margin-top:auto" @click="router.push(fieldPath('results'))">See results →</button>
+        <button class="btn ghost" @click="router.push(fieldPath('soil'))">← Back</button>
       </div>
     </div>
   </AppShell>

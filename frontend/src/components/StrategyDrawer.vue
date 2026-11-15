@@ -33,6 +33,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKey))
       <button ref="closeBtn" class="close" aria-label="Close details" @click="emit('close')"><Icon name="x" /></button>
     </div>
     <div class="dwhy" v-html="d.why"></div>
+    <div v-if="d.sampleText && (state.data.meta?.live || state.data.meta?.sampleOnly)" class="nd2 big"><Icon name="info" /><span>The lists below are example text, not computed for your field. The numbers above are the real ones.</span></div>
     <div class="dsec">
       <h3>What the data shows</h3>
       <div v-for="e in d.evidence" :key="e.text" class="evr2">
