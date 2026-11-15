@@ -51,6 +51,20 @@ def make_soil_raw(overrides=None, d_factor=10) -> dict:
     return {"type": "Feature", "properties": {"layers": layers}, "query_time_s": 1.0}
 
 
+APPEEARS_HEADER = ("File Name,Dataset,aid,Date,Count,Minimum,Maximum,Range,Mean,Standard Deviation,Variance,"
+                   "Upper Quartile,Upper 1.5 IQR,Median,Lower 1.5 IQR,Lower Quartile")
+
+
+def write_stats(path, rows):
+    """CSV `*-Statistics.csv` do AppEEARS. rows: (dataset, date, count, minimum, maximum, mean, std, median)."""
+    lines = [APPEEARS_HEADER] + [
+        f"f,{ds},aid0001,{d},{n},{lo},{hi},\"({lo},{hi})\",{mean},{std},0,0,0,{median},0,0"
+        for ds, d, n, lo, hi, mean, std, median in rows
+    ]
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return path
+
+
 @pytest.fixture
 def isolated_dirs(tmp_path, monkeypatch):
     monkeypatch.setattr(soil, "CACHE_DIR", tmp_path / "cache")

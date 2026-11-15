@@ -379,3 +379,83 @@ def test_elevation_invalid_is_422(payload):
 def test_elevation_source_down_is_503(monkeypatch):
     monkeypatch.setattr(main_module, "get_topoData", lambda pts: None)
     assert client.post("/api/elevation", json={"points": [{"lat": 0, "lon": 0}]}).status_code == 503
+
+
+# --- GET /api/ndvi, /api/surface-temperature, /api/soil-moisture (AppEEARS) ---
+
+AREA_LAT, AREA_LON = -23.88, -48.98  # inside the study area box
+
+
+@pytest.fixture
+def appeears_files(tmp_path, monkeypatch):
+    from datasets.clients import appeears
+    from datasets.clients.modis import modis_client
+    from datasets.clients.smap import smap_client
+    from tests.conftest import write_stats
+
+    ring = [[-49.06, -23.95], [-48.91, -23.95], [-48.91, -23.81], [-49.06, -23.81], [-49.06, -23.95]]
+    area = tmp_path / "request.json"
+    area.write_text(json.dumps({"params": {"geo": {"features": [{"geometry": {"coordinates": [ring]}}]}}}), encoding="utf-8")
+    monkeypatch.setattr(appeears, "STUDY_AREA_FILE", area)
+    monkeypatch.setattr(modis_client, "NDVI_FILE", write_stats(tmp_path / "ndvi.csv", [
+        ("_250m_16_days_NDVI", "2025-01-01", 4571, 0.2, 0.98, 0.84, 0.09, 0.87),
+        ("_250m_16_days_NDVI", "2025-01-17", 4571, 0.3, 0.97, 0.82, 0.1, 0.85),
+    ]))
+    monkeypatch.setattr(modis_client, "LST_FILE", write_stats(tmp_path / "lst.csv", [
+        ("LST_Day_1km", "2025-01-05", 300, 296.15, 309.15, 303.15, 2.0, 303.15),
+        ("LST_Day_1km", "2025-01-06", 30, 298.15, 300.15, 299.15, 0.5, 299.15),
+        ("LST_Night_1km", "2025-01-05", 300, 288.15, 292.15, 290.15, 1.0, 290.15),
+    ]))
+    monkeypatch.setattr(smap_client, "SMAP_FILE", write_stats(tmp_path / "smap.csv", [
+        ("Geophysical_Data_sm_rootzone", "2025-01-04 01:30:00 UTC", 9, 0.12, 0.14, 0.13, 0.01, 0.13),
+        ("Geophysical_Data_sm_rootzone", "2025-01-04 04:30:00 UTC", 9, 0.12, 0.16, 0.15, 0.01, 0.15),
+        ("Geophysical_Data_sm_surface", "2025-01-04 01:30:00 UTC", 9, 0.20, 0.30, 0.25, 0.01, 0.25),
+    ]))
+
+
+def area_url(path, **extra):
+    q = "&".join(f"{k}={v}" for k, v in {"lat": AREA_LAT, "lon": AREA_LON, **extra}.items())
+    return f"{path}?{q}"
+
+
+def test_ndvi(appeears_files):
+    r = client.get(area_url("/api/ndvi", start="2025-01-10"))
+    assert r.status_code == 200
+    body = r.json()
+    assert body["composites"] == [{"date": "2025-01-17", "mean": 0.82, "median": 0.85, "minimum": 0.3,
+                                   "maximum": 0.97, "std": 0.1, "pixel_count": 4571, "coverage": 1.0}]
+    assert body["area"]["bbox"] == {"min_lon": -49.06, "min_lat": -23.95, "max_lon": -48.91, "max_lat": -23.81}
+    assert body["start"] == "2025-01-10" and body["end"] == "2025-12-31"
+    assert "not the requested point" in body["source"]["note"]
+
+
+def test_surface_temperature_merges_overpasses(appeears_files):
+    body = client.get(area_url("/api/surface-temperature")).json()
+    assert body["unit"] == "°C"
+    assert [(d["date"], d["day"]["mean"], d["night"] and d["night"]["mean"]) for d in body["daily"]] == [
+        ("2025-01-05", 30.0, 17.0), ("2025-01-06", 26.0, None)]
+    cloudy_dropped = client.get(area_url("/api/surface-temperature", min_coverage=0.5)).json()["daily"]
+    assert [d["date"] for d in cloudy_dropped] == ["2025-01-05"]
+
+
+def test_soil_moisture_merges_layers(appeears_files):
+    body = client.get(area_url("/api/soil-moisture")).json()
+    assert body["unit"] == "m³/m³"
+    assert body["daily"] == [{"date": "2025-01-04",
+                              "surface": {"mean": 0.25, "minimum": 0.2, "maximum": 0.3, "samples": 1},
+                              "rootzone": {"mean": 0.14, "minimum": 0.12, "maximum": 0.16, "samples": 2}}]
+
+
+@pytest.mark.parametrize("path", ["/api/ndvi", "/api/surface-temperature", "/api/soil-moisture"])
+def test_appeears_errors(appeears_files, monkeypatch, path):
+    assert client.get(f"{path}?lat=-23.53&lon=-49.24").status_code == 404           # outside the study area
+    assert client.get(area_url(path, start="2030-01-01", end="2030-12-31")).status_code == 404  # outside 2025
+    assert client.get(area_url(path, start="2025-02-01", end="2025-01-01")).status_code == 422
+    assert client.get(area_url(path, lat=95)).status_code == 422
+    from datasets.clients import appeears
+    monkeypatch.setattr(appeears, "STUDY_AREA_FILE", Path("missing.json"))
+    assert client.get(area_url(path)).status_code == 503
+
+
+def test_surface_temperature_rejects_bad_coverage(appeears_files):
+    assert client.get(area_url("/api/surface-temperature", min_coverage=2)).status_code == 422

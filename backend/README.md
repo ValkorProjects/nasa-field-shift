@@ -1,6 +1,6 @@
 # Backend
 
-FastAPI service for RollCrop: NASA POWER (history + CMIP6 projections), SoilGrids and SRTM elevation.
+FastAPI service for RollCrop: NASA POWER (history + CMIP6 projections), SoilGrids, SRTM elevation, and MODIS / SMAP from NASA AppEEARS.
 
 ## Run
 
@@ -23,6 +23,9 @@ pytest                                 # no network needed
 | GET | `/api/projection?parameters=&lat=&lon=&start=&end=` | Daily CMIP6 climate projection per scenario |
 | GET | `/api/projection/plot?...` | Same + NASA's Bokeh chart per parameter (`charts`); max 5 parameters |
 | POST | `/api/elevation` | SRTM 30 m elevation for 1-5 points |
+| GET | `/api/ndvi?lat=&lon=&start=&end=` | MODIS NDVI, 16-day composites (study area, 2025) |
+| GET | `/api/surface-temperature?lat=&lon=&start=&end=&min_coverage=` | MODIS land surface temperature °C, day + night (study area, 2025) |
+| GET | `/api/soil-moisture?lat=&lon=&start=&end=` | SMAP soil moisture m³/m³, surface + root zone (study area, 2025) |
 
 `weather`, `recommendation`, `soil` and `field/profile` are detailed in the [root README](../README.md#recommendation-api).
 
@@ -56,6 +59,37 @@ The projection data currently covers North America only; elsewhere it returns `4
 ```
 
 Returns `{"points": [{"lat", "lon", "elevation_m"}], "source": {...}}`. All points go to OpenTopoData in one request; `elevation_m` is `null` where SRTM has no value.
+
+## `GET /api/ndvi`, `/api/surface-temperature`, `/api/soil-moisture`
+
+Offline 2025 extract from NASA AppEEARS for the **Itaberá–Itapeva study area** (lon -49.06 to -48.91, lat -23.95 to -23.81); files and citations in [`data/itabera-itapeva/`](data/itabera-itapeva/README.md). Values are statistics over the **whole area**, not the point: `lat`/`lon` only has to fall inside the area (else `404`). `start`/`end` default to 2025-01-01 / 2025-12-31.
+
+```bash
+curl "http://localhost:8000/api/surface-temperature?lat=-23.88&lon=-48.98&start=2025-07-01&end=2025-07-31&min_coverage=0.5"
+```
+
+All three return `location`, `area` (`name`, `bbox`), `start`, `end`, `source` (with a `note`) plus:
+
+| Route | Series | Each record |
+|---|---|---|
+| `/api/ndvi` | `composites[]` (16-day, `date` = first day) | `mean`, `median`, `minimum`, `maximum`, `std`, `pixel_count`, `coverage` |
+| `/api/surface-temperature` | `daily[]`, `unit: "°C"` | `date`, `day` and `night` (same stats as NDVI, or `null`) |
+| `/api/soil-moisture` | `daily[]` (UTC days), `unit: "m³/m³"` | `date`, `surface` (0-5 cm) and `rootzone` (0-100 cm): `mean`, `minimum`, `maximum`, `samples` (8 = full day) |
+
+`coverage` = share of the area with valid pixels (vs. the clearest day). Clouds leave some LST days with a few pixels: `min_coverage=0.5` drops them (`day`/`night` becomes `null`). SMAP is a 9 km grid: regional context, never a field measurement.
+
+## Data clients (`datasets/clients/`)
+
+| Module | Source | Access |
+|---|---|---|
+| `nasapower/nasapower_history.py` | NASA POWER daily history | live API |
+| `nasapower/nasapower_client.py` | NASA POWER CMIP6 projections | live API |
+| `soilgrids/soilgrids_client.py` | ISRIC SoilGrids 2.0 | live API |
+| `opentopodata/open_topo_data.py` | SRTM 30 m via OpenTopoData | live API |
+| `modis/modis_client.py` | `get_ndvi(start, end)`, `get_lst(start, end, overpass, min_coverage)` | local CSV |
+| `smap/smap_client.py` | `get_soil_moisture(start, end, layer)` | local CSV |
+
+The MODIS and SMAP clients share `appeears.py`, which reads each AppEEARS `*-Statistics.csv` once and keeps it in memory. A missing or malformed file raises `AppEEARSDataError` (the routes answer `503`).
 
 ## Crop catalog (`data/crops/`)
 
