@@ -1,7 +1,10 @@
-# nasa-field-shift
-A project submitted to the 2026 NASA Space Apps challenge for the theme: Field Shift: Adapting Farms with NASA Data
+# RollCrop
 
-Field Shift is a free decision-support tool for farmers in São Paulo state. For each field it compares the current crop rotation with 2 alternatives using NASA Earth observations, local soil, crop traits and the farmer's priorities, and warns before planting when a crop is likely to fail. **It supports the farmer and the agronomist; it does not replace them.**
+<img src="frontend/public/img/brand/rollcrop-logo.png" alt="RollCrop" width="260" />
+
+RollCrop is our project for the 2026 NASA Space Apps Challenge, theme **Field Shift: Adapting Farms with NASA Data** (repository: `nasa-field-shift`).
+
+RollCrop is a free decision-support tool for farmers in São Paulo state. For each field it compares the current crop rotation with 2 alternatives using NASA Earth observations, local soil, crop traits and the farmer's priorities, and warns before planting when a crop is likely to fail. **It supports the farmer and the agronomist; it does not replace them.**
 
 > **Prototype:** every value in the app is sample data. Dotted (yellow) values will be replaced by real data.
 

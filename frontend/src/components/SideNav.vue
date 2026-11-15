@@ -17,7 +17,7 @@ const items = computed(() => [
 </script>
 <template>
   <aside class="side" aria-label="Main">
-    <div class="logo"><div class="dot"><Icon name="leaf" /></div>{{ t('app.name') }}</div>
+    <div class="logo"><img src="/img/brand/rollcrop-logo-light.png" :alt="t('app.name')" width="176" height="80" /></div>
     <template v-for="it in items" :key="it.id">
       <router-link v-if="it.to" :to="it.to" :class="['nav', { on: active === it.id }]">
         <Icon :name="it.icon" />{{ t(`nav.${it.id}`) }}

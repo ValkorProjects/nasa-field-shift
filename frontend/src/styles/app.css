@@ -143,3 +143,5 @@ ol.chain{padding:0;margin:0}
 .netrow{font-size:13px;font-weight:600;color:#3c4c3e;background:#f5f7f3;border-radius:10px;padding:6px 10px;margin:6px 0 4px;line-height:1.4}
 .netrow b{font-weight:800;color:#1f2e21}.netrow b.neg{color:#c0392b}
 .banner.mixed{background:#eaf4ff;border-bottom-color:#b9d3f0;color:#1d3a5c}
+/* RollCrop logo in the side nav */
+.logo img{display:block;width:176px;height:auto;margin:-4px 0 -6px}
