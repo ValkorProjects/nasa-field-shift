@@ -1,35 +1,47 @@
-from fastapi.middleware.cors import CORSMiddleware
-from datasets.clients.nasapower.nasapower_client import get_simplePoint, get_dailyPlot, Parameters
-from datasets.clients.opentopodata.open_topo_data import get_topoData
-from fastapi import FastAPI, HTTPException, Query
 from datetime import date
 from typing import Literal
 
+from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
+
+from datasets.clients.nasapower.nasapower_client import get_simplePoint, get_dailyPlot, Parameters
+from datasets.clients.nasapower.nasapower_typedef import NO_DATA, Plot
+from datasets.clients.opentopodata.open_topo_data import get_topoData
 from demo_points import HISTORY_END, HISTORY_START, find_demo_point
 from field_api import router as field_router
 from recommendation import recommend
+from schemas import ElevationRequest
 from soil import SoilNoData, SoilUnavailable, get_soil, soil_payload
 from weather import WeatherUnavailable, get_weather
-from pydantic import BaseModel, Field
-from array import array
+
+# API conventions (every route follows them; tests/test_api.py checks the prefix):
+# - paths start with /api/, lowercase, no trailing slash
+# - coordinates are `lat` / `lon`; dates are ISO `start` / `end` (YYYY-MM-DD)
+# - responses use lowercase keys, `null` for missing values and a `source` block
+# - 404 = the source has no data for the request, 422 = invalid input,
+#   503 = the source is unavailable; error `detail` messages in English
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 app.include_router(field_router)
 
 
-#USED DATASETS:
-#Topology: SRTM
+@app.get("/api/health")
+def api_health():
+    return {"status": "ok"}
+
 
 #------------------------
-# NASA POWER
+# NASA POWER - climate projections (CMIP6)
 #-----------------------
 VALID_PARAMETERS = {v for k, v in vars(Parameters).items() if not k.startswith("_")}
 MAX_PLOT_PARAMETERS = 5  # the NASA plot endpoint rejects more than 5 parameters per request
+PROJECTION_SOURCE = {"dataset": "NASA POWER Climate Projection (CMIP6 NEX-GDDP)", "url": "https://power.larc.nasa.gov/"}
 
-def _validate_parameters(parameter: str) -> None:
-    """`parameter` may be a comma-separated list, e.g. "T2M,RH2M"."""
-    requested = [p.strip() for p in parameter.split(",") if p.strip()]
+
+def _parse_parameters(parameters: str) -> list[str]:
+    """`parameters` is a comma-separated list, e.g. "T2M,RH2M"."""
+    requested = [p.strip() for p in parameters.split(",") if p.strip()]
     if not requested:
         raise HTTPException(status_code=422, detail="At least one parameter is required")
     unknown = [p for p in requested if p not in VALID_PARAMETERS]
@@ -38,82 +50,94 @@ def _validate_parameters(parameter: str) -> None:
             status_code=422,
             detail=f"Unknown parameter(s): {', '.join(unknown)}. Valid: {', '.join(sorted(VALID_PARAMETERS))}",
         )
+    return requested
 
 
-def _fetch(fetcher, parameter: str, **kwargs):
-    _validate_parameters(parameter)
-    try:
-        result = fetcher(parameter, **kwargs)
-    except ValueError as e:  # e.g. an impossible date such as Feb 31
-        raise HTTPException(status_code=422, detail=str(e))
+def _fetch_projection(fetcher, parameters: list[str], lat: float, lon: float, start: date, end: date) -> Plot:
+    if start > end:
+        raise HTTPException(status_code=422, detail="start must be on or before end")
+    result = fetcher(
+        ",".join(parameters), longitude=lon, latitude=lat,
+        year_start=start.year, month_start=start.month, day_start=start.day,
+        year_end=end.year, month_end=end.month, day_end=end.day,
+    )
     if result is None:
-        raise HTTPException(status_code=502, detail="NASA POWER request failed")
+        raise HTTPException(status_code=503, detail="NASA POWER projection API unavailable")
     if not result.has_data():
         # NASA answers 200 but fills every value with -999 when it has no data
-        # for the location/dates (e.g. outside the dataset's coverage).
+        # for the location/period (e.g. outside the dataset's coverage).
         raise HTTPException(
             status_code=404,
-            detail=(
-                f"NASA POWER has no data for longitude {kwargs['longitude']}, "
-                f"latitude {kwargs['latitude']} in the requested period. The location may be "
-                "outside the projection dataset's coverage."
-            ),
+            detail="NASA POWER has no projection data for this location/period (it may be outside the dataset's coverage)",
         )
     return result
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+def _projection_payload(result: Plot, lat: float, lon: float, start: date, end: date) -> dict:
+    """Same record shape as /api/weather `daily`, one list per climate scenario."""
+    params = result.Properties.Parameter
+    scenario_names = sorted({s for p in params.values() for s in p.Scenarios})
+
+    def value(name: str, scenario: str, day: str):
+        sc = params[name].Scenarios.get(scenario)
+        v = sc.Values.get(day) if sc else None
+        return None if v is None or v == NO_DATA else v
+
+    scenarios = {}
+    for s in scenario_names:
+        days = sorted({d for p in params.values() if s in p.Scenarios for d in p.Scenarios[s].Values})
+        scenarios[s] = [
+            {"date": f"{d[:4]}-{d[4:6]}-{d[6:]}", **{name: value(name, s, d) for name in params}}
+            for d in days
+        ]
+    return {
+        "location": {"lat": lat, "lon": lon},
+        "start": start.isoformat(),
+        "end": end.isoformat(),
+        "parameters": list(params),
+        "scenarios": scenarios,
+        "source": PROJECTION_SOURCE,
+    }
 
 
-@app.get("/nasapower/point")
-def nasapower_point(
-    parameter: str = Query(..., description="Parameter(s), comma-separated, e.g. T2M or T2M,RH2M"),
-    longitude: float = Query(..., ge=-180, le=180),
-    latitude: float = Query(..., ge=-90, le=90),
-    year_start: int = 2050,
-    year_end: int = 2050,
-    month_start: int = Query(1, ge=1, le=12),
-    month_end: int = Query(12, ge=1, le=12),
-    day_start: int = Query(1, ge=1, le=31),
-    day_end: int = Query(31, ge=1, le=31),
+@app.get("/api/projection")
+def api_projection(
+    parameters: str = Query(..., description="Comma-separated, e.g. T2M or T2M,RH2M"),
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+    start: date = Query(date(2050, 1, 1)),
+    end: date = Query(date(2050, 12, 31)),
 ):
-    return _fetch(
-        get_simplePoint, parameter,
-        longitude=longitude, latitude=latitude,
-        year_start=year_start, year_end=year_end,
-        month_start=month_start, month_end=month_end,
-        day_start=day_start, day_end=day_end,
-    )
+    requested = _parse_parameters(parameters)
+    result = _fetch_projection(get_simplePoint, requested, lat, lon, start, end)
+    return _projection_payload(result, lat, lon, start, end)
 
 
-@app.get("/nasapower/plot")
-def nasapower_plot(
-    parameter: str = Query(..., description="Parameter(s), comma-separated, max 5, e.g. T2M or T2M,RH2M"),
-    longitude: float = Query(..., ge=-180, le=180),
-    latitude: float = Query(..., ge=-90, le=90),
-    year_start: int = 2050,
-    year_end: int = 2050,
-    month_start: int = Query(1, ge=1, le=12),
-    month_end: int = Query(12, ge=1, le=12),
-    day_start: int = Query(1, ge=1, le=31),
-    day_end: int = Query(31, ge=1, le=31),
+@app.get("/api/projection/plot")
+def api_projection_plot(
+    parameters: str = Query(..., description=f"Comma-separated, at most {MAX_PLOT_PARAMETERS}, e.g. T2M,RH2M"),
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+    start: date = Query(date(2050, 1, 1)),
+    end: date = Query(date(2050, 12, 31)),
 ):
-    if len([p for p in parameter.split(",") if p.strip()]) > MAX_PLOT_PARAMETERS:
+    requested = _parse_parameters(parameters)
+    if len(requested) > MAX_PLOT_PARAMETERS:
         raise HTTPException(
             status_code=422,
-            detail=f"/nasapower/plot accepts at most {MAX_PLOT_PARAMETERS} parameters; use /nasapower/point for more",
+            detail=f"/api/projection/plot accepts at most {MAX_PLOT_PARAMETERS} parameters; use /api/projection for more",
         )
-    return _fetch(
-        get_dailyPlot, parameter,
-        longitude=longitude, latitude=latitude,
-        year_start=year_start, year_end=year_end,
-        month_start=month_start, month_end=month_end,
-        day_start=day_start, day_end=day_end,
-    )
+    result = _fetch_projection(get_dailyPlot, requested, lat, lon, start, end)
+    body = _projection_payload(result, lat, lon, start, end)
+    # Bokeh embed code for NASA's ready-made chart, per parameter
+    body["charts"] = {name: {"script": p.Script, "div": p.Div} for name, p in result.Properties.Parameter.items()}
+    return body
+#-----------------------
 
 
+#------------------------
+# NASA POWER - daily history, recommendation; SoilGrids
+#-----------------------
 WEATHER_UNAVAILABLE_MSG = "NASA POWER unavailable and no offline data for this point/period"
 MIN_WEATHER_DATE = date(1981, 1, 1)
 MAX_WEATHER_DAYS = 20 * 365 + 5
@@ -193,36 +217,21 @@ def api_soil(
     return soil_payload(result, lat, lon)
 #-----------------------
 
+
 #------------------------
-# OPEN TOPOLOGY
+# OpenTopoData - elevation (NASA SRTM 30 m)
 #-----------------------
-#Maximum supported by the API is ~100 locations per request, 1000 calls a day
-MAX_POINT_LIMIT_REQUEST = 5
-
-class Point(BaseModel):
-    latitude : float
-    longitude : float
-
-class elevationsPayload(BaseModel):
-    #List of keypairs (e.g. [ [-23.953, -49.284], [-24.963, -47.524] ])
-    #Where [0] = latitude and [1] = longitude
-    Elevations : list[Point] = Field(min_length=1)
-
-@app.post("/elevations/")
-def opentopo_elevations(payload : elevationsPayload):
-    # One batched call for all points (the API is rate limited to ~1 request/second)
-    elevations = get_topoData([(p.latitude, p.longitude) for p in payload.Elevations[:MAX_POINT_LIMIT_REQUEST]])
+@app.post("/api/elevation")
+def api_elevation(body: ElevationRequest):
+    # One batched call for all points (the public API is rate limited to ~1 request/second)
+    elevations = get_topoData([(p.lat, p.lon) for p in body.points])
     if elevations is None:
-        raise HTTPException(status_code=502, detail="OpenTopoData falhou")
-    if len(payload.Elevations) > MAX_POINT_LIMIT_REQUEST:
-        return {
-            "detail":"Limite de posições por requisição é 5. Enviadas 5 primeiras posições.",
-            "elevations" : elevations
-        }
-    else:
-        return {
-            "detail":"Sucesso.",
-            "elevations" : elevations
-        }
-
+        raise HTTPException(status_code=503, detail="OpenTopoData unavailable")
+    return {
+        "points": [
+            {"lat": p.lat, "lon": p.lon, "elevation_m": e}
+            for p, e in zip(body.points, elevations)
+        ],
+        "source": {"dataset": "NASA SRTM 30 m (via OpenTopoData)", "url": "https://www.opentopodata.org/datasets/srtm/"},
+    }
 #-----------------------
