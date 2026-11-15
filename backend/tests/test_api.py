@@ -5,8 +5,9 @@ import pytest
 from fastapi.testclient import TestClient
 
 from datasets.clients.nasapower import nasapower_history
+from datasets.clients.soilgrids import soilgrids_client
 from main import app
-from tests.conftest import make_raw, write_demo_slice
+from tests.conftest import make_raw, make_soil_raw, write_demo_slice
 
 client = TestClient(app)
 WQ = "/api/weather?lat=-23.53&lon=-49.24&start=2020-01-01&end=2020-01-10"
@@ -100,3 +101,72 @@ def test_live_call_uses_rounded_coordinates(isolated_dirs, monkeypatch):
     monkeypatch.setattr(nasapower_history, "fetch_daily_history", fake)
     client.get("/api/weather?lat=-23.5349&lon=-49.2401&start=2020-01-01&end=2020-01-10")
     assert seen == [(-23.53, -49.24)]
+
+
+SQ = "/api/soil?lat=-23.53&lon=-49.24"
+
+
+def soil_down(*a, **kw):
+    raise soilgrids_client.SoilGridsError("down")
+
+
+def test_soil_validation_errors():
+    assert client.get("/api/soil?lon=-49.24").status_code == 422
+    assert client.get("/api/soil?lat=95&lon=-49.24").status_code == 422
+
+
+def test_soil_503_outside_demo(isolated_dirs, monkeypatch):
+    monkeypatch.setattr(soilgrids_client, "fetch_properties", soil_down)
+    assert client.get("/api/soil?lat=10&lon=10").status_code == 503
+
+
+def test_soil_mock_with_demo_slice(isolated_dirs, monkeypatch):
+    monkeypatch.setattr(soilgrids_client, "fetch_properties", soil_down)
+    write_demo_slice(isolated_dirs / "demo" / "soil", "taquarituba_sp", make_soil_raw())
+    r = client.get(SQ)
+    assert r.status_code == 200
+    body = r.json()
+    assert body["mode"] == "mock"
+    assert body["source"]["dataset"] == "SoilGrids 2.0 (ISRIC)"
+    assert body["profile"]["clay_pct"] == 34.8
+    assert body["depths"]["soc"]["unit"] == "g/kg"
+
+
+def test_soil_404_without_data(isolated_dirs, monkeypatch):
+    empty = make_soil_raw({k: (None, None, None) for k in ("clay", "sand", "silt", "soc", "phh2o")})
+    monkeypatch.setattr(soilgrids_client, "fetch_properties", lambda *a, **k: empty)
+    assert client.get("/api/soil?lat=10&lon=10").status_code == 404
+
+
+def test_soil_api_sampled_point_and_note(isolated_dirs, monkeypatch):
+    empty = make_soil_raw({k: (None, None, None) for k in ("clay", "sand", "silt", "soc", "phh2o")})
+    full = make_soil_raw()
+    monkeypatch.setattr(soilgrids_client, "fetch_properties",
+                        lambda lat, lon, **k: full if (lat, lon) == (-23.97, -48.88) else empty)
+    src = client.get("/api/soil?lat=-23.98&lon=-48.88").json()["source"]
+    assert src["sampled_point"] == {"lat": -23.97, "lon": -48.88}
+    assert src["distance_km"] == 1.1
+    assert src["sampling"] == "nearest_neighbor"
+    assert "nearest pixel with data within ~1.6 km used" in src["note"]
+
+
+def test_soil_api_requested_point_has_zero_distance(isolated_dirs, monkeypatch):
+    monkeypatch.setattr(soilgrids_client, "fetch_properties", lambda *a, **k: make_soil_raw())
+    body = client.get(SQ).json()
+    assert body["source"]["distance_km"] == 0
+    assert body["source"]["sampled_point"] == {"lat": -23.53, "lon": -49.24}
+    assert "nearest pixel" not in body["source"]["note"]
+    assert body["profile"]["texture_method"] == "Embrapa SiBCS textural groups"
+
+
+def test_soil_api_mock_curated_override(isolated_dirs, monkeypatch):
+    monkeypatch.setattr(soilgrids_client, "fetch_properties", soil_down)
+    write_demo_slice(isolated_dirs / "demo" / "soil", "itapeva_sp", make_soil_raw(),
+                     meta={"sampled_lat": -24.0, "sampled_lon": -48.92, "sampling": "curated rural pixel"})
+    body = client.get("/api/soil?lat=-23.98&lon=-48.88").json()
+    src = body["source"]
+    assert body["mode"] == "mock"
+    assert src["sampled_point"] == {"lat": -24.0, "lon": -48.92}
+    assert src["distance_km"] == 4.6
+    assert src["sampling"] == "curated_rural_pixel"
+    assert "manually verified rural pixel 4.6 km away" in src["note"]

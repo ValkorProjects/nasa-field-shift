@@ -1,7 +1,6 @@
 """Obtenção da série diária: cache -> NASA POWER ao vivo -> slice offline (mock)."""
 import json
 import os
-import uuid
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
@@ -10,6 +9,7 @@ from typing import Literal
 from climate_series import DailyRecord, has_data, parse_history, slice_period
 from datasets.clients.nasapower import nasapower_history
 from demo_points import find_demo_point
+from disk_cache import write_json_atomic
 
 CACHE_DIR = Path(__file__).parent / "data" / "cache"
 DEMO_DIR = Path(__file__).parent / "data" / "demo"
@@ -42,18 +42,7 @@ def _read_cache(path: Path) -> list[DailyRecord] | None:
 
 
 def _write_cache(path: Path, raw: dict) -> None:
-    tmp = path.with_name(f"{path.name}.{uuid.uuid4().hex}.tmp")
-    try:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        tmp.write_text(json.dumps(raw), encoding="utf-8")
-        os.replace(tmp, path)
-    except OSError:
-        pass  # cache é só otimização
-    finally:
-        try:
-            tmp.unlink()
-        except OSError:
-            pass  # já movido ou nunca criado
+    write_json_atomic(path, raw)
 
 
 MIN_LIVE_COVERAGE = 0.8

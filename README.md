@@ -199,6 +199,9 @@ Endpoints used by the front end:
 1. `pip install -r requirements-dev.txt`
 2. `pytest` (no network needed)
 3. `python -m scripts.build_demo_slice [--point slug] [--force]` - downloads the offline slices into `backend/data/demo/`
+4. `python -m scripts.build_soil_slice [--point slug] [--force]` - downloads the SoilGrids soil slices into `backend/data/demo/soil/` (pauses 15 s between points to respect the ISRIC rate limit)
+
+**`GET /api/soil?lat=&lon=`** - soil profile (clay, sand, silt, organic carbon, pH in water) for 0-5, 5-15 and 15-30 cm, plus a 0-30 cm summary and the textural group. **SoilGrids 2.0 by ISRIC - complementary source, not NASA data (CC-BY 4.0, 250 m, modelled estimate).** Same `mode` logic as above (cache `backend/data/cache/soilgrids_v1_*`, then live, then the slice in `backend/data/demo/soil/`). `SOILGRIDS_TIMEOUT` (seconds, default 20) controls the request timeout; `SOILGRIDS_NEIGHBOR_PAUSE` (seconds, default 2) is the pause between calls of the neighbor-pixel search (up to 8 extra calls within ~1.6 km, only when the requested pixel is masked and the point has no demo slice). `source.sampling` is `requested`, `nearest_neighbor` or `curated_rural_pixel`. Returns 404 when SoilGrids has no data for the point (water, urban, outside coverage) and 503 when it is unavailable and there is no slice.
 
 **`mode`** tells where the data came from: `live` (NASA POWER just fetched), `cache` (a previous live response saved in `backend/data/cache/`) or `mock` (static offline slice of a demo point). Lookup order is cache, live, mock. Set `FIELD_SHIFT_OFFLINE=1` to skip the live call. Before a demo, make one warm-up call per point so the cache is filled. `NASA_POWER_TIMEOUT` (seconds, default 30) controls the request timeout.
 
@@ -213,6 +216,11 @@ Endpoints used by the front end:
   - https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1094445/1/CT140mofobrancoOL.pdf
   - https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1147086/1/Circ-Tec-189.pdf
 
+- Soil (SoilGrids): physical value = `mean / d_factor`, with the factor read from each API layer (clay/sand/silt g/kg to %, soc dg/kg to g/kg, pH*10 to pH). Summary = thickness-weighted mean of 0-30 cm.
+  - Textural group: Embrapa SiBCS (2018) groups; sand/loamy sand via the USDA rule (silt + 2 x clay < 30).
+  - Organic matter = organic carbon x 1.724 (van Bemmelen, Embrapa soil analysis manual); shown as derived.
+  - SoilGrids: Poggio et al. (2021), SOIL 7, 217-240. https://soilgrids.org/
+
 ## Mocked / hardcoded
 
 - Crop cycles (days after planting): corn flowering/grain filling 60-110, soybean R1-R3 45-75.
@@ -222,3 +230,6 @@ Endpoints used by the front end:
 - Demo points: Taquarituba, Itapeva and Capao Bonito (SP).
 - `mock` mode serves a static slice of real NASA POWER data fetched once with `build_demo_slice`.
 - Fixed analysis period 2015-2024.
+- Soil `mock` mode serves a static SoilGrids slice of each demo point (`build_soil_slice`).
+- Soil demo slices: SoilGrids masks the urban-center pixel of the Itapeva and Capao Bonito demo points, so `build_soil_slice` uses curated rural pixels (`SAMPLE_OVERRIDES`: Itapeva -24.00,-48.92; Capao Bonito -24.02,-48.36), checked manually on 2026-11-15; the API reports `source.sampled_point` and `distance_km`.
+- Soil is simplified to a 0-30 cm weighted mean and a textural group; there is no drainage indicator (no sourced rule yet).
