@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { farm, fieldById } from './data/fields.js'
+import { missingStep } from './data/store.js'
 
 const routes = [
   { path: '/', redirect: '/farm' },
@@ -29,7 +30,9 @@ router.beforeEach((to) => {
   const id = String(to.params.id)
   if (!fieldById(id)) return '/farm'
   farm.selectedId = id
-  return true
+  // Issue #38: nothing is pre-chosen, so results and costs wait for the farmer's answers.
+  const step = /\/(results|costs)/.test(to.path) ? missingStep() : null
+  return step ? `/field/${id}/${step}` : true
 })
 
 export default router

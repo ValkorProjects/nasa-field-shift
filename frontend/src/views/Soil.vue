@@ -1,5 +1,6 @@
 <script setup>
 // Screen 3 · Soil. Every question has "I don't know" → estimate from public maps, lower confidence.
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import AppShell from '@/components/AppShell.vue'
 import Stepper from '@/components/Stepper.vue'
@@ -10,6 +11,7 @@ import { state } from '@/data/store.js'
 import { fieldPath, selected } from '@/data/fields.js'
 
 const router = useRouter()
+const answered = computed(() => !!(state.soil.texture && state.soil.drainage && state.soil.slope))
 const IDK = { id: 'idk', b: "I don't know", s: 'We estimate it' }
 
 // Drawn soil texture: deterministic dots (coarse for sandy, fine for clay)
@@ -82,7 +84,7 @@ const questions = [
             <template v-if="state.data.soil.slope_sat.pending">Satellite slope coming soon (terrain data in progress)</template>
             <template v-else>
               Satellite elevation suggests:
-              <b><SampleValue :v="state.data.soil.slope_sat" :dotted="false" /></b>
+              <b><SampleValue :v="state.data.soil.slope_sat" /></b>
               <span>(<SampleValue :v="state.data.soil.slope_pct" />% average)</span>
               <Chip scale="field" source="NASADEM 30 m" />
             </template>
@@ -100,7 +102,8 @@ const questions = [
           <p class="pp">You can upload it later. It makes the result more certain.</p>
           <button class="btn ghost small" disabled>Upload soil test (coming soon)</button>
         </div>
-        <button class="btn green" style="margin-top:auto" @click="router.push(fieldPath('priorities'))">Next: priorities →</button>
+        <div v-if="!answered" class="fnote" role="status">Answer the 3 questions ("I don't know" is fine).</div>
+        <button class="btn green" style="margin-top:auto" :disabled="!answered" @click="router.push(fieldPath('priorities'))">Next: priorities →</button>
         <button class="btn ghost" @click="router.push(fieldPath('crops'))">← Back</button>
       </div>
     </div>

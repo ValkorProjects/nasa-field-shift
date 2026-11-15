@@ -1,0 +1,12 @@
+key,name_pt,label_en,family,source
+black_oat,Aveia-preta,Black oat,Poaceae,Adubação verde
+millet,Milheto,Pearl millet,Poaceae,Adubação verde
+brachiaria,Braquiária (Urochloa spp.),Brachiaria (Urochloa),Poaceae,Adubação verde
+sunn_hemp,Crotalária-júncea,Sunn hemp (Crotalaria juncea),Fabaceae,Adubação verde
+showy_crotalaria,Crotalária-espectábilis,Showy crotalaria,Fabaceae,Adubação verde
+forage_radish,Nabo forrageiro,Forage radish,Brassicaceae,Adubação verde
+velvet_bean,Mucuna,Velvet bean (Mucuna),Fabaceae,Adubação verde
+millet_sunn_hemp,Milheto + crotalária-júncea,Pearl millet + sunn hemp,Poaceae + Fabaceae,Adubação verde
+spontaneous_cover,Cobertura espontânea,Spontaneous cover (mowed),,generic
+cover_grass,Gramínea de cobertura,Cover grass,Poaceae,generic
+cover_legume,Leguminosa de cobertura,Cover legume,Fabaceae,generic

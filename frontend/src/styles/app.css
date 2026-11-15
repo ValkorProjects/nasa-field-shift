@@ -143,3 +143,80 @@ ol.chain{padding:0;margin:0}
 .netrow{font-size:13px;font-weight:600;color:#3c4c3e;background:#f5f7f3;border-radius:10px;padding:6px 10px;margin:6px 0 4px;line-height:1.4}
 .netrow b{font-weight:800;color:#1f2e21}.netrow b.neg{color:#c0392b}
 .banner.mixed{background:#eaf4ff;border-bottom-color:#b9d3f0;color:#1d3a5c}
+/* RollCrop logo in the side nav */
+.logo img{display:block;width:176px;height:auto;margin:-4px 0 -6px}
+/* issue #38: nothing pre-chosen */
+.srot>.img.empty{display:flex;align-items:center;justify-content:center;border:2px dashed #a9c3a6;color:#a9c3a6;font-size:30px;font-weight:800}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+/* issue #39: map mode */
+.scopebar{position:absolute;top:126px;left:16px;right:76px;z-index:500;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-radius:12px;padding:8px 12px;font-size:13px;font-weight:600;box-shadow:0 3px 12px rgba(0,0,0,.25)}
+.scopebar.mvp{background:rgba(255,255,255,.96);color:#12301c}
+.scopebar.explore{background:#fff3cf;color:#5a4300;border:2px solid #e0a400}
+.scopebar button{margin-left:auto;border:0;border-radius:9px;padding:6px 10px;font:700 12.5px Inter,sans-serif;cursor:pointer;background:#123346;color:#fff}
+.scopebar.explore button{background:#2e8b3d}
+.leaflet-tooltip.area-tt{background:rgba(18,51,70,.82);color:#ffd23f;border:0;box-shadow:none;font:800 13px Inter,sans-serif;padding:2px 8px}
+.leaflet-tooltip.area-tt::before{display:none}
+.pill.pexp{background:#fff3cf;color:#5a4300}
+.scopemsg{border:2px solid #e0a400;background:#fffaf0}
+.scopemsg b{color:#5a4300}
+.emptyfarm .btn{margin-top:8px}
+
+/* ---------- issue #38: top menu instead of the side bar (RollCrop colours) ---------- */
+:root{--rc-green:#42a147;--rc-navy:#123346;--rc-ink:#16232c;--rc-bg:#f4f6f1}
+.screen{display:flex;flex-direction:column}
+.main{width:100%}
+.topnav{position:sticky;top:0;z-index:1000;display:flex;align-items:center;gap:18px;height:64px;padding:0 22px;background:#fff;border-bottom:3px solid var(--rc-green);box-shadow:0 2px 10px rgba(18,51,70,.08)}
+.tn-logo{display:flex;align-items:center;flex-shrink:0}
+.tn-logo img{display:block;height:46px;width:auto}
+.tn-links{display:flex;align-items:center;gap:2px;flex:1;min-width:0}
+.tn-link{display:flex;align-items:center;gap:6px;padding:8px 11px;border-radius:10px;font:700 14px Inter,sans-serif;color:var(--rc-navy);background:none;border:0;cursor:pointer;white-space:nowrap;text-decoration:none}
+.tn-link .ic{width:18px;height:18px}
+.tn-link:hover{background:#eef6ec}
+.tn-link.on{background:var(--rc-navy);color:#fff}
+.tn-link.step{font-weight:600}
+.tn-link.disabled{color:#a8b4ad;cursor:not-allowed}
+.tn-link.disabled:hover{background:none}
+.tn-sep{width:1px;height:24px;background:#d5ded3;margin:0 6px}
+.tn-profile{position:relative;flex-shrink:0}
+.tn-me{display:flex;align-items:center;gap:8px;border:1px solid #d5ded3;background:#fff;border-radius:22px;padding:4px 10px 4px 4px;font:700 14px Inter,sans-serif;color:var(--rc-navy);cursor:pointer}
+.tn-me .ic{width:16px;height:16px}
+.tn-avatar{width:30px;height:30px;border-radius:50%;background:var(--rc-green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.tn-nick{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tn-menu{position:absolute;right:0;top:46px;width:290px;background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(18,51,70,.22);padding:8px;display:flex;flex-direction:column;z-index:40}
+.tn-menu button{text-align:left;border:0;background:none;padding:9px 10px;border-radius:9px;font:600 14px Inter,sans-serif;color:var(--rc-ink);cursor:pointer}
+.tn-menu button:hover{background:#eef6ec}
+.tn-menu button.danger{color:#b02a2a}
+.tn-note{font-size:12px;color:#617061;padding:6px 10px 8px;border-bottom:1px solid #e6ece4;margin-bottom:4px;line-height:1.4}
+.top h1{color:var(--rc-navy)}
+.drawer{top:64px}
+
+/* ---------- welcome screen + tour ---------- */
+.welcome{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#eef6ec 0%,#f4f6f1 55%,#e7eef2 100%);padding:40px}
+.wl-card{width:640px;background:#fff;border-radius:22px;padding:36px 40px;box-shadow:0 16px 50px rgba(18,51,70,.14);border-top:6px solid var(--rc-green)}
+.wl-card h1{font-size:28px;color:var(--rc-navy);margin:16px 0 8px}
+.wl-lead{font-size:16px;line-height:1.5;color:#3c4c3e;margin:0 0 22px}
+.wl-form label{display:block;font-weight:800;color:var(--rc-navy);margin-bottom:6px}
+.wl-row{display:flex;gap:10px}
+.wl-row input{flex:1;border:2px solid #cfd9cc;border-radius:12px;padding:12px 14px;font:600 16px Inter,sans-serif}
+.wl-row input:focus{outline:none;border-color:var(--rc-green)}
+.wl-row .btn{width:auto;padding:12px 26px}
+.wl-err{color:#b02a2a;font-weight:700;margin:8px 0 0}
+.wl-note{font-size:13px;color:#617061;margin:10px 0 0;line-height:1.4}
+.wl-more{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:18px;font-size:14px;color:#617061}
+.wl-foot{margin:26px 0 0;font-size:12px;color:#8a978a}
+.lnk{background:none;border:0;color:#1f6bd1;text-decoration:underline;font:inherit;cursor:pointer;padding:0}
+.onb-back{position:fixed;inset:0;z-index:2000;background:rgba(18,51,70,.45);display:flex;align-items:center;justify-content:center}
+.onb{width:560px;background:#fff;border-radius:20px;padding:24px 30px 22px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.onb-top{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:#617061;font-weight:700}
+.onb-ic{width:52px;height:52px;border-radius:14px;background:#eef6ec;color:var(--rc-green);display:flex;align-items:center;justify-content:center;margin:16px 0 10px}
+.onb-ic .ic{width:28px;height:28px}
+.onb h2{font-size:22px;color:var(--rc-navy);margin:0 0 10px}
+.onb p{font-size:15px;line-height:1.5;color:#2f3d31;margin:0 0 8px}
+.onb-foot{display:flex;align-items:center;gap:8px;margin-top:18px}
+.onb-foot .btn{width:auto;padding:9px 18px}
+.onb-dots{display:flex;gap:6px;margin-right:auto}
+.onb-dots button{width:10px;height:10px;border-radius:50%;border:0;background:#cfd9cc;cursor:pointer;padding:0}
+.onb-dots button.on{background:var(--rc-green);width:24px;border-radius:6px}
+.howmodes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.howmodes>div{background:#f5f7f3;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;font-size:14px;line-height:1.45;color:#3c4c3e}
+.howmodes b{color:var(--rc-navy)}
