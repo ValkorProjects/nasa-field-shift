@@ -1,4 +1,4 @@
-#SMAP Soil umidity for Itaberá–Itapeva (CSV do NASA AppEEARS, 2025).
+#SMAP soil moisture for Itaberá–Itapeva (NASA AppEEARS CSV, 2025).
 from dataclasses import dataclass
 from datetime import date
 from itertools import groupby
@@ -16,7 +16,7 @@ SAMPLES_PER_DAY = 8
 
 @dataclass(frozen=True)
 class SoilMoistureDay:
-    """Umidade volumétrica do solo (m³/m³) da área em um dia UTC."""
+    """Volumetric soil moisture (m³/m³) of the area on one UTC day."""
     day: date
     mean: float     
     minimum: float 
@@ -29,7 +29,7 @@ def get_soil_moisture(
     end: date | None = None,
     layer: Literal["surface", "rootzone"] = "rootzone",
 ) -> list[SoilMoistureDay]:
-    """Série diária de umidade do solo em [start, end] para a camada `surface` (0-5 cm) ou `rootzone` (0-100 cm)."""
+    """Daily soil moisture in [start, end] for the `surface` (0-5 cm) or `rootzone` (0-100 cm) layer."""
     if layer not in LAYERS:
         raise ValueError(f"layer must be one of {', '.join(LAYERS)}")
     check_interval(start, end)

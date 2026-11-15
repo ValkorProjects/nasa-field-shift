@@ -4,6 +4,7 @@ from typing import Literal
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
+from catalog import CATALOG, CATALOG_SOURCE, cover_payload, crop_detail, crop_summary, edge_payload, risk_payload
 from datasets.clients.appeears import STUDY_AREA_NAME, AppEEARSDataError, in_study_area, study_area_bbox
 from datasets.clients.modis.modis_client import get_lst, get_ndvi
 from datasets.clients.nasapower.nasapower_client import get_simplePoint, get_dailyPlot, Parameters
@@ -357,4 +358,76 @@ def api_soil_moisture(
         for d in sorted(surface.keys() | rootzone.keys())
     ]
     return body
+#-----------------------
+
+
+#------------------------
+# Crop catalog - 55 crops of São Paulo, rotations, cover crops, climate risks
+#-----------------------
+# Static data from backend/data/crops/ (generated from the spreadsheet by scripts/build_crop_catalog.py),
+# loaded once in catalog.py. Data only: choosing rotations and alerts is done by the frontend (ADR-009).
+def _check_keys(kind: str, keys: list[str | None], valid) -> None:
+    unknown = [k for k in keys if k is not None and k not in valid]
+    if unknown:
+        raise HTTPException(status_code=422, detail=f"Unknown {kind}: {', '.join(unknown)}")
+
+
+@app.get("/api/crops")
+def api_crops(
+    crop_type: Literal["permanent", "temporary"] | None = None,
+    decision_type: Literal["succession", "interrow", "reform", "after_closure"] | None = None,
+    risk: str | None = Query(None, description="Only crops exposed to this climate risk key, e.g. frost"),
+    quantitative: bool | None = Query(None, description="Only the crops with numeric parameters (or only the others)"),
+):
+    _check_keys("risk", [risk], CATALOG.risks)
+    crops = [
+        c for c in CATALOG.crops.values()
+        if (crop_type is None or c.crop_type == crop_type)
+        and (decision_type is None or c.decision_type == decision_type)
+        and (risk is None or risk in c.risk_keys)
+        and (quantitative is None or c.quantitative == quantitative)
+    ]
+    return {"count": len(crops), "crops": [crop_summary(c) for c in crops], "source": CATALOG_SOURCE}
+
+
+@app.get("/api/crops/{key}")
+def api_crop(key: str):
+    crop = CATALOG.crops.get(key)
+    if crop is None:
+        raise HTTPException(status_code=404, detail=f"Unknown crop: {key}")
+    return {**crop_detail(crop), "source": CATALOG_SOURCE}
+
+
+@app.get("/api/rotations")
+def api_rotations(
+    from_key: str | None = Query(None, alias="from", description="Previous crop key"),
+    to_key: str | None = Query(None, alias="to", description="Next crop key"),
+    via: str | None = Query(None, description="Cover crop key between the two"),
+    origin: Literal["documented_pair", "alt_a", "alt_b"] | None = None,
+):
+    _check_keys("crop", [from_key, to_key], CATALOG.crops)
+    _check_keys("cover", [via], CATALOG.covers)
+    edges = [
+        e for e in CATALOG.edges
+        if (from_key is None or e.from_key == from_key)
+        and (to_key is None or e.to_key == to_key)
+        and (via is None or e.via_key == via)
+        and (origin is None or e.origin == origin)
+    ]
+    return {"count": len(edges), "rotations": [edge_payload(e) for e in edges], "source": CATALOG_SOURCE}
+
+
+@app.get("/api/covers")
+def api_covers():
+    covers = [cover_payload(v) for v in CATALOG.covers.values()]
+    return {"count": len(covers), "covers": covers, "source": CATALOG_SOURCE}
+
+
+@app.get("/api/climate-risks")
+def api_climate_risks():
+    risks = [
+        {**risk_payload(r), "crop_keys": [c.key for c in CATALOG.crops.values() if r.key in c.risk_keys]}
+        for r in CATALOG.risks.values()
+    ]
+    return {"count": len(risks), "risks": risks, "source": CATALOG_SOURCE}
 #-----------------------

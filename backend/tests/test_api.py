@@ -459,3 +459,57 @@ def test_appeears_errors(appeears_files, monkeypatch, path):
 
 def test_surface_temperature_rejects_bad_coverage(appeears_files):
     assert client.get(area_url("/api/surface-temperature", min_coverage=2)).status_code == 422
+
+
+# --- crop catalog: /api/crops, /api/crops/{key}, /api/rotations, /api/covers, /api/climate-risks ---
+
+def test_crops_list_and_filters():
+    body = client.get("/api/crops").json()
+    assert body["count"] == 55 and len(body["crops"]) == 55
+    assert set(body["crops"][0]) == {"key", "label", "name_pt", "crop_type", "family", "decision_type",
+                                     "risk_keys", "quantitative"}
+    assert body["source"]["file"].endswith(".xlsx")
+    quant = client.get("/api/crops?quantitative=true").json()["crops"]
+    assert {c["key"] for c in quant} == {"corn", "soybean", "sorghum", "wheat", "dry_bean", "oat",
+                                         "sunflower", "cotton", "peanut"}
+    frost = client.get("/api/crops?risk=frost&crop_type=permanent").json()["crops"]
+    assert frost and all("frost" in c["risk_keys"] and c["crop_type"] == "permanent" for c in frost)
+    assert client.get("/api/crops?risk=tornado").status_code == 422
+    assert client.get("/api/crops?decision_type=whatever").status_code == 422
+
+
+def test_crop_detail_has_risks_and_rotations():
+    body = client.get("/api/crops/corn").json()
+    assert body["label"] == "Corn" and body["quantitative"] is True
+    assert [r["key"] for r in body["risks"]] == body["risk_keys"]
+    assert all(e["from"]["key"] == "corn" for e in body["next"])
+    assert all(e["to"]["key"] == "corn" for e in body["previous"])
+    assert any(e["from"] and e["from"]["key"] == "soybean" and e["origin"] == "documented_pair" and e["why_pt"]
+               for e in body["previous"])
+    tomato_prev = client.get("/api/crops/tomato").json()["previous"]
+    assert any(e["from"] is None for e in tomato_prev)  # "after any crop"
+    assert client.get("/api/crops/maize").status_code == 404
+
+
+def test_rotations_filters():
+    body = client.get("/api/rotations").json()
+    assert body["count"] == len(body["rotations"]) > 100
+    pair = client.get("/api/rotations?from=corn&to=soybean&origin=documented_pair").json()["rotations"]
+    assert len(pair) == 1 and pair[0]["why_pt"] and pair[0]["same_crop"] is False
+    interrow = client.get("/api/rotations?from=orange&to=orange").json()["rotations"]
+    assert interrow and all(e["same_crop"] and e["via"] for e in interrow)
+    assert client.get("/api/rotations?from=maize").status_code == 422
+    assert client.get("/api/rotations?via=corn").status_code == 422  # corn is a crop, not a cover
+
+
+def test_covers_and_climate_risks():
+    covers = client.get("/api/covers").json()["covers"]
+    sunn_hemp = next(c for c in covers if c["key"] == "sunn_hemp")
+    assert sunn_hemp["family"] == "Fabaceae" and sunn_hemp["mechanism_pt"]
+    assert {"key": "sugarcane", "label": "Sugarcane"} in sunn_hemp["used_with"]
+    generic = next(c for c in covers if c["key"] == "spontaneous_cover")
+    assert generic["mechanism_pt"] is None and generic["used_with"]
+    risks = client.get("/api/climate-risks").json()
+    assert risks["count"] == 9
+    frost = next(r for r in risks["risks"] if r["key"] == "frost")
+    assert frost["label"] == "Frost" and frost["message_pt"] and "corn" in frost["crop_keys"]

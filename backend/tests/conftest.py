@@ -56,7 +56,7 @@ APPEEARS_HEADER = ("File Name,Dataset,aid,Date,Count,Minimum,Maximum,Range,Mean,
 
 
 def write_stats(path, rows):
-    """CSV `*-Statistics.csv` do AppEEARS. rows: (dataset, date, count, minimum, maximum, mean, std, median)."""
+    """AppEEARS `*-Statistics.csv` file. rows: (dataset, date, count, minimum, maximum, mean, std, median)."""
     lines = [APPEEARS_HEADER] + [
         f"f,{ds},aid0001,{d},{n},{lo},{hi},\"({lo},{hi})\",{mean},{std},0,0,0,{median},0,0"
         for ds, d, n, lo, hi, mean, std, median in rows

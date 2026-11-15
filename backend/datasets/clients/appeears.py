@@ -37,7 +37,7 @@ def read_statistics(path: Path) -> dict[str, tuple[Sample, ...]]:
     try:
         for r in rows:
             layers.setdefault(r["Dataset"], []).append(Sample(
-                # "2025-01-01" ou "2025-01-04 01:30:00 UTC"
+                # "2025-01-01" or "2025-01-04 01:30:00 UTC"
                 time=datetime.fromisoformat(r["Date"].removesuffix(" UTC")),
                 pixel_count=int(float(r["Count"])),
                 mean=float(r["Mean"]),

@@ -55,7 +55,7 @@ def test_smap_daily_aggregation(smap_file):
     days = smap_client.get_soil_moisture()
     assert [(d.day, d.samples) for d in days] == [(date(2025, 1, 4), 8), (date(2025, 1, 5), 1)]
     first = days[0]
-    assert first.mean == 0.185  # média de 0.15..0.22
+    assert first.mean == 0.185  # mean of 0.15..0.22
     assert (first.minimum, first.maximum) == (0.10, 0.20)
     assert smap_client.get_soil_moisture(start=date(2025, 1, 5))[0].mean == 0.25
     assert smap_client.get_soil_moisture(layer="surface")[0].mean == 0.35

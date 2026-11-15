@@ -1,4 +1,4 @@
-#Séries MODIS da área de estudo Itaberá–Itapeva (CSV do NASA AppEEARS, 2025).
+#MODIS series for the Itaberá–Itapeva study area (NASA AppEEARS CSV, 2025).
 
 from dataclasses import dataclass
 from datetime import date
@@ -15,7 +15,7 @@ KELVIN_OFFSET = 273.15
 
 @dataclass(frozen=True)
 class AreaStat:
-    """Estatísticas da área em uma data."""
+    """Statistics of the area on one date."""
     day: date
     mean: float
     median: float
@@ -37,7 +37,7 @@ def _area_stats(path, layer: str, start: date | None, end: date | None, offset: 
             median=round(s.median + offset, 4),
             minimum=round(s.minimum + offset, 4),
             maximum=round(s.maximum + offset, 4),
-            std=round(s.std, 4),  # desvio padrão não muda com o deslocamento K -> °C
+            std=round(s.std, 4),  # the K -> °C shift does not change the standard deviation
             pixel_count=s.pixel_count,
             coverage=round(s.pixel_count / full, 3),
         )
@@ -47,11 +47,11 @@ def _area_stats(path, layer: str, start: date | None, end: date | None, offset: 
 
 
 def get_ndvi(start: date | None = None, end: date | None = None) -> list[AreaStat]:
-    """NDVI (-1 a 1) das composições de 16 dias cuja data inicial está em [start, end]."""
+    """NDVI (-1 to 1) of the 16-day composites whose first day is in [start, end]."""
     return _area_stats(NDVI_FILE, NDVI_LAYER, start, end)
 
 
-# Temperatura superficial
+# Land surface temperature
 def get_lst(
     start: date | None = None,
     end: date | None = None,

@@ -26,6 +26,11 @@ pytest                                 # no network needed
 | GET | `/api/ndvi?lat=&lon=&start=&end=` | MODIS NDVI, 16-day composites (study area, 2025) |
 | GET | `/api/surface-temperature?lat=&lon=&start=&end=&min_coverage=` | MODIS land surface temperature °C, day + night (study area, 2025) |
 | GET | `/api/soil-moisture?lat=&lon=&start=&end=` | SMAP soil moisture m³/m³, surface + root zone (study area, 2025) |
+| GET | `/api/crops?crop_type=&decision_type=&risk=&quantitative=` | The 55 crops (summary), filterable |
+| GET | `/api/crops/{key}` | One crop: notes, risks, what can follow it (`next`) and come before it (`previous`) |
+| GET | `/api/rotations?from=&to=&via=&origin=` | Rotation pairs (crop → crop, optionally via a cover crop) |
+| GET | `/api/covers` | The 11 cover crops and the crops that use them |
+| GET | `/api/climate-risks` | The 9 climate risk keys: what to measure, how it changes the decision, affected crops |
 
 `weather`, `recommendation`, `soil` and `field/profile` are detailed in the [root README](../README.md#recommendation-api).
 
@@ -99,15 +104,37 @@ Qualitative agronomic base for São Paulo, from `data/crops/source/rotacoes_agri
 |---|---|---|
 | `source/rotacoes_agricolas_SP_55_culturas.xlsx` | versioned copy of the original spreadsheet | replace with a new version |
 | `crops.csv` | 55 crops: key, names, type, family, decision type, alternatives A/B, residue note, risks (`risk_keys`), caveat, evidence, URL, `quantitative` (the 9 crops with numeric parameters) | **generated** |
-| `rotation_edges.csv` | successions `from_key → to_key` (`via_key` = cover crop) from "Pares de partida" (`documented_pair`) and alternatives A/B (`alt_a`, `alt_b`); `from_key` empty = after any crop | **generated** |
-| `covers.csv` | cover crops used as `via_key` (the 8 from "Adubação verde" + 3 generic ones) | **generated** |
+| `rotation_edges.csv` | successions `from_key → to_key` (`via_key` = cover crop) from "Pares de partida" (`documented_pair`, with `why`) and alternatives A/B (`alt_a`, `alt_b`); `from_key` empty = after any crop | **generated** |
+| `covers.csv` | cover crops used as `via_key` (the 8 from "Adubação verde" with mechanism, management, caveat, URL + 3 generic ones) | **generated** |
+| `climate_risks.csv` | the 9 `risk_keys` with the "Eventos climáticos" texts: what to measure, how it changes the decision, example message, URLs | **generated** |
 
 Regenerate after changing the spreadsheet (needs `openpyxl` from `requirements-dev.txt`):
 
 ```bash
 cd backend
-python -m scripts.build_crop_catalog          # writes the 3 CSVs
+python -m scripts.build_crop_catalog          # writes the 4 CSVs
 python -m scripts.build_crop_catalog --check  # fails if the CSVs are out of date (also checked by pytest)
 ```
 
 The script fails on any crop, cover or risk text it does not know, instead of guessing. Risk texts are mapped to `risk_keys` by keyword: "seca" without a stage counts as `reproductive_drought`, and "frio" counts as `frost` (except "frio insuficiente" → `chill_hours`). This is a qualitative base for screening, not a field recipe: the evidence column says when a pair is only a hypothesis.
+
+### Crop routes
+
+`catalog.py` reads and validates the 4 CSVs once at startup; an inconsistent catalog stops the backend from starting. The routes only return data with its evidence and URL: choosing a rotation or raising alerts is done by the frontend (ADR-009). Spreadsheet texts stay in Portuguese (`*_pt` fields); `key` and `label` are in English.
+
+```bash
+curl "http://localhost:8000/api/crops?quantitative=true"
+curl "http://localhost:8000/api/crops/corn"
+curl "http://localhost:8000/api/rotations?from=corn&to=soybean"
+```
+
+A rotation pair (in `/api/rotations` and in a crop's `next` / `previous`):
+
+```json
+{ "from": {"key": "corn", "label": "Corn"}, "to": {"key": "soybean", "label": "Soybean"}, "via": null,
+  "same_crop": false, "origin": "documented_pair", "why_pt": "...", "evidence_pt": "...", "condition_pt": "...", "url": "..." }
+```
+
+- `from: null` = after any crop; `via` = cover crop between the two; `same_crop: true` = the crop stays and the cover goes in the interrow (orchards) or the reform (sugarcane).
+- `origin`: `documented_pair` ("Pares de partida", has `why_pt`), `alt_a` / `alt_b` (the crop's alternatives A and B, which are not a ranking).
+- Unknown filter keys return `422`; an unknown crop in `/api/crops/{key}` returns `404`.
