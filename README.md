@@ -32,14 +32,7 @@ npm run build      # production build in frontend/dist/
 2. Run `pip install "fastapi[standard]" requests` or `pip install fastapi requests`
 3. Run `fastapi dev main.py` or `uv fastapi run dev` (serves on http://localhost:8000, docs at `/docs`)
 
-Current endpoints (NASA POWER, comma-separated `parameter`, e.g. `T2M,RH2M`):
-
-| Endpoint | What it returns |
-|---|---|
-| `GET /nasapower/point` | values for one point and period (`parameter`, `longitude`, `latitude`, `year_start`…`day_end`) |
-| `GET /nasapower/plot` | daily series for the same query, at most 5 parameters |
-
-`GET /api/recommendation` and `GET /api/soil` (see "Recommendation API" below) are implemented. `POST /api/field/profile` returns the data package for one field.
+Every endpoint lives under `/api/`. The full list is in [`backend/README.md`](backend/README.md#endpoints); `GET /api/recommendation`, `GET /api/weather`, `GET /api/soil` and `POST /api/field/profile` are detailed in "Recommendation API" below.
 
 **Front end + back end together:**
 

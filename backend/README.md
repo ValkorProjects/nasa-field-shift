@@ -1,58 +1,58 @@
 # Backend
 
-FastAPI service wrapping NASA POWER (climate projections) and OpenTopoData (SRTM elevation).
+FastAPI service for Field Shift: NASA POWER (history + CMIP6 projections), SoilGrids and SRTM elevation.
 
 ## Run
 
 ```bash
-pip install fastapi uvicorn requests      # + matplotlib for tests/plot_nasapower.py
 cd backend
-uvicorn main:app --reload
+pip install -r requirements.txt        # requirements-dev.txt adds pytest
+fastapi dev main.py                    # http://localhost:8000 · docs at /docs
+pytest                                 # no network needed
 ```
-
-Server: http://127.0.0.1:8000 · Interactive docs: http://127.0.0.1:8000/docs · CORS: all origins allowed.
 
 ## Endpoints
 
-| Method | Path | Purpose |
+| Method | Path | Returns |
 |---|---|---|
-| GET | `/` | Health check (`{"message": "Hello World"}`) |
-| GET | `/nasapower/point` | Daily climate projection for a point |
-| GET | `/nasapower/plot` | Same data + Bokeh chart embed (`Script`/`Div`); max 5 parameters |
-| POST | `/elevations/` | Elevation (SRTM 30 m) for up to 5 points |
+| GET | `/api/health` | `{"status": "ok"}` |
+| GET | `/api/weather?lat=&lon=&start=&end=` | Daily NASA POWER history (1981 to today, max 20 years) |
+| GET | `/api/recommendation?lat=&lon=&crop=corn\|soybean` | Planting windows + critical events |
+| GET | `/api/soil?lat=&lon=` | SoilGrids profile 0-30 cm |
+| POST | `/api/field/profile` | Data package for one field (GeoJSON polygon) |
+| GET | `/api/projection?parameters=&lat=&lon=&start=&end=` | Daily CMIP6 climate projection per scenario |
+| GET | `/api/projection/plot?...` | Same + NASA's Bokeh chart per parameter (`charts`); max 5 parameters |
+| POST | `/api/elevation` | SRTM 30 m elevation for 1-5 points |
 
-### `GET /nasapower/point` and `GET /nasapower/plot`
+`weather`, `recommendation`, `soil` and `field/profile` are detailed in the [root README](../README.md#recommendation-api).
 
-| Query param | Required | Default | Notes |
-|---|---|---|---|
-| `parameter` | yes | | One or more, comma-separated, e.g. `T2M,RH2M` |
-| `longitude` | yes | | -180 to 180 |
-| `latitude` | yes | | -90 to 90 |
-| `year_start`, `year_end` | no | 2050 | |
-| `month_start`, `month_end` | no | 1, 12 | 1-12 |
-| `day_start`, `day_end` | no | 1, 31 | 1-31 |
+## Conventions (all routes)
 
-Parameters: `T2M`, `T2M_MAX`, `T2M_MIN`, `RH2M`, `QV2M`, `PRECTOTCORR`, `WS10M`, `ALLSKY_SFC_SW_DWN`, `ALLSKY_SFC_LW_DWN`, `HDD18_3`, `CDD10`.
+- Coordinates `lat` / `lon`; dates ISO `YYYY-MM-DD` as `start` / `end`.
+- Lowercase JSON keys, `null` for missing values, a `source` block saying where the data came from.
+- `404` source has no data · `422` invalid input · `503` source unavailable.
+
+## `GET /api/projection`
+
+`parameters` (comma-separated): `T2M`, `T2M_MAX`, `T2M_MIN`, `RH2M`, `QV2M`, `PRECTOTCORR`, `WS10M`, `ALLSKY_SFC_SW_DWN`, `ALLSKY_SFC_LW_DWN`, `HDD18_3`, `CDD10`. `start`/`end` default to 2050-01-01 / 2050-12-31.
 
 ```bash
-curl "http://127.0.0.1:8000/nasapower/point?parameter=T2M,RH2M&longitude=-104.99&latitude=39.74"
+curl "http://localhost:8000/api/projection?parameters=T2M,RH2M&lat=39.74&lon=-104.99"
 ```
-
-Response: `Properties.Parameter.<PARAM>.Scenarios.<ssp126|ssp245|ssp370>.Values` → `{"YYYYMMDD": value}`; `-999` = no data.
-
-| Status | Meaning |
-|---|---|
-| 404 | NASA has no data for the location/period (the projection data currently covers North America only) |
-| 422 | Invalid input: unknown parameter, out-of-range value, impossible date, or >5 parameters on `/plot` |
-| 502 | The NASA request failed |
-
-### `POST /elevations/`
-Returns the elevation of terrain relative to the sea level, in meters.
-
-Body:
 
 ```json
-{ "Elevations": [ { "latitude": -23.953, "longitude": -49.284 } ] }
+{ "location": {"lat": 39.74, "lon": -104.99}, "start": "2050-01-01", "end": "2050-12-31",
+  "parameters": ["T2M", "RH2M"],
+  "scenarios": { "ssp126": [ {"date": "2050-01-01", "T2M": -0.35, "RH2M": 77.75} ], "ssp245": [...], "ssp370": [...] },
+  "source": {...} }
 ```
 
-Only the first 5 points are processed; the response `detail` says when the rest were dropped. Returns `{"detail": "...", "elevations": [...]}`. All points go to OpenTopoData in a single request; an elevation is `null` where the dataset has no value. Status: `422` for an empty/invalid body, `502` if OpenTopoData fails.
+The projection data currently covers North America only; elsewhere it returns `404`.
+
+## `POST /api/elevation`
+
+```json
+{ "points": [ {"lat": -23.953, "lon": -49.284} ] }
+```
+
+Returns `{"points": [{"lat", "lon", "elevation_m"}], "source": {...}}`. All points go to OpenTopoData in one request; `elevation_m` is `null` where SRTM has no value.

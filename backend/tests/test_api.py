@@ -6,8 +6,12 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from fastapi.routing import APIRoute
+
 from datasets.clients.nasapower import nasapower_history
+from datasets.clients.nasapower.nasapower_typedef import Plot
 from datasets.clients.soilgrids import soilgrids_client
+import main as main_module
 import soil as soil_module
 import weather as weather_module
 from main import app
@@ -271,3 +275,107 @@ def test_contract_file_matches_real_response(offline_real_slices):
     contract = json.loads((Path(__file__).parents[2] / "docs" / "contract-field-profile.json").read_text(encoding="utf-8"))
     r = client.post(PROFILE_URL, json={"field": FIELD1_GEOJSON})
     assert keys_of(r.json()) == keys_of(contract)
+
+
+# --- conventions shared by every route ---
+
+def test_every_route_starts_with_api():
+    paths = [r.path for r in app.routes if isinstance(r, APIRoute)]
+    assert paths and all(p.startswith("/api/") for p in paths), paths
+
+
+def test_health():
+    assert client.get("/api/health").json() == {"status": "ok"}
+
+
+# --- GET /api/projection and /api/projection/plot ---
+
+def projection_plot(values=(1.5, -999), with_chart=False) -> Plot:
+    """Projection response in the NASA POWER format: T2M and RH2M, 2 days, 2 scenarios."""
+    days = ("20500101", "20500102")
+    param = {s: dict(zip(days, values)) for s in ("ssp126", "ssp245")}
+    if with_chart:
+        param |= {"script": "<script/>", "div": "<div/>"}
+    return Plot.from_dict({
+        "type": "Feature",
+        "geometry": {"type": "Point", "coordinates": [-104.99, 39.74, 2094.96]},
+        "properties": {"parameter": {"T2M": param, "RH2M": param}},
+    })
+
+
+PQ = "/api/projection?parameters=T2M,RH2M&lat=39.74&lon=-104.99&start=2050-01-01&end=2050-01-02"
+
+
+def test_projection_ok(monkeypatch):
+    seen = {}
+
+    def fake(parameters, **kw):
+        seen.update(kw, parameters=parameters)
+        return projection_plot()
+
+    monkeypatch.setattr(main_module, "get_simplePoint", fake)
+    r = client.get(PQ)
+    assert r.status_code == 200
+    body = r.json()
+    assert seen == {"parameters": "T2M,RH2M", "longitude": -104.99, "latitude": 39.74,
+                    "year_start": 2050, "month_start": 1, "day_start": 1,
+                    "year_end": 2050, "month_end": 1, "day_end": 2}
+    assert body["location"] == {"lat": 39.74, "lon": -104.99}
+    assert body["parameters"] == ["T2M", "RH2M"]
+    assert body["scenarios"]["ssp126"] == [
+        {"date": "2050-01-01", "T2M": 1.5, "RH2M": 1.5},
+        {"date": "2050-01-02", "T2M": None, "RH2M": None},
+    ]
+    assert body["source"]["url"] == "https://power.larc.nasa.gov/"
+    assert "charts" not in body
+
+
+def test_projection_plot_includes_charts(monkeypatch):
+    monkeypatch.setattr(main_module, "get_dailyPlot", lambda *a, **k: projection_plot(with_chart=True))
+    body = client.get(PQ.replace("/api/projection", "/api/projection/plot")).json()
+    assert body["charts"]["T2M"] == {"script": "<script/>", "div": "<div/>"}
+    assert body["scenarios"]["ssp245"][0]["T2M"] == 1.5
+
+
+def test_projection_errors(monkeypatch):
+    monkeypatch.setattr(main_module, "get_simplePoint", lambda *a, **k: projection_plot(values=(-999, -999)))
+    assert client.get(PQ).status_code == 404
+    monkeypatch.setattr(main_module, "get_simplePoint", lambda *a, **k: None)
+    assert client.get(PQ).status_code == 503
+    assert client.get(PQ.replace("T2M,RH2M", "FOO")).status_code == 422
+    assert client.get(PQ.replace("lat=39.74", "lat=91")).status_code == 422
+    assert client.get(PQ.replace("end=2050-01-02", "end=2049-12-31")).status_code == 422
+    assert client.get(PQ.replace("end=2050-01-02", "end=2050-02-31")).status_code == 422
+    six = "/api/projection/plot?parameters=T2M,T2M_MAX,T2M_MIN,RH2M,QV2M,WS10M&lat=39.74&lon=-104.99"
+    assert client.get(six).status_code == 422
+
+
+# --- POST /api/elevation ---
+
+def test_elevation_ok(monkeypatch):
+    seen = []
+    monkeypatch.setattr(main_module, "get_topoData", lambda pts: seen.append(pts) or [551.0, None])
+    r = client.post("/api/elevation", json={"points": [{"lat": -23.953, "lon": -49.284}, {"lat": -24.0, "lon": -40.0}]})
+    assert r.status_code == 200
+    assert seen == [[(-23.953, -49.284), (-24.0, -40.0)]]  # one batched call
+    assert r.json()["points"] == [
+        {"lat": -23.953, "lon": -49.284, "elevation_m": 551.0},
+        {"lat": -24.0, "lon": -40.0, "elevation_m": None},
+    ]
+    assert r.json()["source"]["dataset"].startswith("NASA SRTM")
+
+
+@pytest.mark.parametrize("payload", [
+    {},
+    {"points": []},
+    {"points": [{"lat": 0, "lon": 0}] * 6},
+    {"points": [{"lat": 95, "lon": 0}]},
+    {"points": [{"lat": None, "lon": 0}]},
+])
+def test_elevation_invalid_is_422(payload):
+    assert client.post("/api/elevation", json=payload).status_code == 422
+
+
+def test_elevation_source_down_is_503(monkeypatch):
+    monkeypatch.setattr(main_module, "get_topoData", lambda pts: None)
+    assert client.post("/api/elevation", json={"points": [{"lat": 0, "lon": 0}]}).status_code == 503
