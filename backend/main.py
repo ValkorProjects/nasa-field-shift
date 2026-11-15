@@ -1,14 +1,22 @@
 from fastapi.middleware.cors import CORSMiddleware
 from datasets.clients.nasapower.nasapower_client import get_simplePoint, get_dailyPlot, Parameters
+from datasets.clients.opentopodata.open_topo_data import get_topoData
 from fastapi import FastAPI, HTTPException, Query
+from pydantic import BaseModel, Field
+from array import array
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
+
+#USED DATASETS:
+#Topology: SRTM
+
+#------------------------
+# NASA POWER
+#-----------------------
 VALID_PARAMETERS = {v for k, v in vars(Parameters).items() if not k.startswith("_")}
 MAX_PLOT_PARAMETERS = 5  # the NASA plot endpoint rejects more than 5 parameters per request
-
-# TODO: Include more APIs for different NASA tools or datasets
 
 def _validate_parameters(parameter: str) -> None:
     """`parameter` may be a comma-separated list, e.g. "T2M,RH2M"."""
@@ -95,3 +103,38 @@ def nasapower_plot(
         month_start=month_start, month_end=month_end,
         day_start=day_start, day_end=day_end,
     )
+#-----------------------
+
+#------------------------
+# OPEN TOPOLOGY
+#-----------------------
+#Maximum supported by the API is ~100 locations per request, 1000 calls a day
+MAX_POINT_LIMIT_REQUEST = 5
+
+class Point(BaseModel):
+    latitude : float
+    longitude : float
+
+class elevationsPayload(BaseModel):
+    #List of keypairs (e.g. [ [-23.953, -49.284], [-24.963, -47.524] ])
+    #Where [0] = latitude and [1] = longitude
+    Elevations : list[Point] = Field(min_length=1)
+
+@app.post("/elevations/")
+def opentopo_elevations(payload : elevationsPayload):
+    # One batched call for all points (the API is rate limited to ~1 request/second)
+    elevations = get_topoData([(p.latitude, p.longitude) for p in payload.Elevations[:MAX_POINT_LIMIT_REQUEST]])
+    if elevations is None:
+        raise HTTPException(status_code=502, detail="OpenTopoData falhou")
+    if len(payload.Elevations) > MAX_POINT_LIMIT_REQUEST:
+        return {
+            "detail":"Limite de posições por requisição é 5. Enviadas 5 primeiras posições.",
+            "elevations" : elevations
+        }
+    else:
+        return {
+            "detail":"Sucesso.",
+            "elevations" : elevations
+        }
+
+#-----------------------
