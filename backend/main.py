@@ -1,7 +1,9 @@
+from fastapi.middleware.cors import CORSMiddleware
 from datasets.clients.nasapower.nasapower_client import get_simplePoint, get_dailyPlot, Parameters
 from fastapi import FastAPI, HTTPException, Query
 
 app = FastAPI()
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 VALID_PARAMETERS = {v for k, v in vars(Parameters).items() if not k.startswith("_")}
 MAX_PLOT_PARAMETERS = 5  # the NASA plot endpoint rejects more than 5 parameters per request

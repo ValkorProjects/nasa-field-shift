@@ -45,15 +45,10 @@ def get_simplePoint(
     date_end_formatted = datetime(year_end, month_end, day_end).strftime("%Y%m%d")
 
     try:
-        response = requests.get(f"https://power.larc.nasa.gov/api/projection/daily/point?parameters={parameter}&community=SB&longitude={longitude}&latitude={latitude}&start={date_start_formatted}&end={date_end_formatted}&format=JSON&time-standard=UTC")
+        response = requests.get(f"https://power.larc.nasa.gov/api/projection/daily/point?parameters={parameter}&community=SB&longitude={longitude}&latitude={latitude}&start={date_start_formatted}&end={date_end_formatted}&format=JSON&time-standard=UTC", timeout=30)
         if response.status_code == 200:
-        
             dados_dict = response.json()
             plot = Plot.from_dict(dados_dict)
-        
-            print("Tipo do objeto:", type(dados_dict))
-            print("Conteúdo do dicionário:", dados_dict)
-            print("Acessando uma chave específica (Título):", dados_dict.get("title"))
             return plot
         else:
             print(f"Erro na requisição. Status Code: {response.status_code} - {response.text[:300]}")
@@ -76,15 +71,10 @@ def get_dailyPlot(
     date_end_formatted = datetime(year_end, month_end, day_end).strftime("%Y%m%d")
 
     try:
-        response = requests.get(f"https://power.larc.nasa.gov/api/projection/daily/plot?parameters={parameter}&community=SB&longitude={longitude}&latitude={latitude}&start={date_start_formatted}&end={date_end_formatted}&format=JSON&time-standard=UTC")
-        if response.status_code == 200:
-        
+        response = requests.get(f"https://power.larc.nasa.gov/api/projection/daily/plot?parameters={parameter}&community=SB&longitude={longitude}&latitude={latitude}&start={date_start_formatted}&end={date_end_formatted}&format=JSON&time-standard=UTC", timeout=30)
+        if response.status_code == 200:   
             dados_dict = response.json()
             plot = Plot.from_dict(dados_dict)
-        
-            print("Tipo do objeto:", type(dados_dict))
-            print("Conteúdo do dicionário:", dados_dict)
-            print("Acessando uma chave específica (Título):", dados_dict.get("title"))
             return plot
         else:
             print(f"Erro na requisição. Status Code: {response.status_code} - {response.text[:300]}")
