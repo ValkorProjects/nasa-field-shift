@@ -22,9 +22,9 @@ From the repository root:
 
 ```bash
 npm run setup      # installs the front-end dependencies (once)
-npm run dev        # front end with sample data (mock)  → http://localhost:5173
-npm run dev:api    # front end calling the backend at /api
-npm run build      # production build in frontend/dist/
+npm run dev        # front end + your local backend (http://localhost:8000) → http://localhost:5173
+npm run dev:mock   # front end with sample data only, no backend needed
+npm run build      # production build in frontend/dist/, calls https://rollcrop-backend.vercel.app
 ```
 
 ## Running the backend
@@ -40,17 +40,28 @@ Every endpoint lives under `/api/`. The full list is in [`backend/README.md`](ba
 **Front end + back end together:**
 
 1. Start the backend as above (port 8000).
-2. In another terminal, run `npm run dev:api`.
+2. In another terminal, run `npm run dev`.
 
-In dev, Vite proxies every `/api/*` call to the backend, so the browser never sees a CORS error. To use another backend address, copy `frontend/.env.example` to `frontend/.env.local` and change `VITE_BACKEND_URL`. Never commit `.env` files.
+In dev, Vite proxies every `/api/*` call to the backend, so the browser never sees a CORS error.
 
-| Setting | Values | Default |
+**Which backend each build calls.** The settings live in committed files (no secrets) in `frontend/`:
+
+| Where | File | Backend |
 |---|---|---|
-| `VITE_API_MODE` (or `npm run dev:api`) | `mock` · `api` | `mock` |
-| `VITE_BACKEND_URL` | backend used by the dev proxy | `http://localhost:8000` |
-| `VITE_API_BASE` | backend URL for a **production build** (Vercel has no proxy); the backend allows CORS | empty (use the dev proxy) |
+| `npm run dev` (local development) | `.env.development` | your machine, `http://localhost:8000` (through the Vite proxy) |
+| `npm run dev:mock` | `.env.mock` | none: sample data |
+| `npm run build` / Vercel **production** (the `main` branch) | `.env.production` | `https://rollcrop-backend.vercel.app` |
+| Vercel **preview** (the `dev` branch and pull requests) | `vite.config.js` | `http://localhost:8000`: the backend on the machine of whoever opens the preview |
 
-**Production (e.g. Vercel):** build with `VITE_API_MODE=api` and `VITE_API_BASE=https://<backend>`. Without a backend, deploy with `VITE_API_MODE=mock` (plan B).
+Published front end: https://rollcropfrontend.vercel.app · back end: https://rollcrop-backend.vercel.app
+
+To override on your machine, copy `frontend/.env.example` to `frontend/.env.local` (never committed). A `VITE_API_BASE` set in the Vercel project settings wins over these files.
+
+| Setting | Values |
+|---|---|
+| `VITE_API_MODE` | `api` · `mock` (missing = `mock`) |
+| `VITE_BACKEND_URL` | backend used by the dev proxy |
+| `VITE_API_BASE` | backend URL called directly by a build (no proxy outside dev); the backend allows CORS |
 
 If the backend is not running in `api` mode, the screen shows an error with **Try again** and **Use sample data**.
 
