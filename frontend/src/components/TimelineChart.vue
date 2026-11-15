@@ -39,6 +39,16 @@ const months = computed(() => {
   return out
 })
 const todayX = computed(() => (props.today && day(props.today) >= t0.value && day(props.today) < t1.value ? x(props.today) : null))
+// "N of M years": inside the bar when it fits, otherwise next to it (right, or left near the end).
+function eventLabel(e) {
+  const x0 = x(e.start), x1 = xEnd(e.end)
+  const need = `${e.years_hit} of ${e.years_total} years`.length * 7.4 + 14
+  if (x1 - x0 >= need) return { x: x0 + 8, fill: '#fff' }
+  if (x1 + 6 + need <= X1) return { x: x1 + 6, fill: '#2b2f6b' }
+  return { x: x0 - 6, fill: '#2b2f6b', 'text-anchor': 'end' }
+}
+// one legend entry per event type (the backend can send several frost periods)
+const legendEvents = computed(() => [...new Map(props.events.map((e) => [e.type, e])).values()])
 const fmt = (s) => new Date(day(s)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
 </script>
 
@@ -59,10 +69,10 @@ const fmt = (s) => new Date(day(s)).toLocaleDateString('en-US', { month: 'short'
       </g>
 
       <!-- event bands span all rows so overlap with planting is easy to see -->
-      <rect v-for="e in events" :key="`band-${e.type}`" :x="x(e.start)" :y="TOP - 8" :width="clampW(x(e.start), xEnd(e.end))"
+      <rect v-for="(e, i) in events" :key="`band-${i}`" :x="x(e.start)" :y="TOP - 8" :width="clampW(x(e.start), xEnd(e.end))"
         :height="H - TOP - 18" :fill="EVENT_COL[e.type] ?? '#555'" opacity=".08" />
 
-      <g v-for="(r, i) in rows" :key="r.label" :transform="`translate(0, ${TOP + i * ROW})`">
+      <g v-for="(r, i) in rows" :key="i" :transform="`translate(0, ${TOP + i * ROW})`">
         <text x="0" y="22" class="tl-rl">{{ r.label }}</text>
         <rect :x="X0" y="4" :width="X1 - X0" :height="ROW - 14" rx="8" fill="#f5f7f3" />
         <template v-if="r.kind === 'plant'">
@@ -76,7 +86,7 @@ const fmt = (s) => new Date(day(s)).toLocaleDateString('en-US', { month: 'short'
         <template v-else>
           <rect :x="x(r.e.start)" y="4" :width="clampW(x(r.e.start), xEnd(r.e.end))" :height="ROW - 14" rx="7"
             :fill="EVENT_COL[r.e.type] ?? '#555'" />
-          <text :x="x(r.e.start) + 8" y="25" class="tl-seg" fill="#fff">{{ r.e.years_hit }} of {{ r.e.years_total }} years</text>
+          <text v-bind="eventLabel(r.e)" y="25" class="tl-seg">{{ r.e.years_hit }} of {{ r.e.years_total }} years</text>
         </template>
       </g>
 
@@ -89,7 +99,7 @@ const fmt = (s) => new Date(day(s)).toLocaleDateString('en-US', { month: 'short'
       <span><i style="background:#2e8b3d"></i>Best time to plant</span>
       <span><i style="background:#e0a400"></i>Risky</span>
       <span><i class="hatch"></i>Avoid</span>
-      <span v-for="e in events" :key="`leg-${e.type}`"><i :style="{ background: EVENT_COL[e.type] }"></i>{{ e.label }} (past years)</span>
+      <span v-for="e in legendEvents" :key="`leg-${e.type}`"><i :style="{ background: EVENT_COL[e.type] }"></i>{{ e.label }} (past years)</span>
     </figcaption>
   </figure>
 </template>

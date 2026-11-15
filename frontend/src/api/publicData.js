@@ -119,10 +119,10 @@ export async function municipalityAt(lat, lon, opt) {
 }
 
 /**
- * April + May rain (mm) per year from NASA POWER, and which years were dry:
- * a dry autumn = April–May rain at least 25 % below the 2001–last-year average.
+ * April + May rain (mm) per year from NASA POWER (used when the backend profile is not available).
+ * Which years count as dry is decided in data/rules.js (same rule as the pre-planting alert).
  */
-export async function autumnRain(lat, lon, { from = 2001, to = new Date().getFullYear() - 1, opt } = {}) {
+export async function autumnRain(lat, lon, { from = new Date().getFullYear() - 10, to = new Date().getFullYear() - 1, opt } = {}) {
   const url = `https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=PRECTOTCORR&community=AG` +
     `&longitude=${lon.toFixed(2)}&latitude=${lat.toFixed(2)}&start=${from}&end=${to}&format=JSON`
   const data = await getJson(url, opt)
@@ -138,8 +138,5 @@ export async function autumnRain(lat, lon, { from = 2001, to = new Date().getFul
   const mm = Object.fromEntries(
     Object.entries(years).filter(([, v]) => v.apr != null && v.may != null).map(([y, v]) => [y, Math.round(v.apr + v.may)])
   )
-  const vals = Object.values(mm)
-  const mean = vals.reduce((a, b) => a + b, 0) / vals.length
-  const dry = Object.keys(mm).filter((y) => mm[y] < 0.75 * mean)
-  return { mm, mean: Math.round(mean), dry, period: `${from}–${to}`, url }
+  return { mm, url }
 }
