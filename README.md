@@ -9,7 +9,7 @@ Field Shift is a free decision-support tool for farmers in São Paulo state. For
 
 ```
 frontend/   Vue 3 + Vite app (this README covers it)
-backend/    Python API with the NASA POWER client (issues #2–#5, coming)
+backend/    FastAPI app with the NASA POWER client (PR #10)
 docs/       spec, data requirements, reference screens, API contract example
 ```
 
@@ -24,9 +24,26 @@ npm run dev:api    # front end calling the backend at /api
 npm run build      # production build in frontend/dist/
 ```
 
+## Running the backend
+
+**Locally:**
+
+1. Run `cd ./backend`
+2. Run `pip install "fastapi[standard]" requests` or `pip install fastapi requests`
+3. Run `fastapi dev main.py` or `uv fastapi run dev` (serves on http://localhost:8000, docs at `/docs`)
+
+Current endpoints (NASA POWER, comma-separated `parameter`, e.g. `T2M,RH2M`):
+
+| Endpoint | What it returns |
+|---|---|
+| `GET /nasapower/point` | values for one point and period (`parameter`, `longitude`, `latitude`, `year_start`…`day_end`) |
+| `GET /nasapower/plot` | daily series for the same query, at most 5 parameters |
+
+`GET /api/recommendation` (below) is not implemented yet (issues #4/#5); until then the front end uses its mock.
+
 **Front end + back end together:**
 
-1. Start the backend on port 8000. The command will be documented in `backend/` (issues #2/#3), for example `uvicorn app.main:app --reload --port 8000`.
+1. Start the backend as above (port 8000).
 2. In another terminal, run `npm run dev:api`.
 
 In dev, Vite proxies every `/api/*` call to the backend, so the browser never sees a CORS error. To use another backend address, copy `frontend/.env.example` to `frontend/.env.local` and change `VITE_BACKEND_URL`. Never commit `.env` files.
