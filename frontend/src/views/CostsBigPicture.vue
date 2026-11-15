@@ -9,11 +9,11 @@ import Chip from '@/components/Chip.vue'
 import SampleValue from '@/components/SampleValue.vue'
 import PublicDataNote from '@/components/PublicDataNote.vue'
 import { state } from '@/data/store.js'
-import { costs, loadCosts } from '@/data/costs.js'
+import { costs, loadCosts, withCosts } from '@/data/costs.js'
 
 onMounted(() => loadCosts())
 const real = computed(() => costs.status === 'ok')
-const r = computed(() => state.data.regional)
+const r = computed(() => withCosts(state.data).regional)
 const ufName = computed(() => (real.value ? `${r.value.uf} state` : 'São Paulo'))
 const signed = (x) => (typeof x === 'number' && x > 0 ? `+${x}` : x)
 const chain = [

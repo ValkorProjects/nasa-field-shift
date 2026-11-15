@@ -1,22 +1,27 @@
 // Costs from free public data (replaces the sample numbers on the Costs screens and the Results money bar).
 //
-// Field 1's municipality → IBGE PAM yields of the last 10 harvests, NASA POWER April–May rain.
+// The field's municipality → IBGE PAM yields of the last 10 harvests, NASA POWER April–May rain.
 //   dry autumn   = April–May rain ≥ 25 % below average (NASA POWER, ~50 km)
 //   normal yield = average yield in the other years · dry yield = average in dry years
 //   loss         = 1 − dry yield / normal yield (worst = the worst dry year)
 //   price        = value of production ÷ quantity, latest year (IBGE PAM, price received by farmers)
 //   R$           = area (your map) × yield × price · second crop only, before costs
 // If any API fails the screens keep the sample values and say so.
+//
+// This module never changes the field data: it keeps its own patch and the screens show
+// withCosts(state.data), so it works whatever builds state.data (sample JSON or field profile).
 import { reactive } from 'vue'
-import { state } from '@/data/store.js'
-import { farm, fieldById, areaHa } from '@/data/fields.js'
+import { areaHa, fieldById } from '@/data/fields.js'
+
+// The field the Costs screens are about. (With /field/:id routes, use the selected field.)
+export const costsField = () => fieldById('1')
 import { sidra, municipalityAt, autumnRain, conabCost, PRODUCTS, IPCA_ITEMS, SOURCES } from '@/api/publicData.js'
 
 const BAG_KG = 60
 const SCENARIO_SHARE = 50 // % of the state's 2nd-crop corn area hit, for the "big picture" scenario
 const FALLBACK = { lat: -23.53, lon: -49.24 } // Taquarituba (SP), when there is no field on the map
 
-export const costs = reactive({ status: 'idle', error: null, key: null, muni: null, info: null })
+export const costs = reactive({ status: 'idle', error: null, key: null, muni: null, info: null, patch: null })
 
 const leaf = (value, source, scale = 'area', extra = {}) => ({ value, sample: false, source, scale, ...extra })
 const mean = (a) => (a.length ? a.reduce((s, x) => s + x, 0) / a.length : NaN)
@@ -27,8 +32,7 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 const enMonth = (s = '') => { const [m, y] = s.split('/'); const i = MESES.indexOf(m?.toLowerCase()); return i >= 0 ? `${MONTHS[i]} ${y}` : s }
 const pct = (x) => Math.round(x * 100)
 
-function fieldPoint() {
-  const f = fieldById('1') ?? farm.fields[0]
+function fieldPoint(f) {
   if (!f?.coords?.length) return { ...FALLBACK, area: NaN }
   const lat = mean(f.coords.map((c) => c[0]))
   const lon = mean(f.coords.map((c) => c[1]))
@@ -64,12 +68,12 @@ function priceOf(qty, val) {
   return y ? { perBag: ((val[y] * 1000) / qty[y]) * (BAG_KG / 1000), year: y } : null
 }
 
-export async function loadCosts({ force = false } = {}) {
-  const p = fieldPoint()
+/** Fetch and compute the costs for a field (the one on screen). */
+export async function loadCosts({ field = costsField(), force = false } = {}) {
+  const p = fieldPoint(field)
   const key = `${p.lat.toFixed(3)},${p.lon.toFixed(3)},${p.area.toFixed(2)}`
   if (!force && costs.key === key && (costs.status === 'ok' || costs.status === 'loading')) return
-  if (!state.data) return
-  costs.status = 'loading'; costs.error = null; costs.key = key
+  costs.status = 'loading'; costs.error = null; costs.key = key; costs.patch = null
   try {
     const muni = await municipalityAt(p.lat, p.lon)
     const N6 = `N6[${muni.id}]`, N3 = `N3[${muni.ufId}]`
@@ -109,31 +113,25 @@ export async function loadCosts({ force = false } = {}) {
     const income = (yKg, price) => area * (yKg / BAG_KG) * price
 
     // ---- screen 9: your money ----
-    const m = state.data.money
+    const m = {}
     m.at_risk_min = leaf(fmt(income(corn.normal - corn.dry, cornP.perBag)), 'IBGE PAM + NASA POWER', 'est')
     m.at_risk_max = leaf(fmt(income(corn.normal - corn.worst, cornP.perBag)), 'IBGE PAM + NASA POWER', 'est')
     m.dry_years = leaf(`${corn.dryCount} of the last ${N}`, 'NASA POWER')
     m.worst_year = leaf(corn.worstYear, srcY(cornS.level))
-    const inp = Object.fromEntries(m.inputs.map((i) => [i.id, i]))
-    inp.yield.v = leaf(+(corn.normal / BAG_KG).toFixed(1), `IBGE PAM, normal years`)
-    inp.price.v = leaf(+cornP.perBag.toFixed(2), `IBGE PAM ${cornP.year}`)
-    inp.loss.v = leaf(+(corn.loss * 100).toFixed(1), 'IBGE + NASA POWER', 'est')
+    const inp = {}
+    inp.yield = leaf(+(corn.normal / BAG_KG).toFixed(1), `IBGE PAM, normal years`)
+    inp.price = leaf(+cornP.perBag.toFixed(2), `IBGE PAM ${cornP.year}`)
+    inp.loss = leaf(+(corn.loss * 100).toFixed(1), 'IBGE + NASA POWER', 'est')
     const costSrc = (c) => `CONAB ${c.town}-${c.uf} ${c.month.split(' ')[1] ?? c.season}`
-    inp.cost.v = cornCost
+    inp.cost = cornCost
       ? leaf(cornCost.variable, costSrc(cornCost), 'area', { ref: cornCost })
       : { value: '—', sample: false, source: 'no recent CONAB data', scale: 'field', empty: true }
 
-    for (const s of state.data.strategies) {
-      const name = String(s.name?.value ?? s.name)
-      const crop = /corn/i.test(name) ? { st: corn, pr: cornP, lvl: cornS.level, cost: cornCost }
-        : /wheat/i.test(name) ? { st: wheat, pr: wheatP, lvl: wheatS.level, cost: wheatCost } : null
-      if (!crop || !Number.isFinite(crop.st.normal) || !crop.pr?.perBag) {
-        // cover crop: no grain to sell
-        s.money.dry = leaf('0', 'no grain sold', 'book')
-        s.money.normal = leaf('0', 'no grain sold', 'book')
-        s.money.avg = leaf('0', 'no grain sold', 'book')
-        continue
-      }
+    // per plan, by its second crop (see planCrop)
+    const plans = { cover: { dry: leaf('0', 'no grain sold', 'book'), normal: leaf('0', 'no grain sold', 'book'), avg: leaf('0', 'no grain sold', 'book') } }
+    for (const [id, crop] of [['corn', { st: corn, pr: cornP, lvl: cornS.level, cost: cornCost }], ['wheat', { st: wheat, pr: wheatP, lvl: wheatS.level, cost: wheatCost }]]) {
+      if (!Number.isFinite(crop.st.normal) || !crop.pr?.perBag) continue
+      const s = { money: (plans[id] = {}) }
       const src = `${srcY(crop.lvl)} × price ${crop.pr.year}`
       s.money.dry = leaf(fmt(income(crop.st.dry, crop.pr.perBag)), `${src} · ${crop.st.dryCount} dry years`, 'est')
       s.money.normal = leaf(fmt(income(crop.st.normal, crop.pr.perBag)), src)
@@ -165,7 +163,7 @@ export async function loadCosts({ force = false } = {}) {
     const pr = (y) => (stQ[y] && stV[y] ? stV[y] / stQ[y] : NaN)
     const priceRise = past ? pr(past.year) / pr(past.prev) - 1 : NaN
 
-    const r = state.data.regional
+    const r = {}
     const stYield = stProd[last] / stArea[last] // t/ha
     r.share = leaf(SCENARIO_SHARE, 'scenario', 'est')
     r.area = leaf(Math.round((stArea[last] * SCENARIO_SHARE) / 100 / 1000), `IBGE PAM ${last} × ${SCENARIO_SHARE}%`)
@@ -181,6 +179,7 @@ export async function loadCosts({ force = false } = {}) {
       r.food = await foodPrices(past.year)
     }
 
+    costs.patch = { money: m, inputs: inp, plans, regional: r }
     costs.muni = muni
     costs.info = {
       span, rainPeriod: rain.period, dryYears, rainMean: rain.mean, cornLevel: cornS.level,
@@ -206,5 +205,27 @@ async function foodPrices(year) {
     return { year, food: r1(v(IPCA_ITEMS.food)), chicken: r1(v(IPCA_ITEMS.chicken)), eggs: r1(v(IPCA_ITEMS.eggs)) }
   } catch {
     return null
+  }
+}
+
+// Second crop of a plan, from its name ("Soybean → Corn").
+const planCrop = (s) => {
+  const name = String(s.name?.value ?? s.name ?? '')
+  const second = name.split('→').at(-1)
+  return /corn/i.test(second) ? 'corn' : /wheat/i.test(second) ? 'wheat' : /cover/i.test(second) ? 'cover' : null
+}
+
+/** The field data with the public-data costs on top (unchanged until they are loaded). */
+export function withCosts(data) {
+  const P = costs.status === 'ok' ? costs.patch : null
+  if (!data || !P) return data
+  return {
+    ...data,
+    money: { ...data.money, ...P.money, inputs: data.money.inputs.map((i) => (P.inputs[i.id] ? { ...i, v: P.inputs[i.id] } : i)) },
+    regional: { ...data.regional, ...P.regional },
+    strategies: data.strategies.map((s) => {
+      const p = P.plans[planCrop(s)]
+      return p ? { ...s, money: { ...s.money, ...p } } : s
+    })
   }
 }

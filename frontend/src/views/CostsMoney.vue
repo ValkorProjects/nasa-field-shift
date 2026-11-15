@@ -12,13 +12,14 @@ import SampleValue from '@/components/SampleValue.vue'
 import PublicDataNote from '@/components/PublicDataNote.vue'
 import { state } from '@/data/store.js'
 import { fieldById, areaHa, fmtHa } from '@/data/fields.js'
-import { costs, loadCosts } from '@/data/costs.js'
+import { costs, loadCosts, withCosts } from '@/data/costs.js'
 
 onMounted(() => loadCosts())
 const real = computed(() => costs.status === 'ok')
 
-const m = computed(() => state.data.money)
-const plans = computed(() => state.data.strategies)
+const data = computed(() => withCosts(state.data))
+const m = computed(() => data.value.money)
+const plans = computed(() => data.value.strategies)
 
 // farmer's own numbers (override the public data)
 const own = reactive({})
