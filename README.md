@@ -218,6 +218,8 @@ Every block is `{ status, reason, source, data }`. `status` = `ok` · `unavailab
 
 **`mode`** tells where the data came from: `live` (NASA POWER just fetched), `cache` (a previous live response saved in `backend/data/cache/`) or `mock` (static offline slice of a demo point). Lookup order is cache, live, mock. Set `FIELD_SHIFT_OFFLINE=1` to skip the live call. Before a demo, make one warm-up call per point so the cache is filled. `NASA_POWER_TIMEOUT` (seconds, default 30) controls the request timeout.
 
+**`live` / `cache` / `mock` / `synthetic`.** The first three are real NASA POWER data: `live` just fetched, `cache` a saved live response, `mock` a pre-downloaded real slice of a demo point (offline fallback). `synthetic` is **invented** data: `backend/synthetic.py` (`make_synthetic()`) builds a deterministic daily series in the same format as NASA POWER, with planted events (frost, 10- vs 9-day dry spell, heavy rain, heat, white mold, each with a just-at-threshold case and a just-below case) and a ground-truth list (`SyntheticSeries.truth`) that `backend/tests/test_synthetic.py` compares with the hazard functions. It is for tests and front-end development only: it must carry `mode: "synthetic"` wherever it is shown and never appears in the demo, video or pitch as if it were real. There is no endpoint serving it yet. Dry spell, heavy rain and heat have no engine in this branch (#20), so the tests use small reference functions and provisional thresholds (10 days < 1 mm, 50 mm/day, T2M 30 C).
+
 **"Forecast" = climatological risk.** The recommendation is the frequency of past events (2015-2024) for each planting date during the crop's critical stage. It is not a weather forecast.
 
 ## Thresholds and sources
