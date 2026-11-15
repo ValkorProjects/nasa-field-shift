@@ -74,7 +74,7 @@ Issues do GitHub citadas em `Notas` (conferidas no GitHub em 15/11/2026).
 
 - [x] T-29 · Pacote de dados por talhão `POST /api/field/profile` + frontend com dados reais de qualquer talhão  (RF-01, RF-02, RF-03, RF-04, RF-10, RNF-01, RNF-02, RNF-05) · depende: T-01, T-24
   - Aceite: GeoJSON → blocos `field`, `weather_summary`, `events`, `planting`, `soil`, `terrain` (pending) com status por bloco; 422 para geometria inválida; < 2 s nos pontos do demo; telas do front leem o talhão selecionado; regras de negócio em `frontend/src/data/rules.js`
-  - Notas: Tamanho G · PR #18 (empilhado sobre o #16) · ADR-009. Substitui a parte de backend de T-09/T-12/T-13 (alertas/estratégias passam a ser do front). Estratégias e `fit` seguem fixos (sample) por decisão do usuário.
+  - Notas: Tamanho G · backend no PR #16 (`63a070a`), frontend no PR #28 · ADR-009. Substitui a parte de backend de T-09/T-12/T-13 (alertas/estratégias passam a ser do front). Estratégias e `fit` seguem fixos (sample) por decisão do usuário.
 
 ## Marco 2 — pós-hackathon
 
