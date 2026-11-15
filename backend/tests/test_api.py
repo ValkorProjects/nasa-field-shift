@@ -1,12 +1,17 @@
+import json
 import time
 from datetime import date
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
 from datasets.clients.nasapower import nasapower_history
 from datasets.clients.soilgrids import soilgrids_client
+import soil as soil_module
+import weather as weather_module
 from main import app
+from tests.conftest import POLY as FIELD1_GEOJSON
 from tests.conftest import make_raw, make_soil_raw, write_demo_slice
 
 client = TestClient(app)
@@ -170,3 +175,99 @@ def test_soil_api_mock_curated_override(isolated_dirs, monkeypatch):
     assert src["distance_km"] == 4.6
     assert src["sampling"] == "curated_rural_pixel"
     assert "manually verified rural pixel 4.6 km away" in src["note"]
+
+
+# --- POST /api/field/profile ---
+
+PROFILE_URL = "/api/field/profile"
+BLOCKS = ("field", "weather_summary", "events", "planting", "soil", "terrain")
+
+
+def square(lon, lat, half=0.002):
+    ring = [[lon - half, lat - half], [lon + half, lat - half], [lon + half, lat + half],
+            [lon - half, lat + half], [lon - half, lat - half]]
+    return {"type": "Polygon", "coordinates": [ring]}
+
+
+@pytest.fixture
+def offline_real_slices(tmp_path, monkeypatch):
+    """Slices reais de backend/data/demo; só o cache vai para o diretório temporário."""
+    monkeypatch.setenv("FIELD_SHIFT_OFFLINE", "1")
+    monkeypatch.setattr(soil_module, "CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(weather_module, "CACHE_DIR", tmp_path / "cache")
+
+
+def test_profile_valid_post(isolated_dirs, monkeypatch):
+    monkeypatch.setattr(nasapower_history, "fetch_daily_history", failing)
+    monkeypatch.setattr(soilgrids_client, "fetch_properties", soil_down)
+    write_demo_slice(isolated_dirs / "demo", "taquarituba_sp", make_raw(date(2015, 1, 1), 3652))
+    write_demo_slice(isolated_dirs / "demo" / "soil", "taquarituba_sp", make_soil_raw())
+    r = client.post(PROFILE_URL, json={"field": square(-49.24, -23.53), "name": "Field 1"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["schema"] == 1
+    for key in BLOCKS:
+        assert set(body[key]) == {"status", "reason", "source", "data"}
+    assert [body[k]["status"] for k in BLOCKS] == ["ok"] * 5 + ["pending"]
+    assert body["weather_summary"]["source"]["mode"] == "mock"
+    assert body["field"]["data"]["location_name"] == "Taquarituba, SP"
+
+
+def test_profile_feature_without_data_is_200(isolated_dirs, monkeypatch):
+    monkeypatch.setattr(nasapower_history, "fetch_daily_history", failing)
+    monkeypatch.setattr(soilgrids_client, "fetch_properties", soil_down)
+    feature = {"type": "Feature", "properties": {}, "geometry": square(-47.0, -21.0)}
+    r = client.post(PROFILE_URL, json={"field": feature})
+    assert r.status_code == 200
+    body = r.json()
+    assert [body[k]["status"] for k in BLOCKS] == ["ok", "unavailable", "unavailable", "unavailable",
+                                                     "unavailable", "pending"]
+
+
+@pytest.mark.parametrize("payload", [
+    {},
+    {"field": {"type": "Point", "coordinates": [0, 0]}},
+    {"field": {"type": "Polygon", "coordinates": [[[-49, -23], [-48.9, -23], [-48.9, -22.9], [-49, -22.9]]]}},
+    {"field": {"type": "Polygon", "coordinates": [[[-49.0 + i * 1e-5, -23.0 + (i % 7) * 1e-5] for i in range(1001)] + [[-49.0, -23.0]]]}},
+    {"field": {"type": "Polygon", "coordinates": [[[10**400, -23], [-48.9, -23], [-48.9, -22.9], [10**400, -23]]]}},
+    {"field": {"type": "Polygon", "coordinates": [[[-49, -23], [-48.3, -23], [-48.3, -22.9], [-49, -22.9], [-49, -23]]]}},
+])
+def test_profile_invalid_is_422(payload):
+    r = client.post(PROFILE_URL, json=payload)
+    assert r.status_code == 422 and r.json()["detail"]
+
+
+def test_profile_offline_real_slices_fast(offline_real_slices):
+    for lon, lat in ((-49.24, -23.53), (-48.88, -23.98), (-48.35, -24.01)):
+        t0 = time.perf_counter()
+        r = client.post(PROFILE_URL, json={"field": square(lon, lat)})
+        assert time.perf_counter() - t0 < 2
+        body = r.json()
+        assert r.status_code == 200
+        assert body["weather_summary"]["status"] == "ok" and body["weather_summary"]["source"]["mode"] == "mock"
+        assert body["soil"]["status"] == "ok"
+        assert body["planting"]["data"]["corn"]["crop"] == "corn"
+
+
+def test_soil_endpoint_unchanged_by_profile_refactor(offline_real_slices):
+    body = client.get(SQ).json()
+    assert set(body) == {"location", "mode", "depths", "profile", "source"}
+    assert body["mode"] == "mock" and body["source"]["api"].startswith("https://rest.isric.org")
+
+
+def keys_of(value, prefix=""):
+    """Caminhos de chaves de um JSON (listas entram pelo primeiro item)."""
+    out = set()
+    if isinstance(value, dict):
+        for k, v in value.items():
+            out.add(prefix + k)
+            out |= keys_of(v, prefix + k + ".")
+    elif isinstance(value, list) and value:
+        out |= keys_of(value[0], prefix + "[].")
+    return out
+
+
+def test_contract_file_matches_real_response(offline_real_slices):
+    contract = json.loads((Path(__file__).parents[2] / "docs" / "contract-field-profile.json").read_text(encoding="utf-8"))
+    r = client.post(PROFILE_URL, json={"field": FIELD1_GEOJSON})
+    assert keys_of(r.json()) == keys_of(contract)

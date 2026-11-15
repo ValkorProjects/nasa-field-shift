@@ -1,5 +1,4 @@
 """Perfil de solo: cache -> SoilGrids ao vivo -> slice offline (mock)."""
-import math
 import os
 import time
 from dataclasses import dataclass
@@ -9,7 +8,8 @@ from typing import Literal
 from datasets.clients.soilgrids import soilgrids_client
 from demo_points import find_demo_point
 from disk_cache import read_json, write_json_atomic
-from soil_profile import SoilProfile, build_profile, has_data
+from geo import haversine_km  # noqa: F401  (reexportado)
+from soil_profile import UNITS, SoilProfile, build_profile, has_data
 
 CACHE_DIR = Path(__file__).parent / "data" / "cache"
 DEMO_DIR = Path(__file__).parent / "data" / "demo" / "soil"
@@ -32,13 +32,6 @@ def neighbor_pause() -> float:
         return max(0.0, float(os.environ.get("SOILGRIDS_NEIGHBOR_PAUSE", "2")))
     except ValueError:
         return 2.0
-
-
-def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    p1, p2 = math.radians(lat1), math.radians(lat2)
-    a = (math.sin((p2 - p1) / 2) ** 2
-         + math.cos(p1) * math.cos(p2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2)
-    return 2 * 6371.0088 * math.asin(math.sqrt(a))
 
 
 def find_neighbor(lat: float, lon: float, fetch, pause: float | None = None):
@@ -188,3 +181,50 @@ def get_soil(lat: float, lon: float, fetcher=None) -> SoilResult:
     if no_data:
         raise SoilNoData("SoilGrids has no data for this location")
     raise SoilUnavailable("SoilGrids unavailable and no offline data for this point")
+
+
+SOIL_API_URL = "https://rest.isric.org/soilgrids/v2.0/properties/query"
+
+
+def soil_payload(result: SoilResult, lat: float, lon: float) -> dict:
+    """Corpo JSON de GET /api/soil (e do bloco `soil` do perfil do talhão)."""
+    p = result.profile
+    top = p.topsoil
+    note = "Complementary source, not NASA data. Modelled estimate, not a field measurement."
+    if result.sampling == "nearest_neighbor":
+        note += (" Requested pixel has no soil data (urban, water or rock);"
+                 " nearest pixel with data within ~1.6 km used.")
+    elif result.sampling == "curated_rural_pixel":
+        note += (" Requested demo point falls in an urban pixel masked by SoilGrids; values come"
+                 f" from a manually verified rural pixel {result.distance_km} km away and represent"
+                 " nearby farmland, not the town centre.")
+    return {
+        "location": {"lat": lat, "lon": lon},
+        "mode": result.mode,
+        "depths": {prop: {"unit": UNITS.get(prop), "values": values} for prop, values in p.depths.items()},
+        "profile": {
+            "depth": "0-30cm",
+            "method": "thickness-weighted mean of 0-5, 5-15, 15-30 cm",
+            "clay_pct": top.get("clay"),
+            "sand_pct": top.get("sand"),
+            "silt_pct": top.get("silt"),
+            "soc_g_kg": top.get("soc"),
+            "organic_matter_g_kg": p.organic_matter_g_kg,
+            "ph_h2o": top.get("phh2o"),
+            "texture_group": p.texture_group,
+            "texture_method": "Embrapa SiBCS textural groups",
+        },
+        "source": {
+            "dataset": "SoilGrids 2.0 (ISRIC)",
+            "url": "https://soilgrids.org/",
+            "api": SOIL_API_URL,
+            "resolution": "250 m",
+            "license": "CC-BY 4.0",
+            "attribution": "Poggio et al. (2021), SOIL 7, 217-240. ISRIC - World Soil Information",
+            "note": note,
+            "mode": result.mode,
+            "sampled_point": {"lat": result.sampled_lat, "lon": result.sampled_lon},
+            "distance_km": result.distance_km,
+            "sampling": result.sampling,
+        },
+    }

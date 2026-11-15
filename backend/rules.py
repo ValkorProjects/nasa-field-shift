@@ -166,3 +166,12 @@ def frequency_by_window(
         yrs = valid_years if covered is None else {y for y in valid_years if covered(y, smd, emd)}
         out.append(CalendarWindow(smd, emd, len(ys & yrs), len(yrs)))
     return out
+
+
+def has_valid_inputs(record: DailyRecord | None, event_type: str) -> bool:
+    """O dia tem as variáveis necessárias para o detector do tipo de evento?"""
+    if record is None:
+        return False
+    if event_type == "frost":
+        return record.t2m_min is not None
+    return record.t2m is not None and record.rh2m is not None

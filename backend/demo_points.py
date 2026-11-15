@@ -2,6 +2,8 @@
 from dataclasses import dataclass
 from datetime import date
 
+from geo import haversine_km
+
 
 @dataclass(frozen=True)
 class DemoPoint:
@@ -26,3 +28,9 @@ def find_demo_point(lat: float, lon: float, tol: float = 0.05) -> DemoPoint | No
         if abs(p.lat - lat) <= tol and abs(p.lon - lon) <= tol:
             return p
     return None
+
+
+def nearest_demo_point(lat: float, lon: float, max_km: float = 50.0) -> tuple[DemoPoint, float] | None:
+    """Ponto demo mais próximo dentro de `max_km`, com a distância em km."""
+    best = min(((p, haversine_km(lat, lon, p.lat, p.lon)) for p in DEMO_POINTS), key=lambda x: x[1])
+    return best if best[1] <= max_km else None

@@ -39,7 +39,7 @@ Current endpoints (NASA POWER, comma-separated `parameter`, e.g. `T2M,RH2M`):
 | `GET /nasapower/point` | values for one point and period (`parameter`, `longitude`, `latitude`, `year_start`…`day_end`) |
 | `GET /nasapower/plot` | daily series for the same query, at most 5 parameters |
 
-`GET /api/recommendation` (below) is not implemented yet (issues #4/#5); until then the front end uses its mock.
+`GET /api/recommendation` and `GET /api/soil` (see "Recommendation API" below) are implemented. `POST /api/field/profile` returns the data package for one field.
 
 **Front end + back end together:**
 
@@ -202,6 +202,19 @@ Endpoints used by the front end:
 4. `python -m scripts.build_soil_slice [--point slug] [--force]` - downloads the SoilGrids soil slices into `backend/data/demo/soil/` (pauses 15 s between points to respect the ISRIC rate limit)
 
 **`GET /api/soil?lat=&lon=`** - soil profile (clay, sand, silt, organic carbon, pH in water) for 0-5, 5-15 and 15-30 cm, plus a 0-30 cm summary and the textural group. **SoilGrids 2.0 by ISRIC - complementary source, not NASA data (CC-BY 4.0, 250 m, modelled estimate).** Same `mode` logic as above (cache `backend/data/cache/soilgrids_v1_*`, then live, then the slice in `backend/data/demo/soil/`). `SOILGRIDS_TIMEOUT` (seconds, default 20) controls the request timeout; `SOILGRIDS_NEIGHBOR_PAUSE` (seconds, default 2) is the pause between calls of the neighbor-pixel search (up to 8 extra calls within ~1.6 km, only when the requested pixel is masked and the point has no demo slice). `source.sampling` is `requested`, `nearest_neighbor` or `curated_rural_pixel`. Returns 404 when SoilGrids has no data for the point (water, urban, outside coverage) and 503 when it is unavailable and there is no slice.
+
+**`POST /api/field/profile`** - data package for one field (talhao). Body: `{ "field": <GeoJSON Polygon or Feature<Polygon>, [lon, lat] order, closed ring>, "name"?: string }` (`name` is accepted but ignored for now). Always 200 for a valid polygon; each block degrades on its own. Business rules (alerts, scores, strategies) live in the front end: the back end only returns data with provenance. Example response: [`docs/contract-field-profile.json`](docs/contract-field-profile.json) (generated with `FIELD_SHIFT_OFFLINE=1` for the sample Field 1).
+
+| Block | Content | Source |
+|---|---|---|
+| `field` | centroid, `area_ha`, bbox, `vertex_count`, `location_name` | computed from the polygon |
+| `weather_summary` | monthly totals (`by_year_month`) and `climatology` for 2015-2024 | NASA POWER |
+| `events` | calendar windows with frost / white-mold frequency (`years_hit` of `years_total`) | NASA POWER |
+| `planting` | `corn` and `soybean`, identical to `GET /api/recommendation` | NASA POWER |
+| `soil` | same body as `GET /api/soil` (without `source`, which moves to the block) | SoilGrids 2.0 (ISRIC) |
+| `terrain` | `pending`: elevation and slope are being integrated in issues #11/#12 (`terrain_block()` in `backend/field_profile.py` is the single place to fill) | NASA SRTM / NASADEM (planned) |
+
+Every block is `{ status, reason, source, data }`. `status` = `ok` · `unavailable` (source down, no slice, timeout or unexpected error) · `no_data` (soil only) · `pending` (terrain only); when not `ok`, `data` is `null` and `reason` explains why. Weather is read once and feeds `weather_summary`, `events` and `planting` (if it fails, all three are `unavailable`). If NASA POWER has nothing for the centroid, the nearest demo point within 50 km is used and `source` says so (`sampling: "nearest_demo_point"`, `sampled_point`, `distance_km`, `location_name`). Data read from an offline demo slice (`mode: "mock"`) is always reported this way, even when the field is next to the demo point; `sampling: "requested"` only means live/cache data for the field's own centroid, and `location_name` (also in `field`) is only set when the data comes from a demo point; soil has no such fallback. Weather and soil run in parallel with a budget of `FIELD_PROFILE_TIMEOUT_S` seconds (default 25); on timeout the block is `unavailable`; the slow query keeps running in the background and finishes by writing the cache, so a retry is fast. Invalid shapes return 422 with a readable `detail`: wrong type, holes, open ring, fewer than 4 positions, more than 1000 vertices, zero area, coordinates out of range, or an extent above 0.5 degrees. Limitation: self-intersecting polygons are not detected.
 
 **`mode`** tells where the data came from: `live` (NASA POWER just fetched), `cache` (a previous live response saved in `backend/data/cache/`) or `mock` (static offline slice of a demo point). Lookup order is cache, live, mock. Set `FIELD_SHIFT_OFFLINE=1` to skip the live call. Before a demo, make one warm-up call per point so the cache is filled. `NASA_POWER_TIMEOUT` (seconds, default 30) controls the request timeout.
 

@@ -4,7 +4,9 @@ from datetime import date, datetime, timedelta, timezone
 
 from climate_series import DailyRecord
 from crops import CROPS, CropProfile
-from rules import DETECTORS, FROST, WHITE_MOLD, EventPeriod, Threshold, frequency_by_window
+from rules import (
+    DETECTORS, FROST, WHITE_MOLD, EventPeriod, Threshold, frequency_by_window, has_valid_inputs,
+)
 
 RECOMMENDED_MAX = 0.10
 RISKY_MAX = 0.30
@@ -58,12 +60,7 @@ def classify(hits: int, total: int) -> str:
     return "avoid"
 
 
-def _valid(r: DailyRecord | None, event_type: str) -> bool:
-    if r is None:
-        return False
-    if event_type == "frost":
-        return r.t2m_min is not None
-    return r.t2m is not None and r.rh2m is not None
+_valid = has_valid_inputs
 
 
 def candidate_risks(

@@ -5,13 +5,14 @@ from datetime import date
 from typing import Literal
 
 from demo_points import HISTORY_END, HISTORY_START, find_demo_point
+from field_api import router as field_router
 from recommendation import recommend
-from soil import SoilNoData, SoilUnavailable, get_soil
-from soil_profile import UNITS
+from soil import SoilNoData, SoilUnavailable, get_soil, soil_payload
 from weather import WeatherUnavailable, get_weather
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.include_router(field_router)
 
 VALID_PARAMETERS = {v for k, v in vars(Parameters).items() if not k.startswith("_")}
 MAX_PLOT_PARAMETERS = 5  # the NASA plot endpoint rejects more than 5 parameters per request
@@ -168,7 +169,6 @@ def api_recommendation(
 
 SOIL_UNAVAILABLE_MSG = "SoilGrids unavailable and no offline data for this point"
 SOIL_NO_DATA_MSG = "SoilGrids has no data for this location (water, urban or outside coverage)"
-SOIL_API_URL = "https://rest.isric.org/soilgrids/v2.0/properties/query"
 
 
 @app.get("/api/soil")
@@ -182,43 +182,4 @@ def api_soil(
         raise HTTPException(status_code=404, detail=SOIL_NO_DATA_MSG)
     except SoilUnavailable:
         raise HTTPException(status_code=503, detail=SOIL_UNAVAILABLE_MSG)
-    p = result.profile
-    top = p.topsoil
-    note = "Complementary source, not NASA data. Modelled estimate, not a field measurement."
-    if result.sampling == "nearest_neighbor":
-        note += (" Requested pixel has no soil data (urban, water or rock);"
-                 " nearest pixel with data within ~1.6 km used.")
-    elif result.sampling == "curated_rural_pixel":
-        note += (" Requested demo point falls in an urban pixel masked by SoilGrids; values come"
-                 f" from a manually verified rural pixel {result.distance_km} km away and represent"
-                 " nearby farmland, not the town centre.")
-    return {
-        "location": {"lat": lat, "lon": lon},
-        "mode": result.mode,
-        "depths": {prop: {"unit": UNITS.get(prop), "values": values} for prop, values in p.depths.items()},
-        "profile": {
-            "depth": "0-30cm",
-            "method": "thickness-weighted mean of 0-5, 5-15, 15-30 cm",
-            "clay_pct": top.get("clay"),
-            "sand_pct": top.get("sand"),
-            "silt_pct": top.get("silt"),
-            "soc_g_kg": top.get("soc"),
-            "organic_matter_g_kg": p.organic_matter_g_kg,
-            "ph_h2o": top.get("phh2o"),
-            "texture_group": p.texture_group,
-            "texture_method": "Embrapa SiBCS textural groups",
-        },
-        "source": {
-            "dataset": "SoilGrids 2.0 (ISRIC)",
-            "url": "https://soilgrids.org/",
-            "api": SOIL_API_URL,
-            "resolution": "250 m",
-            "license": "CC-BY 4.0",
-            "attribution": "Poggio et al. (2021), SOIL 7, 217-240. ISRIC - World Soil Information",
-            "note": note,
-            "mode": result.mode,
-            "sampled_point": {"lat": result.sampled_lat, "lon": result.sampled_lon},
-            "distance_km": result.distance_km,
-            "sampling": result.sampling,
-        },
-    }
+    return soil_payload(result, lat, lon)
