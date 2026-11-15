@@ -70,7 +70,9 @@ def _read_mock(lat: float, lon: float, start: date, end: date) -> list[DailyReco
     return records or None
 
 
-def get_weather(lat: float, lon: float, start: date, end: date, fetcher=None) -> WeatherResult:
+def get_weather(lat: float, lon: float, start: date, end: date, fetcher=None,
+                offline_ok: bool = True) -> WeatherResult:
+    """offline_ok=False (modo explorar, #39): só cache e ao vivo; nunca o slice offline nem FIELD_SHIFT_OFFLINE."""
     def result(records, mode):
         return WeatherResult(records, mode, lat, lon, start, end)
 
@@ -79,7 +81,7 @@ def get_weather(lat: float, lon: float, start: date, end: date, fetcher=None) ->
     if cached is not None:
         return result(cached, "cache")
 
-    if os.environ.get("FIELD_SHIFT_OFFLINE") != "1":
+    if not offline_ok or os.environ.get("FIELD_SHIFT_OFFLINE") != "1":
         fetch = fetcher or nasapower_history.fetch_daily_history
         raw = None
         try:
@@ -91,7 +93,9 @@ def get_weather(lat: float, lon: float, start: date, end: date, fetcher=None) ->
             _write_cache(path, raw)
             return result(records, "live")
 
-    mock = _read_mock(lat, lon, start, end)
+    mock = _read_mock(lat, lon, start, end) if offline_ok else None
     if mock is not None:
         return result(mock, "mock")
+    if not offline_ok:
+        raise WeatherUnavailable("NASA POWER unavailable (exploratory mode uses live data only)")
     raise WeatherUnavailable("NASA POWER unavailable and no offline data for this point/period")

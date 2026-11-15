@@ -141,14 +141,15 @@ def _read_cache(path: Path, lat: float, lon: float) -> SoilResult | None:
     return None if profile is None else SoilResult(profile, "cache", lat, lon, *sampled, sampling)
 
 
-def get_soil(lat: float, lon: float, fetcher=None) -> SoilResult:
+def get_soil(lat: float, lon: float, fetcher=None, offline_ok: bool = True) -> SoilResult:
+    """offline_ok=False (modo explorar, #39): só cache e ao vivo; nunca o slice offline nem FIELD_SHIFT_OFFLINE."""
     path = _cache_path(lat, lon)
     from_cache = _read_cache(path, lat, lon)
     if from_cache is not None:
         return from_cache
 
     no_data = False
-    if os.environ.get("FIELD_SHIFT_OFFLINE") != "1":
+    if not offline_ok or os.environ.get("FIELD_SHIFT_OFFLINE") != "1":
         fetch = fetcher or soilgrids_client.fetch_properties
         rlat, rlon = round(lat, 2), round(lon, 2)  # mesma precisao da chave de cache
         try:
@@ -162,7 +163,7 @@ def get_soil(lat: float, lon: float, fetcher=None) -> SoilResult:
                                          "sampling": "requested"})
                 return SoilResult(profile, "live", lat, lon, lat, lon, 0.0, "requested")
             no_data = True  # resposta valida, mas todas as camadas nulas
-            if _read_mock(lat, lon) is None:  # ponto do demo com slice: vai direto ao mock (sem busca)
+            if not offline_ok or _read_mock(lat, lon) is None:  # ponto do demo com slice: vai direto ao mock (sem busca)
                 try:
                     found = find_neighbor(rlat, rlon, fetch)
                 except soilgrids_client.SoilGridsError:
@@ -175,11 +176,13 @@ def get_soil(lat: float, lon: float, fetcher=None) -> SoilResult:
                                              "sampling": "nearest_neighbor"})
                     return SoilResult(nprofile, "live", lat, lon, nlat, nlon, dist, "nearest_neighbor")
 
-    mock = _read_mock(lat, lon)
+    mock = _read_mock(lat, lon) if offline_ok else None
     if mock is not None:
         return SoilResult(mock[0], "mock", lat, lon, *mock[1:])
     if no_data:
         raise SoilNoData("SoilGrids has no data for this location")
+    if not offline_ok:
+        raise SoilUnavailable("SoilGrids unavailable (exploratory mode uses live data only)")
     raise SoilUnavailable("SoilGrids unavailable and no offline data for this point")
 
 

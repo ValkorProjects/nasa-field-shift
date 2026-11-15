@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -6,6 +6,8 @@ from pydantic import BaseModel, Field
 class FieldProfileRequest(BaseModel):
     field: dict[str, Any]
     name: str | None = Field(None, max_length=80)
+    # "mvp" (padrão): só Itaberá e Itapeva, pode usar os dados baixados. "explore": Brasil, só dados ao vivo (#39).
+    scope: Literal["mvp", "explore"] = "mvp"
 
 
 MAX_ELEVATION_POINTS = 5  # OpenTopoData's public API allows ~100 per call, 1000 calls/day

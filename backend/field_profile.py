@@ -8,6 +8,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FutureTimeout
 from datetime import date, datetime, timezone
+from functools import partial
 
 from climate_summary import area_events, climatology, monthly_summary
 from demo_points import HISTORY_END, HISTORY_START, find_demo_point, nearest_demo_point
@@ -27,6 +28,8 @@ except ValueError:
 
 WEATHER_UNAVAILABLE = "NASA POWER unavailable and no offline data for this point/period"
 SOIL_UNAVAILABLE = "SoilGrids unavailable and no offline data for this point"
+WEATHER_LIVE_ONLY = "NASA POWER unavailable (exploratory mode uses live data only, no downloaded data)"
+SOIL_LIVE_ONLY = "SoilGrids unavailable (exploratory mode uses live data only, no downloaded data)"
 SOIL_NO_DATA = "SoilGrids has no data for this location (water, urban or outside coverage)"
 UNEXPECTED = "Unexpected error while reading this data source"
 TIMED_OUT = "Data source timed out; try again, the result will be cached"
@@ -54,13 +57,18 @@ def _all_weather(reason: str) -> dict:
     return {k: not_ok("unavailable", reason, WEATHER_SOURCE) for k in WEATHER_KEYS}
 
 
-def weather_blocks(geom: FieldGeometry, today: date, weather_fn=get_weather) -> dict:
-    """Uma única leitura de clima alimenta weather_summary, events e planting."""
+def weather_blocks(geom: FieldGeometry, today: date, weather_fn=get_weather, offline_ok: bool = True) -> dict:
+    """Uma única leitura de clima alimenta weather_summary, events e planting.
+
+    offline_ok=False (modo explorar, #39): sem slice offline e sem o ponto de demo mais próximo.
+    """
     lat, lon = geom.centroid_lat, geom.centroid_lon
     fallback = False
     try:
         result = weather_fn(lat, lon, HISTORY_START, HISTORY_END)
     except WeatherUnavailable:
+        if not offline_ok:
+            return _all_weather(WEATHER_LIVE_ONLY)
         near = nearest_demo_point(lat, lon)
         if near is None:
             return _all_weather(WEATHER_UNAVAILABLE)
@@ -106,14 +114,14 @@ def weather_blocks(geom: FieldGeometry, today: date, weather_fn=get_weather) -> 
     }
 
 
-def soil_block(geom: FieldGeometry, soil_fn=get_soil) -> dict:
+def soil_block(geom: FieldGeometry, soil_fn=get_soil, offline_ok: bool = True) -> dict:
     lat, lon = geom.centroid_lat, geom.centroid_lon
     try:
         result = soil_fn(lat, lon)
     except SoilNoData:
         return not_ok("no_data", SOIL_NO_DATA, SOIL_SOURCE)
     except SoilUnavailable:
-        return not_ok("unavailable", SOIL_UNAVAILABLE, SOIL_SOURCE)
+        return not_ok("unavailable", SOIL_UNAVAILABLE if offline_ok else SOIL_LIVE_ONLY, SOIL_SOURCE)
     payload = soil_payload(result, lat, lon)
     source = payload.pop("source")
     return ok(payload, source)
@@ -140,19 +148,23 @@ def _field_block(geom: FieldGeometry, location_name: str | None) -> dict:
 
 
 def build_field_profile(geom: FieldGeometry, today: date, *, weather_fn=get_weather,
-                        soil_fn=get_soil, timeout: float | None = None) -> dict:
+                        soil_fn=get_soil, timeout: float | None = None, scope: str = "mvp") -> dict:
+    """scope "mvp": cache, ao vivo e os slices offline do demo. scope "explore" (#39): só cache e ao vivo."""
     budget = BLOCK_TIMEOUT_S if timeout is None else timeout
+    offline_ok = scope != "explore"
+    if not offline_ok:
+        weather_fn, soil_fn = partial(weather_fn, offline_ok=False), partial(soil_fn, offline_ok=False)
 
     def run_weather():
         try:
-            return weather_blocks(geom, today, weather_fn)
+            return weather_blocks(geom, today, weather_fn, offline_ok)
         except Exception as exc:
             log.warning("field profile weather failed: %s", type(exc).__name__)
             return _all_weather(UNEXPECTED)
 
     def run_soil():
         try:
-            return soil_block(geom, soil_fn)
+            return soil_block(geom, soil_fn, offline_ok)
         except Exception as exc:
             log.warning("field profile soil failed: %s", type(exc).__name__)
             return not_ok("unavailable", UNEXPECTED, SOIL_SOURCE)
@@ -175,6 +187,7 @@ def build_field_profile(geom: FieldGeometry, today: date, *, weather_fn=get_weat
     wsrc = weather["weather_summary"]["source"] or {}
     return {
         "schema": SCHEMA_VERSION,
+        "scope": scope,
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "field": _field_block(geom, wsrc.get("location_name")),
         **weather,

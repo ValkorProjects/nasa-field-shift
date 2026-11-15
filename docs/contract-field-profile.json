@@ -1,5 +1,6 @@
 {
   "schema": 1,
+  "scope": "mvp",
   "generated_at": "2026-11-15T17:16:01Z",
   "field": {
     "status": "ok",
