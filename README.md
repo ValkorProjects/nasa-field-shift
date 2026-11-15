@@ -184,3 +184,41 @@ All thresholds and the Good/OK/Poor ratings are sample values and must be valida
 ---
 
 Prototype made with AI assistance. Images are illustrative, not AI-generated.
+
+---
+
+# Recommendation API
+
+Endpoints used by the front end:
+
+- `GET /api/recommendation?lat=&lon=&crop=corn|soybean` - best planting windows plus critical events.
+- `GET /api/weather?lat=&lon=&start=YYYY-MM-DD&end=YYYY-MM-DD` - daily NASA POWER series (`null` = no data).
+
+**Run / test** (from `backend/`):
+
+1. `pip install -r requirements-dev.txt`
+2. `pytest` (no network needed)
+3. `python -m scripts.build_demo_slice [--point slug] [--force]` - downloads the offline slices into `backend/data/demo/`
+
+**`mode`** tells where the data came from: `live` (NASA POWER just fetched), `cache` (a previous live response saved in `backend/data/cache/`) or `mock` (static offline slice of a demo point). Lookup order is cache, live, mock. Set `FIELD_SHIFT_OFFLINE=1` to skip the live call. Before a demo, make one warm-up call per point so the cache is filled. `NASA_POWER_TIMEOUT` (seconds, default 30) controls the request timeout.
+
+**"Forecast" = climatological risk.** The recommendation is the frequency of past events (2015-2024) for each planting date during the crop's critical stage. It is not a weather forecast.
+
+## Thresholds and sources
+
+- Frost / cold: daily minimum temperature at 2 m <= 3 C (Embrapa: damage begins with shelter air < 3 C because the surface is 3-6 C colder). Indirect reference, not specific to corn.
+  - https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/909515/1/95103GEADA.pdf
+  - https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/927281/1/Climaepoca.pdf
+- White mold: 3+ consecutive days with mean temperature 15-22 C and relative humidity >= 85 %.
+  - https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1094445/1/CT140mofobrancoOL.pdf
+  - https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1147086/1/Circ-Tec-189.pdf
+
+## Mocked / hardcoded
+
+- Crop cycles (days after planting): corn flowering/grain filling 60-110, soybean R1-R3 45-75.
+- Risk cut-offs: <= 10 % recommended, <= 30 % risky, above that avoid.
+- White mold rule (3 days / 85 % / 15-22 C) is a project heuristic.
+- Sowing windows: corn Jan 1 - Apr 30 (second crop), soybean Sep 1 - Dec 31.
+- Demo points: Taquarituba, Itapeva and Capao Bonito (SP).
+- `mock` mode serves a static slice of real NASA POWER data fetched once with `build_demo_slice`.
+- Fixed analysis period 2015-2024.
