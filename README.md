@@ -193,6 +193,7 @@ The Costs screens (`/field/1/costs`, `/field/1/costs/big-picture`) and the money
 
 ### Rules computed in the front end
 
+- **The 3 plans follow the farmer's crops** (`src/data/strategies.js`): the current plan is the summer and second crop the farmer chose. Options A and B are the crops our São Paulo catalog lists after that summer crop (`public/data/crop-catalog.json`, built from `backend/data/crops/` by `node scripts/build-crop-catalog-json.cjs`), documented pairs first. Each one shows its evidence status ("Documented" or "Hypothesis to validate") and the reference link. A cover crop fills the list when the catalog has fewer than 2 options. Only corn, wheat and the cover crop have RollCrop rules (rain/frost rows, Good/OK/Poor fit); any other crop is **Not rated**, with no invented scores, and is left out of "Best for you". The ranking needs at least 2 rated plans. The nitrogen row follows the plan's legumes (crop knowledge).
 - **Best for you:** Σ (Good=2, OK=1, Poor=0) × weight of the farmer's priority order (4-3-2-1). Re-ranked live on the Priorities screen.
 - **How sure are we?:** count of passed checks in `confidence.rules`: 4 = High, 2–3 = Medium, 0–1 = Low.
 

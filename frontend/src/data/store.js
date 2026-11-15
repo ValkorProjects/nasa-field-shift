@@ -5,6 +5,7 @@ import { apiMode, getFieldProfile } from '@/api/index.js'
 import { farm, selected, toFeature, geomKey, areaHa, fieldScope } from './fields.js'
 import { toFieldData } from './profileAdapter.js'
 import { fieldStatus } from './rules.js'
+import { withPlans, loadCatalog } from './strategies.js'
 
 // Profile of each field (POST /api/field/profile):
 //   { [fieldId]: { status: 'loading'|'ready'|'error', error, geom, profile } }
@@ -28,7 +29,12 @@ export const state = reactive({
   layer: 'photo'
 })
 
+// The 3 plans follow the farmer's crops (strategies.js); everything else comes from the sample or the profile.
 function dataFor(id) {
+  return withPlans(baseDataFor(id), state.crops)
+}
+
+function baseDataFor(id) {
   const sample = toRaw(sampleRef.value)
   if (!sample) return null
   const f = farm.fields.find((x) => x.id === id)
@@ -53,6 +59,7 @@ async function tryJson(url) {
 // Real data (field-1.json) wins; falls back to field-1.sample.json.
 export async function loadSample(id = '1') {
   state.loading = true
+  loadCatalog() // crop catalog for the alternative plans (optional)
   try {
     let data
     try {
@@ -143,6 +150,7 @@ export function scoreStrategies(order = state.order) {
   if (!d) return []
   const { weights, points } = d.priorities
   return d.strategies
+    .filter((s) => s.fit) // plans without RollCrop rules are "Not rated" and never ranked
     .map((s) => ({
       id: s.id,
       score: order.reduce((sum, p, i) => sum + (points[s.fit[p]] ?? 0) * (weights[i] ?? 0), 0)
@@ -150,12 +158,14 @@ export function scoreStrategies(order = state.order) {
     .sort((a, b) => b.score - a.score)
 }
 
-export const bestId = computed(() => scoreStrategies()[0]?.id)
+// A ranking needs at least 2 rated plans ("Not rated" plans are left out).
+const ranked = (order) => { const r = scoreStrategies(order); return r.length >= 2 ? r[0].id : undefined }
+export const bestId = computed(() => ranked())
 
 // What would win if "income" were moved to the top of the current order.
 export const bestIfIncomeFirst = computed(() => {
   const order = ['income', ...state.order.filter((p) => p !== 'income')]
-  return scoreStrategies(order)[0]?.id
+  return ranked(order)
 })
 
 export const strategy = (id) => state.data?.strategies.find((s) => s.id === id)
