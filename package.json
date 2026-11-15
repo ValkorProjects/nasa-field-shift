@@ -5,6 +5,7 @@
   "scripts": {
     "setup": "npm --prefix frontend install",
     "dev": "npm --prefix frontend run dev",
+    "dev:mock": "npm --prefix frontend run dev:mock",
     "dev:api": "npm --prefix frontend run dev:api",
     "build": "npm --prefix frontend run build"
   }
