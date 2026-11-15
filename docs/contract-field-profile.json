@@ -1,0 +1,1840 @@
+{
+  "schema": 1,
+  "generated_at": "2026-11-15T17:16:01Z",
+  "field": {
+    "status": "ok",
+    "reason": null,
+    "source": {
+      "dataset": "field boundary drawn by the user",
+      "mode": "computed"
+    },
+    "data": {
+      "centroid": {
+        "lat": -23.5393,
+        "lon": -49.22971
+      },
+      "area_ha": 26.24,
+      "bbox": [
+        -49.23343,
+        -23.54219,
+        -49.22559,
+        -23.53639
+      ],
+      "vertex_count": 5,
+      "location_name": "Taquarituba, SP"
+    }
+  },
+  "weather_summary": {
+    "status": "ok",
+    "reason": null,
+    "source": {
+      "dataset": "NASA POWER",
+      "url": "https://power.larc.nasa.gov/",
+      "parameters": [
+        "T2M_MIN",
+        "T2M",
+        "RH2M",
+        "PRECTOTCORR"
+      ],
+      "period": "2015–2024",
+      "resolution": "0.5° × 0.625° (~50 km)",
+      "mode": "mock",
+      "sampled_point": {
+        "lat": -23.53,
+        "lon": -49.24
+      },
+      "distance_km": 1.5,
+      "sampling": "nearest_demo_point",
+      "note": "Past records, not a forecast.",
+      "location_name": "Taquarituba, SP"
+    },
+    "data": {
+      "frost_tmin_max_c": 3.0,
+      "by_year_month": [
+        {
+          "year": 2015,
+          "month": 1,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 119.9,
+          "t2m_mean": 25.7,
+          "t2m_min_mean": 20.9,
+          "t2m_min_abs": 18.2,
+          "frost_days": 0
+        },
+        {
+          "year": 2015,
+          "month": 2,
+          "days": 28,
+          "valid_days": 28,
+          "prcp_mm": 196.8,
+          "t2m_mean": 24.2,
+          "t2m_min_mean": 20.0,
+          "t2m_min_abs": 17.6,
+          "frost_days": 0
+        },
+        {
+          "year": 2015,
+          "month": 3,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 173.9,
+          "t2m_mean": 23.0,
+          "t2m_min_mean": 19.0,
+          "t2m_min_abs": 16.6,
+          "frost_days": 0
+        },
+        {
+          "year": 2015,
+          "month": 4,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 61.2,
+          "t2m_mean": 21.2,
+          "t2m_min_mean": 16.8,
+          "t2m_min_abs": 13.5,
+          "frost_days": 0
+        },
+        {
+          "year": 2015,
+          "month": 5,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 84.3,
+          "t2m_mean": 18.6,
+          "t2m_min_mean": 14.6,
+          "t2m_min_abs": 10.8,
+          "frost_days": 0
+        },
+        {
+          "year": 2015,
+          "month": 6,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 9.4,
+          "t2m_mean": 17.5,
+          "t2m_min_mean": 12.9,
+          "t2m_min_abs": 9.7,
+          "frost_days": 0
+        },
+        {
+          "year": 2015,
+          "month": 7,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 101.0,
+          "t2m_mean": 17.6,
+          "t2m_min_mean": 13.2,
+          "t2m_min_abs": 7.9,
+          "frost_days": 0
+        },
+        {
+          "year": 2015,
+          "month": 8,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 34.8,
+          "t2m_mean": 19.7,
+          "t2m_min_mean": 13.5,
+          "t2m_min_abs": 10.7,
+          "frost_days": 0
+        },
+        {
+          "year": 2015,
+          "month": 9,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 166.2,
+          "t2m_mean": 22.0,
+          "t2m_min_mean": 16.3,
+          "t2m_min_abs": 11.4,
+          "frost_days": 0
+        },
+        {
+          "year": 2015,
+          "month": 10,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 165.8,
+          "t2m_mean": 23.2,
+          "t2m_min_mean": 17.8,
+          "t2m_min_abs": 14.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2015,
+          "month": 11,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 278.3,
+          "t2m_mean": 23.6,
+          "t2m_min_mean": 19.1,
+          "t2m_min_abs": 15.8,
+          "frost_days": 0
+        },
+        {
+          "year": 2015,
+          "month": 12,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 262.9,
+          "t2m_mean": 24.2,
+          "t2m_min_mean": 20.4,
+          "t2m_min_abs": 15.9,
+          "frost_days": 0
+        },
+        {
+          "year": 2016,
+          "month": 1,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 254.4,
+          "t2m_mean": 23.7,
+          "t2m_min_mean": 19.6,
+          "t2m_min_abs": 16.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2016,
+          "month": 2,
+          "days": 29,
+          "valid_days": 29,
+          "prcp_mm": 196.3,
+          "t2m_mean": 24.6,
+          "t2m_min_mean": 21.0,
+          "t2m_min_abs": 17.4,
+          "frost_days": 0
+        },
+        {
+          "year": 2016,
+          "month": 3,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 129.5,
+          "t2m_mean": 23.2,
+          "t2m_min_mean": 19.0,
+          "t2m_min_abs": 16.4,
+          "frost_days": 0
+        },
+        {
+          "year": 2016,
+          "month": 4,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 35.5,
+          "t2m_mean": 23.3,
+          "t2m_min_mean": 18.5,
+          "t2m_min_abs": 9.4,
+          "frost_days": 0
+        },
+        {
+          "year": 2016,
+          "month": 5,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 161.5,
+          "t2m_mean": 18.0,
+          "t2m_min_mean": 14.0,
+          "t2m_min_abs": 7.8,
+          "frost_days": 0
+        },
+        {
+          "year": 2016,
+          "month": 6,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 96.9,
+          "t2m_mean": 14.7,
+          "t2m_min_mean": 10.1,
+          "t2m_min_abs": 0.6,
+          "frost_days": 2
+        },
+        {
+          "year": 2016,
+          "month": 7,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 27.7,
+          "t2m_mean": 16.3,
+          "t2m_min_mean": 11.1,
+          "t2m_min_abs": 5.3,
+          "frost_days": 0
+        },
+        {
+          "year": 2016,
+          "month": 8,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 101.6,
+          "t2m_mean": 18.1,
+          "t2m_min_mean": 12.6,
+          "t2m_min_abs": 6.2,
+          "frost_days": 0
+        },
+        {
+          "year": 2016,
+          "month": 9,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 29.5,
+          "t2m_mean": 18.5,
+          "t2m_min_mean": 12.5,
+          "t2m_min_abs": 5.7,
+          "frost_days": 0
+        },
+        {
+          "year": 2016,
+          "month": 10,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 144.6,
+          "t2m_mean": 21.3,
+          "t2m_min_mean": 16.0,
+          "t2m_min_abs": 10.5,
+          "frost_days": 0
+        },
+        {
+          "year": 2016,
+          "month": 11,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 69.6,
+          "t2m_mean": 22.5,
+          "t2m_min_mean": 16.7,
+          "t2m_min_abs": 11.7,
+          "frost_days": 0
+        },
+        {
+          "year": 2016,
+          "month": 12,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 135.2,
+          "t2m_mean": 24.1,
+          "t2m_min_mean": 19.1,
+          "t2m_min_abs": 14.5,
+          "frost_days": 0
+        },
+        {
+          "year": 2017,
+          "month": 1,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 301.7,
+          "t2m_mean": 24.2,
+          "t2m_min_mean": 20.5,
+          "t2m_min_abs": 18.5,
+          "frost_days": 0
+        },
+        {
+          "year": 2017,
+          "month": 2,
+          "days": 28,
+          "valid_days": 28,
+          "prcp_mm": 90.8,
+          "t2m_mean": 25.0,
+          "t2m_min_mean": 20.5,
+          "t2m_min_abs": 17.9,
+          "frost_days": 0
+        },
+        {
+          "year": 2017,
+          "month": 3,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 99.0,
+          "t2m_mean": 23.3,
+          "t2m_min_mean": 19.3,
+          "t2m_min_abs": 15.2,
+          "frost_days": 0
+        },
+        {
+          "year": 2017,
+          "month": 4,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 131.8,
+          "t2m_mean": 20.4,
+          "t2m_min_mean": 16.2,
+          "t2m_min_abs": 9.9,
+          "frost_days": 0
+        },
+        {
+          "year": 2017,
+          "month": 5,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 186.0,
+          "t2m_mean": 19.6,
+          "t2m_min_mean": 15.6,
+          "t2m_min_abs": 12.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2017,
+          "month": 6,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 137.2,
+          "t2m_mean": 17.0,
+          "t2m_min_mean": 12.6,
+          "t2m_min_abs": 4.5,
+          "frost_days": 0
+        },
+        {
+          "year": 2017,
+          "month": 7,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 0.8,
+          "t2m_mean": 15.7,
+          "t2m_min_mean": 11.1,
+          "t2m_min_abs": 4.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2017,
+          "month": 8,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 66.9,
+          "t2m_mean": 17.8,
+          "t2m_min_mean": 12.8,
+          "t2m_min_abs": 9.4,
+          "frost_days": 0
+        },
+        {
+          "year": 2017,
+          "month": 9,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 14.4,
+          "t2m_mean": 21.7,
+          "t2m_min_mean": 15.0,
+          "t2m_min_abs": 11.9,
+          "frost_days": 0
+        },
+        {
+          "year": 2017,
+          "month": 10,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 179.2,
+          "t2m_mean": 22.7,
+          "t2m_min_mean": 17.2,
+          "t2m_min_abs": 11.3,
+          "frost_days": 0
+        },
+        {
+          "year": 2017,
+          "month": 11,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 198.1,
+          "t2m_mean": 22.0,
+          "t2m_min_mean": 16.4,
+          "t2m_min_abs": 12.5,
+          "frost_days": 0
+        },
+        {
+          "year": 2017,
+          "month": 12,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 210.9,
+          "t2m_mean": 24.1,
+          "t2m_min_mean": 19.3,
+          "t2m_min_abs": 16.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2018,
+          "month": 1,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 217.6,
+          "t2m_mean": 23.5,
+          "t2m_min_mean": 19.6,
+          "t2m_min_abs": 16.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2018,
+          "month": 2,
+          "days": 28,
+          "valid_days": 28,
+          "prcp_mm": 106.1,
+          "t2m_mean": 22.9,
+          "t2m_min_mean": 18.4,
+          "t2m_min_abs": 16.2,
+          "frost_days": 0
+        },
+        {
+          "year": 2018,
+          "month": 3,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 213.1,
+          "t2m_mean": 24.4,
+          "t2m_min_mean": 20.4,
+          "t2m_min_abs": 17.7,
+          "frost_days": 0
+        },
+        {
+          "year": 2018,
+          "month": 4,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 18.5,
+          "t2m_mean": 21.6,
+          "t2m_min_mean": 17.2,
+          "t2m_min_abs": 13.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2018,
+          "month": 5,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 28.6,
+          "t2m_mean": 18.7,
+          "t2m_min_mean": 14.3,
+          "t2m_min_abs": 7.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2018,
+          "month": 6,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 32.7,
+          "t2m_mean": 17.8,
+          "t2m_min_mean": 13.6,
+          "t2m_min_abs": 8.9,
+          "frost_days": 0
+        },
+        {
+          "year": 2018,
+          "month": 7,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 13.8,
+          "t2m_mean": 18.3,
+          "t2m_min_mean": 12.6,
+          "t2m_min_abs": 7.0,
+          "frost_days": 0
+        },
+        {
+          "year": 2018,
+          "month": 8,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 105.0,
+          "t2m_mean": 17.1,
+          "t2m_min_mean": 11.6,
+          "t2m_min_abs": 5.7,
+          "frost_days": 0
+        },
+        {
+          "year": 2018,
+          "month": 9,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 86.0,
+          "t2m_mean": 20.5,
+          "t2m_min_mean": 15.0,
+          "t2m_min_abs": 9.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2018,
+          "month": 10,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 173.6,
+          "t2m_mean": 22.0,
+          "t2m_min_mean": 16.9,
+          "t2m_min_abs": 12.3,
+          "frost_days": 0
+        },
+        {
+          "year": 2018,
+          "month": 11,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 112.1,
+          "t2m_mean": 23.1,
+          "t2m_min_mean": 17.6,
+          "t2m_min_abs": 13.7,
+          "frost_days": 0
+        },
+        {
+          "year": 2018,
+          "month": 12,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 110.0,
+          "t2m_mean": 25.4,
+          "t2m_min_mean": 19.5,
+          "t2m_min_abs": 12.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2019,
+          "month": 1,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 157.4,
+          "t2m_mean": 26.1,
+          "t2m_min_mean": 21.3,
+          "t2m_min_abs": 19.8,
+          "frost_days": 0
+        },
+        {
+          "year": 2019,
+          "month": 2,
+          "days": 28,
+          "valid_days": 28,
+          "prcp_mm": 173.2,
+          "t2m_mean": 24.4,
+          "t2m_min_mean": 19.9,
+          "t2m_min_abs": 17.3,
+          "frost_days": 0
+        },
+        {
+          "year": 2019,
+          "month": 3,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 98.7,
+          "t2m_mean": 23.7,
+          "t2m_min_mean": 19.6,
+          "t2m_min_abs": 16.6,
+          "frost_days": 0
+        },
+        {
+          "year": 2019,
+          "month": 4,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 88.2,
+          "t2m_mean": 22.8,
+          "t2m_min_mean": 18.1,
+          "t2m_min_abs": 14.2,
+          "frost_days": 0
+        },
+        {
+          "year": 2019,
+          "month": 5,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 64.3,
+          "t2m_mean": 20.9,
+          "t2m_min_mean": 16.5,
+          "t2m_min_abs": 10.3,
+          "frost_days": 0
+        },
+        {
+          "year": 2019,
+          "month": 6,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 64.1,
+          "t2m_mean": 18.6,
+          "t2m_min_mean": 13.9,
+          "t2m_min_abs": 9.4,
+          "frost_days": 0
+        },
+        {
+          "year": 2019,
+          "month": 7,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 72.1,
+          "t2m_mean": 16.8,
+          "t2m_min_mean": 11.4,
+          "t2m_min_abs": 1.4,
+          "frost_days": 1
+        },
+        {
+          "year": 2019,
+          "month": 8,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 5.8,
+          "t2m_mean": 18.6,
+          "t2m_min_mean": 12.6,
+          "t2m_min_abs": 7.6,
+          "frost_days": 0
+        },
+        {
+          "year": 2019,
+          "month": 9,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 65.7,
+          "t2m_mean": 22.1,
+          "t2m_min_mean": 15.7,
+          "t2m_min_abs": 11.2,
+          "frost_days": 0
+        },
+        {
+          "year": 2019,
+          "month": 10,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 34.4,
+          "t2m_mean": 25.1,
+          "t2m_min_mean": 17.8,
+          "t2m_min_abs": 14.4,
+          "frost_days": 0
+        },
+        {
+          "year": 2019,
+          "month": 11,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 200.4,
+          "t2m_mean": 24.1,
+          "t2m_min_mean": 17.9,
+          "t2m_min_abs": 12.8,
+          "frost_days": 0
+        },
+        {
+          "year": 2019,
+          "month": 12,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 115.0,
+          "t2m_mean": 24.4,
+          "t2m_min_mean": 18.9,
+          "t2m_min_abs": 15.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2020,
+          "month": 1,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 121.1,
+          "t2m_mean": 25.1,
+          "t2m_min_mean": 19.7,
+          "t2m_min_abs": 16.4,
+          "frost_days": 0
+        },
+        {
+          "year": 2020,
+          "month": 2,
+          "days": 29,
+          "valid_days": 29,
+          "prcp_mm": 178.6,
+          "t2m_mean": 23.8,
+          "t2m_min_mean": 19.2,
+          "t2m_min_abs": 15.3,
+          "frost_days": 0
+        },
+        {
+          "year": 2020,
+          "month": 3,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 45.0,
+          "t2m_mean": 23.2,
+          "t2m_min_mean": 17.9,
+          "t2m_min_abs": 14.9,
+          "frost_days": 0
+        },
+        {
+          "year": 2020,
+          "month": 4,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 25.3,
+          "t2m_mean": 21.1,
+          "t2m_min_mean": 15.1,
+          "t2m_min_abs": 8.4,
+          "frost_days": 0
+        },
+        {
+          "year": 2020,
+          "month": 5,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 41.5,
+          "t2m_mean": 17.9,
+          "t2m_min_mean": 11.8,
+          "t2m_min_abs": 5.5,
+          "frost_days": 0
+        },
+        {
+          "year": 2020,
+          "month": 6,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 129.4,
+          "t2m_mean": 18.9,
+          "t2m_min_mean": 14.2,
+          "t2m_min_abs": 11.0,
+          "frost_days": 0
+        },
+        {
+          "year": 2020,
+          "month": 7,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 28.9,
+          "t2m_mean": 18.1,
+          "t2m_min_mean": 12.2,
+          "t2m_min_abs": 6.4,
+          "frost_days": 0
+        },
+        {
+          "year": 2020,
+          "month": 8,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 103.3,
+          "t2m_mean": 18.5,
+          "t2m_min_mean": 13.1,
+          "t2m_min_abs": 5.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2020,
+          "month": 9,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 23.8,
+          "t2m_mean": 23.5,
+          "t2m_min_mean": 16.5,
+          "t2m_min_abs": 12.2,
+          "frost_days": 0
+        },
+        {
+          "year": 2020,
+          "month": 10,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 110.4,
+          "t2m_mean": 23.6,
+          "t2m_min_mean": 16.9,
+          "t2m_min_abs": 12.2,
+          "frost_days": 0
+        },
+        {
+          "year": 2020,
+          "month": 11,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 46.7,
+          "t2m_mean": 23.5,
+          "t2m_min_mean": 16.5,
+          "t2m_min_abs": 11.6,
+          "frost_days": 0
+        },
+        {
+          "year": 2020,
+          "month": 12,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 103.0,
+          "t2m_mean": 25.3,
+          "t2m_min_mean": 19.8,
+          "t2m_min_abs": 16.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2021,
+          "month": 1,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 162.9,
+          "t2m_mean": 24.8,
+          "t2m_min_mean": 20.3,
+          "t2m_min_abs": 16.6,
+          "frost_days": 0
+        },
+        {
+          "year": 2021,
+          "month": 2,
+          "days": 28,
+          "valid_days": 28,
+          "prcp_mm": 73.0,
+          "t2m_mean": 24.5,
+          "t2m_min_mean": 18.9,
+          "t2m_min_abs": 15.4,
+          "frost_days": 0
+        },
+        {
+          "year": 2021,
+          "month": 3,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 102.8,
+          "t2m_mean": 24.5,
+          "t2m_min_mean": 19.8,
+          "t2m_min_abs": 17.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2021,
+          "month": 4,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 24.6,
+          "t2m_mean": 21.2,
+          "t2m_min_mean": 15.9,
+          "t2m_min_abs": 12.9,
+          "frost_days": 0
+        },
+        {
+          "year": 2021,
+          "month": 5,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 66.4,
+          "t2m_mean": 19.1,
+          "t2m_min_mean": 13.5,
+          "t2m_min_abs": 6.9,
+          "frost_days": 0
+        },
+        {
+          "year": 2021,
+          "month": 6,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 33.3,
+          "t2m_mean": 17.1,
+          "t2m_min_mean": 12.5,
+          "t2m_min_abs": 2.6,
+          "frost_days": 1
+        },
+        {
+          "year": 2021,
+          "month": 7,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 29.2,
+          "t2m_mean": 15.1,
+          "t2m_min_mean": 8.8,
+          "t2m_min_abs": 0.9,
+          "frost_days": 4
+        },
+        {
+          "year": 2021,
+          "month": 8,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 15.5,
+          "t2m_mean": 19.6,
+          "t2m_min_mean": 13.4,
+          "t2m_min_abs": 8.6,
+          "frost_days": 0
+        },
+        {
+          "year": 2021,
+          "month": 9,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 49.5,
+          "t2m_mean": 23.0,
+          "t2m_min_mean": 15.8,
+          "t2m_min_abs": 12.0,
+          "frost_days": 0
+        },
+        {
+          "year": 2021,
+          "month": 10,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 179.9,
+          "t2m_mean": 21.6,
+          "t2m_min_mean": 16.0,
+          "t2m_min_abs": 11.4,
+          "frost_days": 0
+        },
+        {
+          "year": 2021,
+          "month": 11,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 85.6,
+          "t2m_mean": 23.9,
+          "t2m_min_mean": 17.0,
+          "t2m_min_abs": 12.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2021,
+          "month": 12,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 92.0,
+          "t2m_mean": 24.2,
+          "t2m_min_mean": 17.8,
+          "t2m_min_abs": 12.2,
+          "frost_days": 0
+        },
+        {
+          "year": 2022,
+          "month": 1,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 254.5,
+          "t2m_mean": 24.9,
+          "t2m_min_mean": 20.0,
+          "t2m_min_abs": 15.9,
+          "frost_days": 0
+        },
+        {
+          "year": 2022,
+          "month": 2,
+          "days": 28,
+          "valid_days": 28,
+          "prcp_mm": 67.6,
+          "t2m_mean": 24.6,
+          "t2m_min_mean": 19.5,
+          "t2m_min_abs": 16.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2022,
+          "month": 3,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 148.0,
+          "t2m_mean": 24.1,
+          "t2m_min_mean": 20.0,
+          "t2m_min_abs": 15.8,
+          "frost_days": 0
+        },
+        {
+          "year": 2022,
+          "month": 4,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 44.2,
+          "t2m_mean": 21.6,
+          "t2m_min_mean": 16.7,
+          "t2m_min_abs": 11.0,
+          "frost_days": 0
+        },
+        {
+          "year": 2022,
+          "month": 5,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 87.2,
+          "t2m_mean": 17.1,
+          "t2m_min_mean": 12.0,
+          "t2m_min_abs": 4.9,
+          "frost_days": 0
+        },
+        {
+          "year": 2022,
+          "month": 6,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 52.0,
+          "t2m_mean": 16.8,
+          "t2m_min_mean": 12.1,
+          "t2m_min_abs": 3.5,
+          "frost_days": 0
+        },
+        {
+          "year": 2022,
+          "month": 7,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 4.2,
+          "t2m_mean": 19.2,
+          "t2m_min_mean": 13.1,
+          "t2m_min_abs": 7.3,
+          "frost_days": 0
+        },
+        {
+          "year": 2022,
+          "month": 8,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 68.7,
+          "t2m_mean": 17.9,
+          "t2m_min_mean": 12.2,
+          "t2m_min_abs": 5.8,
+          "frost_days": 0
+        },
+        {
+          "year": 2022,
+          "month": 9,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 171.5,
+          "t2m_mean": 18.3,
+          "t2m_min_mean": 13.1,
+          "t2m_min_abs": 7.7,
+          "frost_days": 0
+        },
+        {
+          "year": 2022,
+          "month": 10,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 179.2,
+          "t2m_mean": 22.0,
+          "t2m_min_mean": 16.5,
+          "t2m_min_abs": 14.0,
+          "frost_days": 0
+        },
+        {
+          "year": 2022,
+          "month": 11,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 69.6,
+          "t2m_mean": 20.7,
+          "t2m_min_mean": 14.8,
+          "t2m_min_abs": 9.0,
+          "frost_days": 0
+        },
+        {
+          "year": 2022,
+          "month": 12,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 146.7,
+          "t2m_mean": 23.9,
+          "t2m_min_mean": 18.8,
+          "t2m_min_abs": 14.2,
+          "frost_days": 0
+        },
+        {
+          "year": 2023,
+          "month": 1,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 133.2,
+          "t2m_mean": 23.8,
+          "t2m_min_mean": 19.2,
+          "t2m_min_abs": 15.3,
+          "frost_days": 0
+        },
+        {
+          "year": 2023,
+          "month": 2,
+          "days": 28,
+          "valid_days": 28,
+          "prcp_mm": 197.8,
+          "t2m_mean": 23.6,
+          "t2m_min_mean": 19.9,
+          "t2m_min_abs": 16.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2023,
+          "month": 3,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 116.4,
+          "t2m_mean": 24.0,
+          "t2m_min_mean": 19.8,
+          "t2m_min_abs": 17.3,
+          "frost_days": 0
+        },
+        {
+          "year": 2023,
+          "month": 4,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 71.4,
+          "t2m_mean": 20.7,
+          "t2m_min_mean": 16.2,
+          "t2m_min_abs": 9.2,
+          "frost_days": 0
+        },
+        {
+          "year": 2023,
+          "month": 5,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 13.3,
+          "t2m_mean": 18.9,
+          "t2m_min_mean": 13.9,
+          "t2m_min_abs": 10.0,
+          "frost_days": 0
+        },
+        {
+          "year": 2023,
+          "month": 6,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 60.4,
+          "t2m_mean": 16.9,
+          "t2m_min_mean": 11.6,
+          "t2m_min_abs": 8.2,
+          "frost_days": 0
+        },
+        {
+          "year": 2023,
+          "month": 7,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 37.0,
+          "t2m_mean": 17.5,
+          "t2m_min_mean": 12.0,
+          "t2m_min_abs": 6.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2023,
+          "month": 8,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 33.5,
+          "t2m_mean": 20.1,
+          "t2m_min_mean": 13.8,
+          "t2m_min_abs": 9.8,
+          "frost_days": 0
+        },
+        {
+          "year": 2023,
+          "month": 9,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 33.7,
+          "t2m_mean": 24.1,
+          "t2m_min_mean": 17.1,
+          "t2m_min_abs": 11.4,
+          "frost_days": 0
+        },
+        {
+          "year": 2023,
+          "month": 10,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 229.3,
+          "t2m_mean": 23.9,
+          "t2m_min_mean": 17.9,
+          "t2m_min_abs": 14.3,
+          "frost_days": 0
+        },
+        {
+          "year": 2023,
+          "month": 11,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 100.1,
+          "t2m_mean": 25.0,
+          "t2m_min_mean": 18.7,
+          "t2m_min_abs": 12.5,
+          "frost_days": 0
+        },
+        {
+          "year": 2023,
+          "month": 12,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 49.4,
+          "t2m_mean": 26.8,
+          "t2m_min_mean": 20.3,
+          "t2m_min_abs": 15.7,
+          "frost_days": 0
+        },
+        {
+          "year": 2024,
+          "month": 1,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 85.0,
+          "t2m_mean": 26.0,
+          "t2m_min_mean": 20.0,
+          "t2m_min_abs": 15.3,
+          "frost_days": 0
+        },
+        {
+          "year": 2024,
+          "month": 2,
+          "days": 29,
+          "valid_days": 29,
+          "prcp_mm": 116.8,
+          "t2m_mean": 26.4,
+          "t2m_min_mean": 20.9,
+          "t2m_min_abs": 19.1,
+          "frost_days": 0
+        },
+        {
+          "year": 2024,
+          "month": 3,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 55.0,
+          "t2m_mean": 25.9,
+          "t2m_min_mean": 20.3,
+          "t2m_min_abs": 17.8,
+          "frost_days": 0
+        },
+        {
+          "year": 2024,
+          "month": 4,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 49.1,
+          "t2m_mean": 24.2,
+          "t2m_min_mean": 18.7,
+          "t2m_min_abs": 13.0,
+          "frost_days": 0
+        },
+        {
+          "year": 2024,
+          "month": 5,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 54.1,
+          "t2m_mean": 21.4,
+          "t2m_min_mean": 15.7,
+          "t2m_min_abs": 5.3,
+          "frost_days": 0
+        },
+        {
+          "year": 2024,
+          "month": 6,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 5.7,
+          "t2m_mean": 19.8,
+          "t2m_min_mean": 13.4,
+          "t2m_min_abs": 10.6,
+          "frost_days": 0
+        },
+        {
+          "year": 2024,
+          "month": 7,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 55.3,
+          "t2m_mean": 18.1,
+          "t2m_min_mean": 12.3,
+          "t2m_min_abs": 8.8,
+          "frost_days": 0
+        },
+        {
+          "year": 2024,
+          "month": 8,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 34.1,
+          "t2m_mean": 19.2,
+          "t2m_min_mean": 12.0,
+          "t2m_min_abs": 4.4,
+          "frost_days": 0
+        },
+        {
+          "year": 2024,
+          "month": 9,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 33.2,
+          "t2m_mean": 23.6,
+          "t2m_min_mean": 16.0,
+          "t2m_min_abs": 12.8,
+          "frost_days": 0
+        },
+        {
+          "year": 2024,
+          "month": 10,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 65.2,
+          "t2m_mean": 23.9,
+          "t2m_min_mean": 17.5,
+          "t2m_min_abs": 13.0,
+          "frost_days": 0
+        },
+        {
+          "year": 2024,
+          "month": 11,
+          "days": 30,
+          "valid_days": 30,
+          "prcp_mm": 148.6,
+          "t2m_mean": 24.4,
+          "t2m_min_mean": 18.7,
+          "t2m_min_abs": 15.3,
+          "frost_days": 0
+        },
+        {
+          "year": 2024,
+          "month": 12,
+          "days": 31,
+          "valid_days": 31,
+          "prcp_mm": 167.6,
+          "t2m_mean": 24.6,
+          "t2m_min_mean": 19.5,
+          "t2m_min_abs": 15.5,
+          "frost_days": 0
+        }
+      ],
+      "climatology": [
+        {
+          "month": 1,
+          "years": 10,
+          "prcp_mm_mean": 180.8,
+          "t2m_mean": 24.8,
+          "t2m_min_mean": 20.1,
+          "frost_days_mean": 0.0
+        },
+        {
+          "month": 2,
+          "years": 10,
+          "prcp_mm_mean": 139.7,
+          "t2m_mean": 24.4,
+          "t2m_min_mean": 19.8,
+          "frost_days_mean": 0.0
+        },
+        {
+          "month": 3,
+          "years": 10,
+          "prcp_mm_mean": 118.1,
+          "t2m_mean": 23.9,
+          "t2m_min_mean": 19.5,
+          "frost_days_mean": 0.0
+        },
+        {
+          "month": 4,
+          "years": 10,
+          "prcp_mm_mean": 55.0,
+          "t2m_mean": 21.8,
+          "t2m_min_mean": 16.9,
+          "frost_days_mean": 0.0
+        },
+        {
+          "month": 5,
+          "years": 10,
+          "prcp_mm_mean": 78.7,
+          "t2m_mean": 19.0,
+          "t2m_min_mean": 14.2,
+          "frost_days_mean": 0.0
+        },
+        {
+          "month": 6,
+          "years": 10,
+          "prcp_mm_mean": 62.1,
+          "t2m_mean": 17.5,
+          "t2m_min_mean": 12.7,
+          "frost_days_mean": 0.3
+        },
+        {
+          "month": 7,
+          "years": 10,
+          "prcp_mm_mean": 37.0,
+          "t2m_mean": 17.3,
+          "t2m_min_mean": 11.8,
+          "frost_days_mean": 0.5
+        },
+        {
+          "month": 8,
+          "years": 10,
+          "prcp_mm_mean": 56.9,
+          "t2m_mean": 18.7,
+          "t2m_min_mean": 12.8,
+          "frost_days_mean": 0.0
+        },
+        {
+          "month": 9,
+          "years": 10,
+          "prcp_mm_mean": 67.3,
+          "t2m_mean": 21.7,
+          "t2m_min_mean": 15.3,
+          "frost_days_mean": 0.0
+        },
+        {
+          "month": 10,
+          "years": 10,
+          "prcp_mm_mean": 146.2,
+          "t2m_mean": 22.9,
+          "t2m_min_mean": 17.1,
+          "frost_days_mean": 0.0
+        },
+        {
+          "month": 11,
+          "years": 10,
+          "prcp_mm_mean": 130.9,
+          "t2m_mean": 23.3,
+          "t2m_min_mean": 17.3,
+          "frost_days_mean": 0.0
+        },
+        {
+          "month": 12,
+          "years": 10,
+          "prcp_mm_mean": 139.3,
+          "t2m_mean": 24.7,
+          "t2m_min_mean": 19.3,
+          "frost_days_mean": 0.0
+        }
+      ]
+    }
+  },
+  "events": {
+    "status": "ok",
+    "reason": null,
+    "source": {
+      "dataset": "NASA POWER",
+      "url": "https://power.larc.nasa.gov/",
+      "parameters": [
+        "T2M_MIN",
+        "T2M",
+        "RH2M",
+        "PRECTOTCORR"
+      ],
+      "period": "2015–2024",
+      "resolution": "0.5° × 0.625° (~50 km)",
+      "mode": "mock",
+      "sampled_point": {
+        "lat": -23.53,
+        "lon": -49.24
+      },
+      "distance_km": 1.5,
+      "sampling": "nearest_demo_point",
+      "note": "Past records, not a forecast.",
+      "location_name": "Taquarituba, SP"
+    },
+    "data": {
+      "items": [
+        {
+          "type": "frost",
+          "label": "Frost / cold",
+          "threshold": "Daily minimum temperature ≤ 3 °C at 2 m",
+          "start_md": "06-12",
+          "end_md": "06-13",
+          "years_hit": 1,
+          "years_total": 10,
+          "season_start_md": "01-01"
+        },
+        {
+          "type": "frost",
+          "label": "Frost / cold",
+          "threshold": "Daily minimum temperature ≤ 3 °C at 2 m",
+          "start_md": "06-30",
+          "end_md": "07-06",
+          "years_hit": 2,
+          "years_total": 10,
+          "season_start_md": "01-01"
+        },
+        {
+          "type": "frost",
+          "label": "Frost / cold",
+          "threshold": "Daily minimum temperature ≤ 3 °C at 2 m",
+          "start_md": "07-19",
+          "end_md": "07-30",
+          "years_hit": 1,
+          "years_total": 10,
+          "season_start_md": "01-01"
+        },
+        {
+          "type": "white_mold",
+          "label": "White mold conditions",
+          "threshold": "3+ days in a row with mean temperature 15–22 °C and relative humidity ≥ 85 %",
+          "start_md": "07-01",
+          "end_md": "07-08",
+          "years_hit": 1,
+          "years_total": 10,
+          "season_start_md": "07-01"
+        },
+        {
+          "type": "white_mold",
+          "label": "White mold conditions",
+          "threshold": "3+ days in a row with mean temperature 15–22 °C and relative humidity ≥ 85 %",
+          "start_md": "08-03",
+          "end_md": "08-20",
+          "years_hit": 3,
+          "years_total": 10,
+          "season_start_md": "07-01"
+        },
+        {
+          "type": "white_mold",
+          "label": "White mold conditions",
+          "threshold": "3+ days in a row with mean temperature 15–22 °C and relative humidity ≥ 85 %",
+          "start_md": "09-03",
+          "end_md": "09-06",
+          "years_hit": 1,
+          "years_total": 10,
+          "season_start_md": "07-01"
+        },
+        {
+          "type": "white_mold",
+          "label": "White mold conditions",
+          "threshold": "3+ days in a row with mean temperature 15–22 °C and relative humidity ≥ 85 %",
+          "start_md": "09-26",
+          "end_md": "09-28",
+          "years_hit": 1,
+          "years_total": 10,
+          "season_start_md": "07-01"
+        },
+        {
+          "type": "white_mold",
+          "label": "White mold conditions",
+          "threshold": "3+ days in a row with mean temperature 15–22 °C and relative humidity ≥ 85 %",
+          "start_md": "05-07",
+          "end_md": "06-26",
+          "years_hit": 8,
+          "years_total": 10,
+          "season_start_md": "07-01"
+        }
+      ]
+    }
+  },
+  "planting": {
+    "status": "ok",
+    "reason": null,
+    "source": {
+      "dataset": "NASA POWER",
+      "url": "https://power.larc.nasa.gov/",
+      "parameters": [
+        "T2M_MIN",
+        "T2M",
+        "RH2M",
+        "PRECTOTCORR"
+      ],
+      "period": "2015–2024",
+      "resolution": "0.5° × 0.625° (~50 km)",
+      "mode": "mock",
+      "sampled_point": {
+        "lat": -23.53,
+        "lon": -49.24
+      },
+      "distance_km": 1.5,
+      "sampling": "nearest_demo_point",
+      "note": "Past records, not a forecast.",
+      "location_name": "Taquarituba, SP"
+    },
+    "data": {
+      "corn": {
+        "location": {
+          "name": "Taquarituba, SP",
+          "lat": -23.539298500576102,
+          "lon": -49.229713999483415
+        },
+        "crop": "corn",
+        "crop_label": "Second-crop corn",
+        "season": {
+          "start": "2027-01-01",
+          "end": "2027-09-30"
+        },
+        "recommendation": {
+          "summary": "Plant second-crop corn between Jan 1 and Mar 11.",
+          "explanation": "Based on NASA POWER daily data for 2015–2024, we checked how often frost / cold (Daily minimum temperature ≤ 3 °C at 2 m) happened during flowering and grain filling for each planting date. This is climatological risk from past years, not a weather forecast."
+        },
+        "windows": [
+          {
+            "start": "2027-01-01",
+            "end": "2027-03-11",
+            "level": "recommended",
+            "explanation": "Plantings in this window reach flowering and grain filling (60–110 days after planting) when frost / cold rarely occurred: it hit that stage in at most 1 of the last 10 years."
+          },
+          {
+            "start": "2027-03-12",
+            "end": "2027-04-30",
+            "level": "risky",
+            "explanation": "In 3 of the last 10 years, frost / cold hit flowering and grain filling for plantings in this window."
+          }
+        ],
+        "events": [
+          {
+            "type": "frost",
+            "label": "Frost / cold",
+            "start": "2027-06-12",
+            "end": "2027-06-13",
+            "years_hit": 1,
+            "years_total": 10,
+            "threshold": "Daily minimum temperature ≤ 3 °C at 2 m",
+            "explanation": "In 1 of the last 10 years, frost / cold occurred between Jun 12 and Jun 13."
+          },
+          {
+            "type": "frost",
+            "label": "Frost / cold",
+            "start": "2027-06-30",
+            "end": "2027-07-06",
+            "years_hit": 2,
+            "years_total": 10,
+            "threshold": "Daily minimum temperature ≤ 3 °C at 2 m",
+            "explanation": "In 2 of the last 10 years, frost / cold occurred between Jun 30 and Jul 6."
+          },
+          {
+            "type": "frost",
+            "label": "Frost / cold",
+            "start": "2027-07-19",
+            "end": "2027-07-30",
+            "years_hit": 1,
+            "years_total": 10,
+            "threshold": "Daily minimum temperature ≤ 3 °C at 2 m",
+            "explanation": "In 1 of the last 10 years, frost / cold occurred between Jul 19 and Jul 30."
+          }
+        ],
+        "source": {
+          "dataset": "NASA POWER",
+          "url": "https://power.larc.nasa.gov/",
+          "parameters": [
+            "T2M_MIN",
+            "T2M",
+            "RH2M",
+            "PRECTOTCORR"
+          ],
+          "period": "2015–2024",
+          "mode": "mock",
+          "generated_at": "2026-11-15T17:16:01Z",
+          "note": "Past records, not a forecast. Risk = how often it happened in past years."
+        }
+      },
+      "soybean": {
+        "location": {
+          "name": "Taquarituba, SP",
+          "lat": -23.539298500576102,
+          "lon": -49.229713999483415
+        },
+        "crop": "soybean",
+        "crop_label": "Soybean",
+        "season": {
+          "start": "2027-09-01",
+          "end": "2028-03-31"
+        },
+        "recommendation": {
+          "summary": "Plant soybean between Sep 1 and Dec 31.",
+          "explanation": "Based on NASA POWER daily data for 2015–2024, we checked how often white mold conditions (3+ days in a row with mean temperature 15–22 °C and relative humidity ≥ 85 %) happened during flowering (R1–R3) for each planting date. This is climatological risk from past years, not a weather forecast."
+        },
+        "windows": [
+          {
+            "start": "2027-09-01",
+            "end": "2027-12-31",
+            "level": "recommended",
+            "explanation": "Plantings in this window reach flowering (R1–R3) (45–75 days after planting) when white mold conditions did not occur: it hit that stage in none of the last 10 years."
+          }
+        ],
+        "events": [
+          {
+            "type": "white_mold",
+            "label": "White mold conditions",
+            "start": "2027-09-03",
+            "end": "2027-09-06",
+            "years_hit": 1,
+            "years_total": 10,
+            "threshold": "3+ days in a row with mean temperature 15–22 °C and relative humidity ≥ 85 %",
+            "explanation": "In 1 of the last 10 years, white mold conditions occurred between Sep 3 and Sep 6."
+          },
+          {
+            "type": "white_mold",
+            "label": "White mold conditions",
+            "start": "2027-09-26",
+            "end": "2027-09-28",
+            "years_hit": 1,
+            "years_total": 10,
+            "threshold": "3+ days in a row with mean temperature 15–22 °C and relative humidity ≥ 85 %",
+            "explanation": "In 1 of the last 10 years, white mold conditions occurred between Sep 26 and Sep 28."
+          }
+        ],
+        "source": {
+          "dataset": "NASA POWER",
+          "url": "https://power.larc.nasa.gov/",
+          "parameters": [
+            "T2M_MIN",
+            "T2M",
+            "RH2M",
+            "PRECTOTCORR"
+          ],
+          "period": "2015–2024",
+          "mode": "mock",
+          "generated_at": "2026-11-15T17:16:01Z",
+          "note": "Past records, not a forecast. Risk = how often it happened in past years."
+        }
+      }
+    }
+  },
+  "soil": {
+    "status": "ok",
+    "reason": null,
+    "source": {
+      "dataset": "SoilGrids 2.0 (ISRIC)",
+      "url": "https://soilgrids.org/",
+      "api": "https://rest.isric.org/soilgrids/v2.0/properties/query",
+      "resolution": "250 m",
+      "license": "CC-BY 4.0",
+      "attribution": "Poggio et al. (2021), SOIL 7, 217-240. ISRIC - World Soil Information",
+      "note": "Complementary source, not NASA data. Modelled estimate, not a field measurement.",
+      "mode": "mock",
+      "sampled_point": {
+        "lat": -23.539298500576102,
+        "lon": -49.229713999483415
+      },
+      "distance_km": 0.0,
+      "sampling": "requested"
+    },
+    "data": {
+      "location": {
+        "lat": -23.539298500576102,
+        "lon": -49.229713999483415
+      },
+      "mode": "mock",
+      "depths": {
+        "clay": {
+          "unit": "%",
+          "values": {
+            "0-5cm": 30.9,
+            "5-15cm": 31.1,
+            "15-30cm": 38.5
+          }
+        },
+        "phh2o": {
+          "unit": "pH",
+          "values": {
+            "0-5cm": 5.5,
+            "5-15cm": 5.5,
+            "15-30cm": 5.5
+          }
+        },
+        "sand": {
+          "unit": "%",
+          "values": {
+            "0-5cm": 48.4,
+            "5-15cm": 47.3,
+            "15-30cm": 42.0
+          }
+        },
+        "silt": {
+          "unit": "%",
+          "values": {
+            "0-5cm": 20.7,
+            "5-15cm": 21.7,
+            "15-30cm": 19.5
+          }
+        },
+        "soc": {
+          "unit": "g/kg",
+          "values": {
+            "0-5cm": 31.4,
+            "5-15cm": 23.0,
+            "15-30cm": 16.0
+          }
+        }
+      },
+      "profile": {
+        "depth": "0-30cm",
+        "method": "thickness-weighted mean of 0-5, 5-15, 15-30 cm",
+        "clay_pct": 34.8,
+        "sand_pct": 44.8,
+        "silt_pct": 20.4,
+        "soc_g_kg": 20.9,
+        "organic_matter_g_kg": 36.0,
+        "ph_h2o": 5.5,
+        "texture_group": "media",
+        "texture_method": "Embrapa SiBCS textural groups"
+      }
+    }
+  },
+  "terrain": {
+    "status": "pending",
+    "reason": "Terrain (elevation and slope) is being integrated in issues #11 (Open Topo Data) and #12 (OpenTopography).",
+    "source": {
+      "dataset": "NASA SRTM / NASADEM (planned)",
+      "url": null,
+      "mode": null
+    },
+    "data": null
+  }
+}

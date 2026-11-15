@@ -9,6 +9,7 @@ import Chip from '@/components/Chip.vue'
 import SampleValue from '@/components/SampleValue.vue'
 import PublicDataNote from '@/components/PublicDataNote.vue'
 import { state } from '@/data/store.js'
+import { fieldPath, selected } from '@/data/fields.js'
 import { costs, loadCosts, withCosts } from '@/data/costs.js'
 
 onMounted(() => loadCosts())
@@ -26,7 +27,7 @@ const chain = [
 </script>
 
 <template>
-  <AppShell active="fields" crumb="My fields › Field 1 › Costs" title="What if nothing changes?">
+  <AppShell active="fields" :crumb="`My fields › ${selected?.name} › Costs`" title="What if nothing changes?">
     <div class="cost">
       <CostTabs active="big" />
       <PublicDataNote />

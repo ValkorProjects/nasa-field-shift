@@ -8,4 +8,7 @@ dist
 __pycache__/
 .venv/
 *.pyc
+
+# Recommendation API
+backend/data/cache/
 .pytest_cache/

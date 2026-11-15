@@ -1,9 +1,22 @@
 // App state: the field JSON (read-only data) + the farmer's answers (wizard state).
 // The front only reads one pre-computed JSON per field. No satellite processing here.
-import { reactive, computed } from 'vue'
+import { reactive, computed, watch, shallowRef, toRaw } from 'vue'
+import { apiMode, getFieldProfile } from '@/api/index.js'
+import { farm, selected, toFeature, geomKey, areaHa } from './fields.js'
+import { toFieldData } from './profileAdapter.js'
+import { fieldStatus } from './rules.js'
+
+// Profile of each field (POST /api/field/profile):
+//   { [fieldId]: { status: 'loading'|'ready'|'error', error, geom, profile } }
+const profiles = reactive({})
+export const profileOf = (id) => profiles[id] ?? null
+
+// The sample JSON (Field 1). Field 1 in mock mode shows it as is (the demo); any other field is
+// built from the sample + its profile by the adapter.
+const sampleRef = shallowRef(null) // not deep-reactive: the adapter clones it
 
 export const state = reactive({
-  data: null,
+  data: computed(() => dataFor(farm.selectedId)),
   loading: true,
   error: null,
   usingSample: true,
@@ -14,6 +27,21 @@ export const state = reactive({
   layer: 'photo'
 })
 
+function dataFor(id) {
+  const sample = toRaw(sampleRef.value)
+  if (!sample) return null
+  const f = farm.fields.find((x) => x.id === id)
+  if (!f || (apiMode.value === 'mock' && f.id === '1')) return sample
+  const e = profiles[id]
+  // A new border keeps the previous profile on screen until the new answer arrives.
+  let profile = e?.status === 'error' ? null : e?.profile ?? null
+  if (profile && !!profile.mock !== (apiMode.value === 'mock')) profile = null // profile of another mode
+  return toFieldData(sample, profile, f, {
+    nextCrop: state.crops.second, crops: state.crops, areaHa: areaHa(f.coords),
+    apiMode: apiMode.value, error: e?.status === 'error' ? e.error : null, loading: !e || e.status === 'loading'
+  })
+}
+
 async function tryJson(url) {
   const res = await fetch(url)
   if (!res.ok) throw new Error(`${url}: ${res.status}`)
@@ -22,7 +50,7 @@ async function tryJson(url) {
 }
 
 // Real data (field-1.json) wins; falls back to field-1.sample.json.
-export async function loadField(id = '1') {
+export async function loadSample(id = '1') {
   state.loading = true
   try {
     let data
@@ -33,7 +61,7 @@ export async function loadField(id = '1') {
       data = await tryJson(`/data/field-${id}.sample.json`)
       state.usingSample = true
     }
-    state.data = data
+    sampleRef.value = data
     state.crops = { ...data.crops.defaults }
     state.soil = { ...data.soil.defaults }
     state.order = [...data.priorities.defaultOrder]
@@ -43,6 +71,53 @@ export async function loadField(id = '1') {
     state.loading = false
   }
 }
+
+/* ---------- Field profile ---------- */
+const ctrls = {}
+const timers = {}
+const EDIT_DEBOUNCE_MS = 700
+
+// Fetches the profile of a field once per geometry. A changed border waits a moment (the farmer may
+// still be dragging corners). Late answers of an older geometry are ignored.
+export function ensureProfile(field, { force = false } = {}) {
+  if (!field) return
+  if (apiMode.value === 'mock' && field.id === '1') return
+  const geom = `${geomKey(field)}|${apiMode.value}`
+  const cur = profiles[field.id]
+  if (!force && cur && cur.geom === geom && cur.status !== 'error') return
+  const first = !cur
+  profiles[field.id] = { status: 'loading', error: null, geom, profile: cur?.status === 'error' ? null : cur?.profile ?? null }
+  clearTimeout(timers[field.id])
+  ctrls[field.id]?.abort()
+  const run = async () => {
+    const ctrl = (ctrls[field.id] = new AbortController())
+    try {
+      const profile = await getFieldProfile({ feature: toFeature(field), name: field.name }, { signal: ctrl.signal })
+      if (profiles[field.id]?.geom !== geom) return
+      profiles[field.id] = { status: 'ready', error: null, geom, profile }
+      const f = farm.fields.find((x) => x.id === field.id)
+      if (f && !profile.mock) f.status = fieldStatus(dataFor(f.id))
+    } catch (e) {
+      if (e.name === 'AbortError' || profiles[field.id]?.geom !== geom) return
+      profiles[field.id] = { status: 'error', error: e.message, geom, profile: null }
+    }
+  }
+  if (first || force) run()
+  else timers[field.id] = setTimeout(run, EDIT_DEBOUNCE_MS)
+}
+
+// Forget the profile of deleted fields (and cancel their requests).
+watch(() => farm.fields.map((f) => f.id).join(','), () => {
+  const ids = new Set(farm.fields.map((f) => f.id))
+  for (const id of Object.keys(profiles)) {
+    if (ids.has(id)) continue
+    ctrls[id]?.abort(); clearTimeout(timers[id])
+    delete ctrls[id]; delete timers[id]; delete profiles[id]
+  }
+})
+
+// Any screen can be opened directly (/field/:id/...): the profile follows the selected field.
+watch(() => [farm.selectedId, geomKey(selected.value), apiMode.value], () => ensureProfile(selected.value), { immediate: true })
 
 // Plain value of a { value, sample, ... } leaf (or a raw value).
 export const val = (x) => (x && typeof x === 'object' && 'value' in x ? x.value : x)

@@ -11,10 +11,10 @@
 // This module never changes the field data: it keeps its own patch and the screens show
 // withCosts(state.data), so it works whatever builds state.data (sample JSON or field profile).
 import { reactive } from 'vue'
-import { areaHa, fieldById } from '@/data/fields.js'
+import { areaHa, selected } from '@/data/fields.js'
 
-// The field the Costs screens are about. (With /field/:id routes, use the selected field.)
-export const costsField = () => fieldById('1')
+// The field the Costs screens are about (/field/:id selects it).
+export const costsField = () => selected.value
 import { sidra, municipalityAt, autumnRain, conabCost, PRODUCTS, IPCA_ITEMS, SOURCES } from '@/api/publicData.js'
 
 const BAG_KG = 60

@@ -1,7 +1,9 @@
 <script setup>
+import { computed } from 'vue'
 import { t } from '@/i18n'
+import { fieldPath } from '@/data/fields.js'
 defineProps({ cur: { type: Number, required: true } })
-const routes = ['/farm', '/field/1/crops', '/field/1/soil', '/field/1/priorities', '/field/1/results']
+const routes = computed(() => ['/farm', fieldPath('crops'), fieldPath('soil'), fieldPath('priorities'), fieldPath('results')])
 </script>
 <template>
   <nav class="steps" aria-label="Steps">

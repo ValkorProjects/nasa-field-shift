@@ -12,6 +12,7 @@ import StrategyDrawer from '@/components/StrategyDrawer.vue'
 import SampleValue from '@/components/SampleValue.vue'
 import AgronomistNote from '@/components/AgronomistNote.vue'
 import { state, bestId, bestIfIncomeFirst, strategy, priorityLabel, confidence } from '@/data/store.js'
+import { fieldPath, selected } from '@/data/fields.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -19,13 +20,13 @@ const option = computed(() => route.params.option)
 const best = computed(() => strategy(bestId.value))
 const alt = computed(() => strategy(bestIfIncomeFirst.value))
 const money = computed(() => withCosts(state.data).money)
-const open = (id) => router.push(`/field/1/results/${id}`)
-const close = () => router.push('/field/1/results')
+const open = (id) => router.push(fieldPath(`results/${id}`))
+const close = () => router.push(fieldPath('results'))
 onMounted(() => loadCosts()) // money bar: public data (IBGE, NASA POWER)
 </script>
 
 <template>
-  <AppShell active="fields" crumb="My fields › Field 1 › Results" title="3 plans for Field 1">
+  <AppShell active="fields" :crumb="`My fields › ${selected?.name} › Results`" :title="`3 plans for ${selected?.name}`">
     <div :class="['res2', { dim: option }]" :inert="option ? true : null">
       <div class="resh"><Stepper :cur="5" /></div>
 
@@ -41,7 +42,7 @@ onMounted(() => loadCosts()) // money bar: public data (IBGE, NASA POWER)
             <button class="lnk" @click="open(best.id)">why?</button>
           </span>
         </div>
-        <button class="edit" @click="router.push('/field/1/priorities')"><Icon name="pencil" />Change priorities</button>
+        <button class="edit" @click="router.push(fieldPath('priorities'))"><Icon name="pencil" />Change priorities</button>
       </div>
 
       <ScaleLegend />
@@ -54,10 +55,10 @@ onMounted(() => loadCosts()) // money bar: public data (IBGE, NASA POWER)
         <Icon name="coin" />
         <div>
           <b>What if nothing changes?</b>
-          <span>If you keep corn and the autumn is dry, Field 1 could lose
+          <span>If you keep corn and the autumn is dry, {{ selected?.name }} could lose
             <b>R$ <SampleValue :v="money.at_risk_min" /> – <SampleValue :v="money.at_risk_max" /></b>.</span>
         </div>
-        <button class="btn red small" style="width:auto;padding:10px 18px" @click="router.push('/field/1/costs')">See the costs →</button>
+        <button class="btn red small" style="width:auto;padding:10px 18px" @click="router.push(fieldPath('costs'))">See the costs →</button>
       </div>
 
       <AgronomistNote />
