@@ -163,9 +163,26 @@ Every value shown on screen is an object:
 | `strategies[].fit` | Priority fit ✓ ~ ✗ | Good / OK / Poor per priority (agronomist table) |
 | `confidence.rules` | How sure are we? | ≥10 years · main indicators field-level · GPM and POWER agree within X% · local soil info |
 | `alert.smap_context` | Regional soil moisture | SMAP L4 9 km anomaly. **Always regional, never the field** |
-| `strategies[].money.*`, `money.at_risk_*` | R$ results | FAO-33: 1 − Ya/Ym = Ky(1 − ETa/ETm); loss = area × yield × loss × price |
-| `money.inputs[]` | Numbers we used | IBGE PAM (yield), CEPEA (price), CONAB (cost), FAO + GPM (loss) |
-| `regional.*` | SP regional scenario | IBGE PAM / CONAB area × share affected × yield loss; past CONAB + CEPEA |
+| `strategies[].money.*`, `money.at_risk_*` | R$ results | **Live from public APIs**, see [Costs from public data](#costs-from-public-data) |
+| `money.inputs[]` | Numbers we used | **Live:** IBGE PAM (yield, price), IBGE PAM + NASA POWER (loss), CONAB (cost to grow) |
+| `regional.*` | State regional scenario | **Live:** IBGE PAM (area, production, price), IBGE IPCA (food prices) |
+
+### Costs from public data
+
+The Costs screens (`/field/1/costs`, `/field/1/costs/big-picture`) and the money bar on Results no longer use sample numbers. The browser calls free APIs directly (all allow CORS, no key) and caches the answers for 24 h in `localStorage`. The code is in `src/api/publicData.js` (fetchers) and `src/data/costs.js` (recipe).
+
+| Step | Source | Recipe |
+|---|---|---|
+| Where is Field 1? | OpenStreetMap Nominatim + IBGE localidades | Field centroid → municipality → IBGE code |
+| Dry autumns | NASA POWER monthly `PRECTOTCORR` (2001–last year) | April + May rain ≥ 25 % below the average = dry autumn |
+| Yield | IBGE PAM table 839 (2nd-crop corn) and 1612 (wheat), last 10 harvests | Normal = mean of the other years; dry = mean of dry years; the state when the town has < 5 harvests |
+| Price | IBGE PAM table 1612 | Value of production ÷ quantity, latest year, R$ per 60 kg bag (price received by farmers) |
+| R$ per plan | — | Field area (map) × yield × price; second crop only, before costs; cover crop = R$ 0 |
+| Loss if nothing changes | — | Area × (normal − dry yield) × price; worst = the worst dry year |
+| Cost to grow | CONAB cost-of-production series (`public/data/conab-costs.json`) | Cash (variable) cost per ha in the nearest reference town with a season from the last 2 years; shown per plan as "after the cost to grow" |
+| Big picture | IBGE PAM 839 (state and Brazil), 1612 (state price), IPCA table 7060 | Year with the biggest state 2nd-crop corn drop, price change that year, food/chicken/eggs 12-month IPCA in December |
+
+**Cost to grow:** CONAB has no API, only one .xls per crop (one sheet per town and season). `frontend/scripts/build-conab-costs.cjs` downloads the 2nd-crop corn and wheat series, reads every sheet and writes `public/data/conab-costs.json` (run `npm i --no-save xlsx@0.18.5` then `node scripts/build-conab-costs.cjs` from `frontend/`). If any API fails, the screens show an error with *Try again* and keep the sample values.
 
 ### Rules computed in the front end
 

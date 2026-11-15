@@ -1,7 +1,8 @@
 <script setup>
 // Screen 5 · Results (+ screen 6 drawer at /field/1/results/:option)
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { loadCosts, withCosts } from '@/data/costs.js'
 import AppShell from '@/components/AppShell.vue'
 import Stepper from '@/components/Stepper.vue'
 import Icon from '@/components/Icon.vue'
@@ -18,9 +19,10 @@ const router = useRouter()
 const option = computed(() => route.params.option)
 const best = computed(() => strategy(bestId.value))
 const alt = computed(() => strategy(bestIfIncomeFirst.value))
-const money = computed(() => state.data.money)
+const money = computed(() => withCosts(state.data).money)
 const open = (id) => router.push(fieldPath(`results/${id}`))
 const close = () => router.push(fieldPath('results'))
+onMounted(() => loadCosts()) // money bar: public data (IBGE, NASA POWER)
 </script>
 
 <template>
