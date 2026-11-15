@@ -131,3 +131,8 @@ ol.chain{padding:0;margin:0}
 .rawjson{background:#fff;border-radius:14px;padding:10px 16px;font-size:13px}
 .rawjson summary{cursor:pointer;font-weight:800;color:#3c4c3e}
 .rawjson pre{max-height:320px;overflow:auto;font-size:12px;background:#f5f7f3;border-radius:10px;padding:10px;margin-top:8px}
+/* costs from public data */
+.pcfoot{font-size:12.5px;font-weight:600;color:#617061;margin-top:-6px}
+.typeyours{color:#1f6bd1;text-decoration:underline}
+.inps{grid-template-columns:repeat(5,minmax(0,1fr))}
+.inp .chip2{max-width:100%;white-space:normal;text-align:left}
