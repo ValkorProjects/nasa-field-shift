@@ -1,0 +1,3365 @@
+{
+ "source": "CONAB – Custos de produção, série histórica (agricultura). Free to use with attribution.",
+ "page": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/planilhas-de-custos-de-producao/copy_of_agricolas",
+ "built": "2026-11-15",
+ "units": "R$ per hectare, nominal (value of the season month); yield in kg/ha",
+ "locations": [
+  {
+   "key": "Crateús-CE",
+   "name": "Crateús",
+   "uf": "CE",
+   "lat": -5.2089,
+   "lon": -40.6675
+  },
+  {
+   "key": "Rio Verde-GO",
+   "name": "Rio Verde",
+   "uf": "GO",
+   "lat": -17.7921,
+   "lon": -50.9191
+  },
+  {
+   "key": "Cristalina-GO",
+   "name": "Cristalina",
+   "uf": "GO",
+   "lat": -16.7681,
+   "lon": -47.6133
+  },
+  {
+   "key": "Balsas-MA",
+   "name": "Balsas",
+   "uf": "MA",
+   "lat": -7.5321,
+   "lon": -46.0372
+  },
+  {
+   "key": "Caldas-MG",
+   "name": "Caldas",
+   "uf": "MG",
+   "lat": -21.9236,
+   "lon": -46.3861
+  },
+  {
+   "key": "Unaí-MG",
+   "name": "Unaí",
+   "uf": "MG",
+   "lat": -16.3629,
+   "lon": -46.8924
+  },
+  {
+   "key": "Chapadão do Sul-MS",
+   "name": "Chapadão do Sul",
+   "uf": "MS",
+   "lat": -18.7949,
+   "lon": -52.62
+  },
+  {
+   "key": "Dourados-MS",
+   "name": "Dourados",
+   "uf": "MS",
+   "lat": -22.2206,
+   "lon": -54.8122
+  },
+  {
+   "key": "Primavera do Leste-MT",
+   "name": "Primavera do Leste",
+   "uf": "MT",
+   "lat": -15.5614,
+   "lon": -54.2994
+  },
+  {
+   "key": "Campo Verde-MT",
+   "name": "Campo Verde",
+   "uf": "MT",
+   "lat": -15.5431,
+   "lon": -55.1591
+  },
+  {
+   "key": "Campo Novo do Parecis-MT",
+   "name": "Campo Novo do Parecis",
+   "uf": "MT",
+   "lat": -13.6587,
+   "lon": -57.8907
+  },
+  {
+   "key": "Sorriso-MT",
+   "name": "Sorriso",
+   "uf": "MT",
+   "lat": -12.5445,
+   "lon": -55.7234
+  },
+  {
+   "key": "Tucumã-PA",
+   "name": "Tucumã",
+   "uf": "PA",
+   "lat": -6.8127,
+   "lon": -51.4133
+  },
+  {
+   "key": "Cascavel-PR",
+   "name": "Cascavel",
+   "uf": "PR",
+   "lat": -24.9555,
+   "lon": -53.4561
+  },
+  {
+   "key": "Londrina-PR",
+   "name": "Londrina",
+   "uf": "PR",
+   "lat": -23.3113,
+   "lon": -51.1595
+  },
+  {
+   "key": "Campo Mourão-PR",
+   "name": "Campo Mourão",
+   "uf": "PR",
+   "lat": -24.0463,
+   "lon": -52.378
+  },
+  {
+   "key": "Ubiratã-PR",
+   "name": "Ubiratã",
+   "uf": "PR",
+   "lat": -24.5427,
+   "lon": -52.99
+  },
+  {
+   "key": "Assis Chateaubriand-PR",
+   "name": "Assis Chateaubriand",
+   "uf": "PR",
+   "lat": -24.4055,
+   "lon": -53.512
+  },
+  {
+   "key": "Francisco Beltrão-PR",
+   "name": "Francisco Beltrão",
+   "uf": "PR",
+   "lat": -26.0791,
+   "lon": -53.0534
+  },
+  {
+   "key": "Marechal Cândido Rondon-PR",
+   "name": "Marechal Cândido Rondon",
+   "uf": "PR",
+   "lat": -24.5583,
+   "lon": -54.0588
+  },
+  {
+   "key": "Assis-SP",
+   "name": "Assis",
+   "uf": "SP",
+   "lat": -22.5778,
+   "lon": -50.4006
+  },
+  {
+   "key": "Pedro Afonso-TO",
+   "name": "Pedro Afonso",
+   "uf": "TO",
+   "lat": -8.9757,
+   "lon": -48.1733
+  },
+  {
+   "key": "Brasília-DF",
+   "name": "Brasília",
+   "uf": "DF",
+   "lat": -15.794,
+   "lon": -47.8828
+  },
+  {
+   "key": "São Gotardo-MG",
+   "name": "São Gotardo",
+   "uf": "MG",
+   "lat": -19.3169,
+   "lon": -46.0477
+  },
+  {
+   "key": "Laguna Carapã-MS",
+   "name": "Laguna Carapã",
+   "uf": "MS",
+   "lat": -22.5549,
+   "lon": -55.1506
+  },
+  {
+   "key": "Dois Vizinhos-PR",
+   "name": "Dois Vizinhos",
+   "uf": "PR",
+   "lat": -25.7465,
+   "lon": -53.0554
+  },
+  {
+   "key": "Toledo-PR",
+   "name": "Toledo",
+   "uf": "PR",
+   "lat": -24.7222,
+   "lon": -53.7402
+  },
+  {
+   "key": "Ponta Grossa-PR",
+   "name": "Ponta Grossa",
+   "uf": "PR",
+   "lat": -25.1392,
+   "lon": -49.9922
+  },
+  {
+   "key": "Guarapuava-PR",
+   "name": "Guarapuava",
+   "uf": "PR",
+   "lat": -25.3951,
+   "lon": -51.4622
+  },
+  {
+   "key": "Capanema-PR",
+   "name": "Capanema",
+   "uf": "PR",
+   "lat": -25.6705,
+   "lon": -53.8083
+  },
+  {
+   "key": "Passo Fundo-RS",
+   "name": "Passo Fundo",
+   "uf": "RS",
+   "lat": -28.2551,
+   "lon": -52.3967
+  },
+  {
+   "key": "Cruz Alta-RS",
+   "name": "Cruz Alta",
+   "uf": "RS",
+   "lat": -28.6451,
+   "lon": -53.6058
+  },
+  {
+   "key": "Ajuricaba-RS",
+   "name": "Ajuricaba",
+   "uf": "RS",
+   "lat": -28.2397,
+   "lon": -53.7693
+  },
+  {
+   "key": "São Luiz Gonzaga-RS",
+   "name": "São Luiz Gonzaga",
+   "uf": "RS",
+   "lat": -28.4075,
+   "lon": -54.9609
+  },
+  {
+   "key": "Liberato Salzano-RS",
+   "name": "Liberato Salzano",
+   "uf": "RS",
+   "lat": -27.6003,
+   "lon": -53.0715
+  },
+  {
+   "key": "Santa Rosa-RS",
+   "name": "Santa Rosa",
+   "uf": "RS",
+   "lat": -27.8644,
+   "lon": -54.4779
+  },
+  {
+   "key": "Itaberá-SP",
+   "name": "Itaberá",
+   "uf": "SP",
+   "lat": -23.8621,
+   "lon": -49.1399
+  },
+  {
+   "key": "Itapeva-SP",
+   "name": "Itapeva",
+   "uf": "SP",
+   "lat": -23.9849,
+   "lon": -48.8804
+  }
+ ],
+ "crops": {
+  "corn2": {
+   "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/agricolas/milho/milho_2a_safra_serie_historica_2005-2026.xls",
+   "towns": {
+    "Crateús-CE": [
+     {
+      "season": "2023",
+      "month": "",
+      "system": "MILHO EM GRÃOS",
+      "yield_kg_ha": null,
+      "variable": 1416,
+      "operational": 1615,
+      "total": 1732
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO CONVENCIONAL - MÉDIA TECNOLOGIA",
+      "yield_kg_ha": 1800,
+      "variable": 1531,
+      "operational": 1756,
+      "total": 1898
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO CONVENCIONAL - MÉDIA TECNOLOGIA",
+      "yield_kg_ha": 1800,
+      "variable": 1645,
+      "operational": 1880,
+      "total": 2025
+     },
+     {
+      "season": "2026",
+      "month": "Março/2026",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO CONVENCIONAL - MÉDIA TECNOLOGIA",
+      "yield_kg_ha": 1800,
+      "variable": 1644,
+      "operational": 1885,
+      "total": 2062
+     }
+    ],
+    "Rio Verde-GO": [
+     {
+      "season": "2005",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 719,
+      "operational": 869,
+      "total": 1014
+     },
+     {
+      "season": "2006",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 672,
+      "operational": 821,
+      "total": 965
+     },
+     {
+      "season": "2007",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 712,
+      "operational": 874,
+      "total": 1029
+     },
+     {
+      "season": "2008",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 858,
+      "operational": 1022,
+      "total": 1178
+     },
+     {
+      "season": "2009",
+      "month": "",
+      "system": "MILHO 2ª SAFRA- PLANTIO DIRETO (100%)",
+      "yield_kg_ha": null,
+      "variable": 804,
+      "operational": 962,
+      "total": 1114
+     },
+     {
+      "season": "2010",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 819,
+      "operational": 999,
+      "total": 1170
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 3241,
+      "operational": 3539,
+      "total": 3664
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 5787,
+      "operational": 6155,
+      "total": 6565
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 4323,
+      "operational": 5473,
+      "total": 6478
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 3924,
+      "operational": 4857,
+      "total": 5686
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 3961,
+      "operational": 4930,
+      "total": 5730
+     },
+     {
+      "season": "2026",
+      "month": "Março/2026",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 4819,
+      "operational": 5889,
+      "total": 6886
+     }
+    ],
+    "Cristalina-GO": [
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4800,
+      "variable": 1821,
+      "operational": 2222,
+      "total": 2322
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4800,
+      "variable": 2720,
+      "operational": 3237,
+      "total": 3581
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4800,
+      "variable": 2318,
+      "operational": 2896,
+      "total": 3649
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4800,
+      "variable": 2851,
+      "operational": 3462,
+      "total": 4114
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4800,
+      "variable": 3044,
+      "operational": 3686,
+      "total": 4359
+     }
+    ],
+    "Balsas-MA": [
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4250,
+      "variable": 2087,
+      "operational": 2493,
+      "total": 2629
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4250,
+      "variable": 3706,
+      "operational": 4252,
+      "total": 4687
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4250,
+      "variable": 3386,
+      "operational": 3978,
+      "total": 4881
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4250,
+      "variable": 2551,
+      "operational": 3160,
+      "total": 3965
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4250,
+      "variable": 2771,
+      "operational": 3564,
+      "total": 4441
+     },
+     {
+      "season": "2026",
+      "month": "Março/2026",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4250,
+      "variable": 2678,
+      "operational": 3421,
+      "total": 4395
+     }
+    ],
+    "Caldas-MG": [
+     {
+      "season": "2019",
+      "month": "",
+      "system": "MILHO EM GRÃOS",
+      "yield_kg_ha": null,
+      "variable": 3614,
+      "operational": 4140,
+      "total": 4416
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 7200,
+      "variable": 4250,
+      "operational": 6033,
+      "total": 6110
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 7200,
+      "variable": 7978,
+      "operational": 10150,
+      "total": 10321
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 7200,
+      "variable": 6957,
+      "operational": 10293,
+      "total": 10795
+     }
+    ],
+    "Unaí-MG": [
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 2644,
+      "operational": 3269,
+      "total": 3358
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 5011,
+      "operational": 5832,
+      "total": 6126
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 3545,
+      "operational": 4313,
+      "total": 4918
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 4614,
+      "operational": 5381,
+      "total": 5999
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 4688,
+      "operational": 5559,
+      "total": 6309
+     },
+     {
+      "season": "2026",
+      "month": "Março/2026",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 4786,
+      "operational": 5736,
+      "total": 6671
+     }
+    ],
+    "Chapadão do Sul-MS": [
+     {
+      "season": "2013",
+      "month": "",
+      "system": "MILHO SEGUNDA SAFRA - Transgênico",
+      "yield_kg_ha": null,
+      "variable": 1300,
+      "operational": 1461,
+      "total": 1960
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 2868,
+      "operational": 2953,
+      "total": 3119
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 5053,
+      "operational": 5142,
+      "total": 5569
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 4186,
+      "operational": 4455,
+      "total": 5732
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 3443,
+      "operational": 3642,
+      "total": 5646
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 4210,
+      "operational": 4418,
+      "total": 6355
+     }
+    ],
+    "Dourados-MS": [
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5400,
+      "variable": 2447,
+      "operational": 3254,
+      "total": 3357
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5400,
+      "variable": 4380,
+      "operational": 5526,
+      "total": 6153
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5100,
+      "variable": 3347,
+      "operational": 3971,
+      "total": 5743
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5100,
+      "variable": 2933,
+      "operational": 3506,
+      "total": 5339
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5100,
+      "variable": 3032,
+      "operational": 3675,
+      "total": 5458
+     },
+     {
+      "season": "2026",
+      "month": "Março/2026",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5100,
+      "variable": 3242,
+      "operational": 3884,
+      "total": 5907
+     }
+    ],
+    "Primavera do Leste-MT": [
+     {
+      "season": "1997",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 273,
+      "operational": 334,
+      "total": 373
+     },
+     {
+      "season": "1998",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO EFETIVO",
+      "yield_kg_ha": null,
+      "variable": 313,
+      "operational": 388,
+      "total": 514
+     },
+     {
+      "season": "1999",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 324,
+      "operational": 398,
+      "total": 524
+     },
+     {
+      "season": "2000",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 411,
+      "operational": 485,
+      "total": 611
+     },
+     {
+      "season": "2001",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 432,
+      "operational": 533,
+      "total": 678
+     },
+     {
+      "season": "2002",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 507,
+      "operational": 608,
+      "total": 750
+     },
+     {
+      "season": "2003",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 660,
+      "operational": 771,
+      "total": 916
+     },
+     {
+      "season": "2004",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 733,
+      "operational": 881,
+      "total": 1011
+     },
+     {
+      "season": "2005",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 753,
+      "operational": 912,
+      "total": 1052
+     },
+     {
+      "season": "2006",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 785,
+      "operational": 967,
+      "total": 1127
+     },
+     {
+      "season": "2007",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 807,
+      "operational": 965,
+      "total": 1102
+     },
+     {
+      "season": "2008",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 1158,
+      "operational": 1346,
+      "total": 1502
+     },
+     {
+      "season": "2009",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 980,
+      "operational": 1161,
+      "total": 1379
+     },
+     {
+      "season": "2010",
+      "month": "",
+      "system": "MILHO 2ª SAFRA- PLANTIO DIRETO (100%)",
+      "yield_kg_ha": null,
+      "variable": 936,
+      "operational": 1131,
+      "total": 1360
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 2671,
+      "operational": 2987,
+      "total": 3100
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 4645,
+      "operational": 5192,
+      "total": 5981
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 3785,
+      "operational": 4338,
+      "total": 5961
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 3440,
+      "operational": 3999,
+      "total": 5485
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 3542,
+      "operational": 4117,
+      "total": 5558
+     }
+    ],
+    "Campo Verde-MT": [
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 2900,
+      "operational": 3297,
+      "total": 3406
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 4978,
+      "operational": 6179,
+      "total": 7410
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 4387,
+      "operational": 5524,
+      "total": 8053
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 3750,
+      "operational": 4851,
+      "total": 7189
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 3837,
+      "operational": 4942,
+      "total": 7199
+     }
+    ],
+    "Campo Novo do Parecis-MT": [
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 2782,
+      "operational": 3561,
+      "total": 3655
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 4179,
+      "operational": 5412,
+      "total": 6068
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 3887,
+      "operational": 5036,
+      "total": 6389
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 3327,
+      "operational": 4433,
+      "total": 5664
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 3350,
+      "operational": 4466,
+      "total": 5659
+     }
+    ],
+    "Sorriso-MT": [
+     {
+      "season": "2020",
+      "month": "",
+      "system": "PRODUTO: MILHO EM GRÃOS - 2ª SAFRA - PD-OGM (92%)",
+      "yield_kg_ha": null,
+      "variable": 2381,
+      "operational": 2660,
+      "total": 2704
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 7200,
+      "variable": 2896,
+      "operational": 3275,
+      "total": 3312
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 7200,
+      "variable": 5193,
+      "operational": 5706,
+      "total": 5849
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 7200,
+      "variable": 4537,
+      "operational": 5030,
+      "total": 5328
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 7200,
+      "variable": 3767,
+      "operational": 4229,
+      "total": 4487
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 7200,
+      "variable": 3709,
+      "operational": 4225,
+      "total": 4477
+     },
+     {
+      "season": "2026",
+      "month": "Março/2026",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 7200,
+      "variable": 3697,
+      "operational": 4201,
+      "total": 4501
+     }
+    ],
+    "Tucumã-PA": [
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO CONVENCIONAL - ALTA TECNOLOGIA",
+      "yield_kg_ha": 5700,
+      "variable": 5341,
+      "operational": 6176,
+      "total": 6809
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO CONVENCIONAL - ALTA TECNOLOGIA",
+      "yield_kg_ha": 5700,
+      "variable": 5807,
+      "operational": 6733,
+      "total": 7355
+     }
+    ],
+    "Cascavel-PR": [
+     {
+      "season": "2026",
+      "month": "Março/2026",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": null,
+      "variable": 5407,
+      "operational": 6322,
+      "total": 9224
+     }
+    ],
+    "Londrina-PR": [
+     {
+      "season": "1999",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 408,
+      "operational": 461,
+      "total": 569
+     },
+     {
+      "season": "2000",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 426,
+      "operational": 479,
+      "total": 587
+     },
+     {
+      "season": "2001",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 440,
+      "operational": 509,
+      "total": 627
+     },
+     {
+      "season": "2002",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 483,
+      "operational": 551,
+      "total": 669
+     },
+     {
+      "season": "2003",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 673,
+      "operational": 754,
+      "total": 876
+     },
+     {
+      "season": "2004",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 755,
+      "operational": 850,
+      "total": 984
+     },
+     {
+      "season": "2005",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 714,
+      "operational": 819,
+      "total": 963
+     },
+     {
+      "season": "2006",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 728,
+      "operational": 832,
+      "total": 973
+     },
+     {
+      "season": "2007",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 799,
+      "operational": 910,
+      "total": 1058
+     },
+     {
+      "season": "2008",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 911,
+      "operational": 1026,
+      "total": 1179
+     },
+     {
+      "season": "2009",
+      "month": "",
+      "system": "MILHO 2ª SAFRA  - PLANTIO DIRETO (100%)",
+      "yield_kg_ha": null,
+      "variable": 1108,
+      "operational": 1225,
+      "total": 1491
+     },
+     {
+      "season": "2010",
+      "month": "",
+      "system": "MILHO 2ª SAFRA  - PLANTIO DIRETO (100%)",
+      "yield_kg_ha": null,
+      "variable": 954,
+      "operational": 1102,
+      "total": 1369
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5700,
+      "variable": 3559,
+      "operational": 4770,
+      "total": 4987
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5700,
+      "variable": 5928,
+      "operational": 7384,
+      "total": 8119
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5700,
+      "variable": 5209,
+      "operational": 6926,
+      "total": 8543
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5700,
+      "variable": 4645,
+      "operational": 6084,
+      "total": 7428
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5700,
+      "variable": 4599,
+      "operational": 6180,
+      "total": 7499
+     },
+     {
+      "season": "2026",
+      "month": "Março/2026",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5700,
+      "variable": 4678,
+      "operational": 6218,
+      "total": 7677
+     }
+    ],
+    "Campo Mourão-PR": [
+     {
+      "season": "1999",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 238,
+      "operational": 265,
+      "total": 346
+     },
+     {
+      "season": "2002",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 328,
+      "operational": 453,
+      "total": 616
+     },
+     {
+      "season": "2003",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 368,
+      "operational": 500,
+      "total": 663
+     },
+     {
+      "season": "2004",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 481,
+      "operational": 656,
+      "total": 858
+     },
+     {
+      "season": "2005",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 505,
+      "operational": 686,
+      "total": 893
+     },
+     {
+      "season": "2006",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 475,
+      "operational": 660,
+      "total": 869
+     },
+     {
+      "season": "2007",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 507,
+      "operational": 696,
+      "total": 908
+     },
+     {
+      "season": "2008",
+      "month": "",
+      "system": "MILHO 2ª SAFRA - PLANTIO DIRETO (100%)",
+      "yield_kg_ha": null,
+      "variable": 727,
+      "operational": 924,
+      "total": 1144
+     },
+     {
+      "season": "2009",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 503,
+      "operational": 717,
+      "total": 944
+     },
+     {
+      "season": "2010",
+      "month": "",
+      "system": "MILHO 2ª SAFRA - PLANTIO DIRETO (100%)",
+      "yield_kg_ha": null,
+      "variable": 493,
+      "operational": 734,
+      "total": 980
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6500,
+      "variable": 3689,
+      "operational": 4129,
+      "total": 4469
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6500,
+      "variable": 5497,
+      "operational": 6119,
+      "total": 7379
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6500,
+      "variable": 4848,
+      "operational": 5861,
+      "total": 8555
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6500,
+      "variable": 4381,
+      "operational": 5240,
+      "total": 7528
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6500,
+      "variable": 4939,
+      "operational": 5850,
+      "total": 8060
+     }
+    ],
+    "Ubiratã-PR": [
+     {
+      "season": "2008",
+      "month": "",
+      "system": "MILHO 2ª SAFRA  - PLANTIO DIRETO",
+      "yield_kg_ha": null,
+      "variable": 1046,
+      "operational": 1247,
+      "total": 1540
+     },
+     {
+      "season": "2009",
+      "month": "",
+      "system": "MILHO 2ª SAFRA  - PLANTIO DIRETO",
+      "yield_kg_ha": null,
+      "variable": 951,
+      "operational": 1149,
+      "total": 1440
+     },
+     {
+      "season": "2010",
+      "month": "",
+      "system": "MILHO 2ª SAFRA  - PLANTIO DIRETO",
+      "yield_kg_ha": null,
+      "variable": 993,
+      "operational": 1198,
+      "total": 1490
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5400,
+      "variable": 3432,
+      "operational": 3816,
+      "total": 4049
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5400,
+      "variable": 5682,
+      "operational": 6310,
+      "total": 7378
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5400,
+      "variable": 5215,
+      "operational": 5882,
+      "total": 8999
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 4828,
+      "operational": 6032,
+      "total": 8739
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 4849,
+      "operational": 6105,
+      "total": 8737
+     }
+    ],
+    "Assis Chateaubriand-PR": [
+     {
+      "season": "2019",
+      "month": "",
+      "system": "PRODUTO MILHO",
+      "yield_kg_ha": null,
+      "variable": 2609,
+      "operational": 2777,
+      "total": 3419
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 3288,
+      "operational": 3693,
+      "total": 4034
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 5012,
+      "operational": 5615,
+      "total": 6727
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6000,
+      "variable": 4223,
+      "operational": 4840,
+      "total": 7884
+     }
+    ],
+    "Francisco Beltrão-PR": [
+     {
+      "season": "2019",
+      "month": "",
+      "system": "PRODUTO MILHO - PLANTIO DIRETO",
+      "yield_kg_ha": null,
+      "variable": 2759,
+      "operational": 3019,
+      "total": 3608
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6600,
+      "variable": 3774,
+      "operational": 4408,
+      "total": 4626
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 6600,
+      "variable": 6343,
+      "operational": 7133,
+      "total": 9244
+     },
+     {
+      "season": "2023",
+      "month": "",
+      "system": "PRODUTO: MILHO",
+      "yield_kg_ha": null,
+      "variable": 5601,
+      "operational": 6552,
+      "total": 11466
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 7000,
+      "variable": 5321,
+      "operational": 6213,
+      "total": 9299
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 7000,
+      "variable": 5258,
+      "operational": 6119,
+      "total": 9076
+     }
+    ],
+    "Marechal Cândido Rondon-PR": [
+     {
+      "season": "2023",
+      "month": "",
+      "system": "PRODUTO: MILHO",
+      "yield_kg_ha": null,
+      "variable": 5375,
+      "operational": 5963,
+      "total": 9373
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5500,
+      "variable": 4648,
+      "operational": 5183,
+      "total": 7452
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5500,
+      "variable": 4229,
+      "operational": 4795,
+      "total": 6992
+     }
+    ],
+    "Assis-SP": [
+     {
+      "season": "2019",
+      "month": "",
+      "system": "PRODUTO - MILHO-2ª SAFRA (SAFRINHA)",
+      "yield_kg_ha": null,
+      "variable": 2377,
+      "operational": 3075,
+      "total": 3578
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4500,
+      "variable": 2627,
+      "operational": 3468,
+      "total": 3615
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4500,
+      "variable": 5374,
+      "operational": 6732,
+      "total": 7242
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA FAMILIAR - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4500,
+      "variable": 4604,
+      "operational": 6024,
+      "total": 7758
+     }
+    ],
+    "Pedro Afonso-TO": [
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - MÉDIA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5400,
+      "variable": 1993,
+      "operational": 2144,
+      "total": 2237
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - MÉDIA TECNOLOGIA - OGM",
+      "yield_kg_ha": 5400,
+      "variable": 4191,
+      "operational": 4365,
+      "total": 4627
+     },
+     {
+      "season": "2023",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4800,
+      "variable": 4142,
+      "operational": 4532,
+      "total": 5074
+     },
+     {
+      "season": "2024",
+      "month": "Março/2024",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4800,
+      "variable": 3848,
+      "operational": 4251,
+      "total": 4723
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4800,
+      "variable": 3843,
+      "operational": 4232,
+      "total": 4686
+     },
+     {
+      "season": "2026",
+      "month": "Março/2026",
+      "system": "AGRICULTURA EMPRESARIAL - MILHO - PLANTIO DIRETO - ALTA TECNOLOGIA - OGM",
+      "yield_kg_ha": 4800,
+      "variable": 3892,
+      "operational": 4261,
+      "total": 4778
+     }
+    ]
+   }
+  },
+  "wheat": {
+   "url": "https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao/arquivos-custo-de-producao/agricolas/seriehistoricacustostrigo1998a2025.xls",
+   "towns": {
+    "Brasília-DF": [
+     {
+      "season": "2012",
+      "month": "",
+      "system": "Trigo - Plantio Direto Irrigado",
+      "yield_kg_ha": null,
+      "variable": 3011,
+      "operational": 3331,
+      "total": 3805
+     },
+     {
+      "season": "2013",
+      "month": "",
+      "system": "Trigo - Plantio Direto Irrigado",
+      "yield_kg_ha": null,
+      "variable": 3328,
+      "operational": 3671,
+      "total": 4149
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": null,
+      "variable": 7374,
+      "operational": 8481,
+      "total": 8766
+     },
+     {
+      "season": "2022-03",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 7200,
+      "variable": 12170,
+      "operational": 14209,
+      "total": 15366
+     },
+     {
+      "season": "2022-11",
+      "month": "Novembro/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 7200,
+      "variable": 12480,
+      "operational": 14639,
+      "total": 16864
+     },
+     {
+      "season": "2023-03",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 7200,
+      "variable": 10564,
+      "operational": 12724,
+      "total": 15120
+     },
+     {
+      "season": "2023-11",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 7200,
+      "variable": 8963,
+      "operational": 11370,
+      "total": 13828
+     },
+     {
+      "season": "2024-11",
+      "month": "Novembro/2024",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 7200,
+      "variable": 9139,
+      "operational": 11998,
+      "total": 14443
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 7200,
+      "variable": 9990,
+      "operational": 13054,
+      "total": 15689
+     },
+     {
+      "season": "2025-11",
+      "month": "Novembro/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 7200,
+      "variable": 9746,
+      "operational": 12678,
+      "total": 15587
+     }
+    ],
+    "São Gotardo-MG": [
+     {
+      "season": "2009",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 2126,
+      "operational": 2562,
+      "total": 3052
+     },
+     {
+      "season": "2010",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 2011,
+      "operational": 2471,
+      "total": 2962
+     },
+     {
+      "season": "2011",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 2165,
+      "operational": 2660,
+      "total": 3172
+     },
+     {
+      "season": "2013",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 2397,
+      "operational": 2910,
+      "total": 3428
+     },
+     {
+      "season": "2020",
+      "month": "Março/2020",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 5100,
+      "variable": 3900,
+      "operational": 4711,
+      "total": 6465
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 5100,
+      "variable": 4694,
+      "operational": 5710,
+      "total": 6278
+     },
+     {
+      "season": "2022-03",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 5100,
+      "variable": 7920,
+      "operational": 9449,
+      "total": 11699
+     },
+     {
+      "season": "2022-11",
+      "month": "Novembro/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 5100,
+      "variable": 7431,
+      "operational": 8877,
+      "total": 13140
+     },
+     {
+      "season": "2023-03",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 5100,
+      "variable": 6825,
+      "operational": 8388,
+      "total": 13867
+     },
+     {
+      "season": "2023-11",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 5100,
+      "variable": 6746,
+      "operational": 8258,
+      "total": 13301
+     },
+     {
+      "season": "2024-11",
+      "month": "Novembro/2024",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 5100,
+      "variable": 7079,
+      "operational": 8607,
+      "total": 13013
+     },
+     {
+      "season": "2025-11",
+      "month": "Novembro/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - IRRIGADO",
+      "yield_kg_ha": 5100,
+      "variable": 7304,
+      "operational": 8855,
+      "total": 14996
+     }
+    ],
+    "Laguna Carapã-MS": [
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO CONVENCIONAL - A LANÇO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2300,
+      "variable": 1442,
+      "operational": 1589,
+      "total": 1747
+     },
+     {
+      "season": "2022-03",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2600,
+      "variable": 3596,
+      "operational": 4791,
+      "total": 5371
+     },
+     {
+      "season": "2022-11",
+      "month": "Novembro/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2600,
+      "variable": 2906,
+      "operational": 4053,
+      "total": 5223
+     },
+     {
+      "season": "2023-03",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2600,
+      "variable": 2733,
+      "operational": 3714,
+      "total": 4895
+     },
+     {
+      "season": "2023-11",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2600,
+      "variable": 2454,
+      "operational": 3370,
+      "total": 4616
+     },
+     {
+      "season": "2024-11",
+      "month": "Novembro/2024",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2600,
+      "variable": 2582,
+      "operational": 3554,
+      "total": 4657
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2600,
+      "variable": 2611,
+      "operational": 3497,
+      "total": 4653
+     },
+     {
+      "season": "2025-11",
+      "month": "Novembro/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2600,
+      "variable": 2754,
+      "operational": 3676,
+      "total": 4963
+     }
+    ],
+    "Dois Vizinhos-PR": [
+     {
+      "season": "2023",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 3271,
+      "operational": 4389,
+      "total": 6945
+     },
+     {
+      "season": "2024",
+      "month": "Outubro/2024",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 3262,
+      "operational": 4511,
+      "total": 6743
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 3592,
+      "operational": 4846,
+      "total": 6955
+     },
+     {
+      "season": "2025-11",
+      "month": "Outubro/2025",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 3802,
+      "operational": 5059,
+      "total": 7348
+     }
+    ],
+    "Toledo-PR": [
+     {
+      "season": "1998",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 300,
+      "operational": 359,
+      "total": 461
+     },
+     {
+      "season": "1999",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 401,
+      "operational": 463,
+      "total": 580
+     },
+     {
+      "season": "2000",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 414,
+      "operational": 479,
+      "total": 580
+     },
+     {
+      "season": "2001",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 452,
+      "operational": 512,
+      "total": 623
+     },
+     {
+      "season": "2002",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 470,
+      "operational": 552,
+      "total": 674
+     },
+     {
+      "season": "2003",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 695,
+      "operational": 821,
+      "total": 1017
+     },
+     {
+      "season": "2004",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 786,
+      "operational": 933,
+      "total": 1142
+     }
+    ],
+    "Ubiratã-PR": [
+     {
+      "season": "2005",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 805,
+      "operational": 952,
+      "total": 1182
+     },
+     {
+      "season": "2006",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 729,
+      "operational": 857,
+      "total": 1112
+     },
+     {
+      "season": "2007",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 724,
+      "operational": 865,
+      "total": 1126
+     },
+     {
+      "season": "2008",
+      "month": "",
+      "system": "TRIGO - PD",
+      "yield_kg_ha": null,
+      "variable": 1033,
+      "operational": 1227,
+      "total": 1449
+     },
+     {
+      "season": "2009",
+      "month": "",
+      "system": "TRIGO - PD",
+      "yield_kg_ha": null,
+      "variable": 1087,
+      "operational": 1284,
+      "total": 1506
+     },
+     {
+      "season": "2010",
+      "month": "",
+      "system": "TRIGO - PD",
+      "yield_kg_ha": null,
+      "variable": 939,
+      "operational": 1148,
+      "total": 1373
+     },
+     {
+      "season": "2013",
+      "month": "",
+      "system": "TRIGO - PD",
+      "yield_kg_ha": null,
+      "variable": 1332,
+      "operational": 1582,
+      "total": 2317
+     },
+     {
+      "season": "2020",
+      "month": "Março/2020",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 2270,
+      "operational": 3284,
+      "total": 4262
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 2946,
+      "operational": 4148,
+      "total": 4443
+     },
+     {
+      "season": "2022-03",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 5085,
+      "operational": 6709,
+      "total": 8031
+     },
+     {
+      "season": "2022-11",
+      "month": "Novembro/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 4687,
+      "operational": 6623,
+      "total": 10214
+     },
+     {
+      "season": "2023-03",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 4038,
+      "operational": 6007,
+      "total": 9881
+     },
+     {
+      "season": "2023-11",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 3762,
+      "operational": 5661,
+      "total": 9194
+     },
+     {
+      "season": "2024-11",
+      "month": "Novembro/2024",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 3784,
+      "operational": 5754,
+      "total": 8792
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 3824,
+      "operational": 5869,
+      "total": 9071
+     },
+     {
+      "season": "2025-11",
+      "month": "Novembro/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 3813,
+      "operational": 5793,
+      "total": 9325
+     }
+    ],
+    "Londrina-PR": [
+     {
+      "season": "1999",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 451,
+      "operational": 506,
+      "total": 617
+     },
+     {
+      "season": "2000",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 521,
+      "operational": 566,
+      "total": 689
+     },
+     {
+      "season": "2001",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 526,
+      "operational": 571,
+      "total": 694
+     },
+     {
+      "season": "2002",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 720,
+      "operational": 774,
+      "total": 889
+     },
+     {
+      "season": "2003",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 1121,
+      "operational": 1199,
+      "total": 1383
+     },
+     {
+      "season": "2004",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 1301,
+      "operational": 1409,
+      "total": 1622
+     },
+     {
+      "season": "2005",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 1138,
+      "operational": 1240,
+      "total": 1452
+     },
+     {
+      "season": "2006",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 1049,
+      "operational": 1146,
+      "total": 1390
+     },
+     {
+      "season": "2007",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 977,
+      "operational": 1083,
+      "total": 1333
+     },
+     {
+      "season": "2008",
+      "month": "",
+      "system": "TRIGO - Plantio Direto",
+      "yield_kg_ha": null,
+      "variable": 1267,
+      "operational": 1445,
+      "total": 1629
+     },
+     {
+      "season": "2009",
+      "month": "",
+      "system": "TRIGO - Plantio Direto",
+      "yield_kg_ha": null,
+      "variable": 1318,
+      "operational": 1563,
+      "total": 1858
+     },
+     {
+      "season": "2010",
+      "month": "",
+      "system": "TRIGO - Plantio Direto",
+      "yield_kg_ha": null,
+      "variable": 1190,
+      "operational": 1431,
+      "total": 1727
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3117,
+      "variable": 2856,
+      "operational": 3917,
+      "total": 4118
+     },
+     {
+      "season": "2022-03",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3117,
+      "variable": 5097,
+      "operational": 6396,
+      "total": 7092
+     },
+     {
+      "season": "2022-11",
+      "month": "Novembro/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3200,
+      "variable": 4940,
+      "operational": 6432,
+      "total": 8327
+     },
+     {
+      "season": "2023-03",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3200,
+      "variable": 4301,
+      "operational": 5786,
+      "total": 7884
+     },
+     {
+      "season": "2023-11",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3200,
+      "variable": 3722,
+      "operational": 5138,
+      "total": 7064
+     },
+     {
+      "season": "2024-11",
+      "month": "Novembro/2024",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3200,
+      "variable": 3907,
+      "operational": 5251,
+      "total": 6845
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3200,
+      "variable": 3977,
+      "operational": 5314,
+      "total": 6995
+     },
+     {
+      "season": "2025-11",
+      "month": "Novembro/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3200,
+      "variable": 4050,
+      "operational": 5377,
+      "total": 7236
+     }
+    ],
+    "Cascavel-PR": [
+     {
+      "season": "2004",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 1147,
+      "operational": 1259,
+      "total": 1471
+     },
+     {
+      "season": "2005",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 989,
+      "operational": 1096,
+      "total": 1307
+     },
+     {
+      "season": "2006",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 897,
+      "operational": 1003,
+      "total": 1214
+     },
+     {
+      "season": "2007",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 929,
+      "operational": 1043,
+      "total": 1343
+     },
+     {
+      "season": "2008",
+      "month": "",
+      "system": "TRIGO - PD",
+      "yield_kg_ha": null,
+      "variable": 1288,
+      "operational": 1472,
+      "total": 1645
+     },
+     {
+      "season": "2009",
+      "month": "",
+      "system": "TRIGO - PD",
+      "yield_kg_ha": null,
+      "variable": 1299,
+      "operational": 1508,
+      "total": 1682
+     },
+     {
+      "season": "2010",
+      "month": "",
+      "system": "TRIGO - PD",
+      "yield_kg_ha": null,
+      "variable": 1149,
+      "operational": 1393,
+      "total": 1571
+     },
+     {
+      "season": "2013",
+      "month": "",
+      "system": "TRIGO - PD",
+      "yield_kg_ha": null,
+      "variable": 1417,
+      "operational": 1690,
+      "total": 2161
+     },
+     {
+      "season": "2020",
+      "month": "Março/2020",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3180,
+      "variable": 2400,
+      "operational": 2881,
+      "total": 3865
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3180,
+      "variable": 3220,
+      "operational": 3771,
+      "total": 4087
+     },
+     {
+      "season": "2022-03",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3180,
+      "variable": 4606,
+      "operational": 5324,
+      "total": 6253
+     },
+     {
+      "season": "2022-11",
+      "month": "Novembro/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3180,
+      "variable": 4452,
+      "operational": 5200,
+      "total": 8762
+     },
+     {
+      "season": "2023-03",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3180,
+      "variable": 4042,
+      "operational": 4796,
+      "total": 8637
+     },
+     {
+      "season": "2023-11",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 3720,
+      "operational": 5050,
+      "total": 7591
+     },
+     {
+      "season": "2024-11",
+      "month": "Novembro/2024",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 3843,
+      "operational": 5280,
+      "total": 7455
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 3999,
+      "operational": 5396,
+      "total": 7668
+     },
+     {
+      "season": "2025-11",
+      "month": "Novembro/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 3824,
+      "operational": 5214,
+      "total": 7731
+     }
+    ],
+    "Ponta Grossa-PR": [
+     {
+      "season": "2020",
+      "month": "Março/2020",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 2537,
+      "operational": 2899,
+      "total": 3692
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 3203,
+      "operational": 3805,
+      "total": 4092
+     },
+     {
+      "season": "2022-03",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 5532,
+      "operational": 6459,
+      "total": 7449
+     },
+     {
+      "season": "2022-11",
+      "month": "Novembro/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 4784,
+      "operational": 5718,
+      "total": 8199
+     },
+     {
+      "season": "2023-03",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 4803,
+      "operational": 5759,
+      "total": 8445
+     },
+     {
+      "season": "2023-11",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 4321,
+      "operational": 5225,
+      "total": 7655
+     },
+     {
+      "season": "2024-11",
+      "month": "Novembro/2024",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 4070,
+      "operational": 4946,
+      "total": 7004
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 4494,
+      "operational": 5401,
+      "total": 7565
+     },
+     {
+      "season": "2025-11",
+      "month": "Novembro/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 4334,
+      "operational": 5139,
+      "total": 7489
+     }
+    ],
+    "Guarapuava-PR": [
+     {
+      "season": "2019",
+      "month": "",
+      "system": "PRODUTO TRIGO",
+      "yield_kg_ha": null,
+      "variable": 2365,
+      "operational": 2845,
+      "total": 2996
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3600,
+      "variable": 3786,
+      "operational": 4765,
+      "total": 4983
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3600,
+      "variable": 5991,
+      "operational": 7181,
+      "total": 7886
+     },
+     {
+      "season": "2023-03",
+      "month": "Março/2023",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3600,
+      "variable": 4572,
+      "operational": 5895,
+      "total": 7894
+     },
+     {
+      "season": "2023-11",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3600,
+      "variable": 3933,
+      "operational": 5207,
+      "total": 7033
+     },
+     {
+      "season": "2024-10",
+      "month": "Outubro/2024",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3600,
+      "variable": 4207,
+      "operational": 5568,
+      "total": 7536
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3600,
+      "variable": 4036,
+      "operational": 5403,
+      "total": 7475
+     }
+    ],
+    "Capanema-PR": [
+     {
+      "season": "2017",
+      "month": "",
+      "system": "PRODUTO: TRIGO PD",
+      "yield_kg_ha": null,
+      "variable": 1679,
+      "operational": 1989,
+      "total": 3101
+     },
+     {
+      "season": "2018",
+      "month": "",
+      "system": "PRODUTO: TRIGO PD",
+      "yield_kg_ha": null,
+      "variable": 1700,
+      "operational": 2014,
+      "total": 2849
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2700,
+      "variable": 2638,
+      "operational": 3732,
+      "total": 3959
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3300,
+      "variable": 3961,
+      "operational": 5130,
+      "total": 6068
+     },
+     {
+      "season": "2023-03",
+      "month": "Março/2023",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3300,
+      "variable": 3198,
+      "operational": 4339,
+      "total": 6604
+     },
+     {
+      "season": "2023-11",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3300,
+      "variable": 2873,
+      "operational": 4049,
+      "total": 6166
+     },
+     {
+      "season": "2024-10",
+      "month": "Outubro/2024",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3300,
+      "variable": 2807,
+      "operational": 4081,
+      "total": 5917
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3300,
+      "variable": 3096,
+      "operational": 4400,
+      "total": 6209
+     }
+    ],
+    "Passo Fundo-RS": [
+     {
+      "season": "2001",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 464,
+      "operational": 548,
+      "total": 654
+     },
+     {
+      "season": "2002",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 574,
+      "operational": 673,
+      "total": 804
+     },
+     {
+      "season": "2003",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 805,
+      "operational": 953,
+      "total": 1163
+     },
+     {
+      "season": "2004",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 940,
+      "operational": 1146,
+      "total": 1390
+     },
+     {
+      "season": "2005",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 750,
+      "operational": 945,
+      "total": 1183
+     },
+     {
+      "season": "2006",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 795,
+      "operational": 952,
+      "total": 1180
+     },
+     {
+      "season": "2007",
+      "month": "",
+      "system": "CUSTO DE PRODUÇÃO ESTIMADO",
+      "yield_kg_ha": null,
+      "variable": 828,
+      "operational": 977,
+      "total": 1200
+     },
+     {
+      "season": "2008",
+      "month": "",
+      "system": "TRIGO - PLANTIO DIRETO (ALTA UTILIZAÇÃO DE INSUMOS)",
+      "yield_kg_ha": null,
+      "variable": 1095,
+      "operational": 1257,
+      "total": 1594
+     },
+     {
+      "season": "2009",
+      "month": "",
+      "system": "TRIGO - PLANTIO DIRETO (ALTA UTILIZAÇÃO DE INSUMOS)",
+      "yield_kg_ha": null,
+      "variable": 1029,
+      "operational": 1231,
+      "total": 1575
+     },
+     {
+      "season": "2010",
+      "month": "",
+      "system": "TRIGO - PLANTIO DIRETO (ALTA UTILIZAÇÃO DE INSUMOS)",
+      "yield_kg_ha": null,
+      "variable": 955,
+      "operational": 1150,
+      "total": 1490
+     },
+     {
+      "season": "2011",
+      "month": "",
+      "system": "TRIGO - PLANTIO DIRETO (ALTA UTILIZAÇÃO DE INSUMOS)",
+      "yield_kg_ha": null,
+      "variable": 1071,
+      "operational": 1269,
+      "total": 1609
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2900,
+      "variable": 2928,
+      "operational": 3351,
+      "total": 3507
+     },
+     {
+      "season": "2022-03",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3420,
+      "variable": 6366,
+      "operational": 7778,
+      "total": 8729
+     },
+     {
+      "season": "2022-11",
+      "month": "Novembro/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3420,
+      "variable": 5489,
+      "operational": 6910,
+      "total": 8573
+     },
+     {
+      "season": "2023-03",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3420,
+      "variable": 4815,
+      "operational": 6194,
+      "total": 7915
+     },
+     {
+      "season": "2023-11",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3420,
+      "variable": 4662,
+      "operational": 6005,
+      "total": 7729
+     },
+     {
+      "season": "2024-11",
+      "month": "Novembro/2024",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3420,
+      "variable": 4550,
+      "operational": 5910,
+      "total": 7352
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3420,
+      "variable": 4641,
+      "operational": 6017,
+      "total": 7544
+     },
+     {
+      "season": "2025-11",
+      "month": "Novembro/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3420,
+      "variable": 4696,
+      "operational": 6054,
+      "total": 7764
+     }
+    ],
+    "Cruz Alta-RS": [
+     {
+      "season": "2007",
+      "month": "",
+      "system": "TRIGO - PLANTIO DIRETO (ALTA UTILIZAÇÃO DE INSUMOS)",
+      "yield_kg_ha": null,
+      "variable": 924,
+      "operational": 1071,
+      "total": 1401
+     },
+     {
+      "season": "2008",
+      "month": "",
+      "system": "TRIGO - PLANTIO DIRETO (ALTA UTILIZAÇÃO DE INSUMOS)",
+      "yield_kg_ha": null,
+      "variable": 1240,
+      "operational": 1413,
+      "total": 1809
+     },
+     {
+      "season": "2009",
+      "month": "",
+      "system": "TRIGO - PLANTIO DIRETO (ALTA UTILIZAÇÃO DE INSUMOS)",
+      "yield_kg_ha": null,
+      "variable": 906,
+      "operational": 1096,
+      "total": 1498
+     },
+     {
+      "season": "2010",
+      "month": "",
+      "system": "TRIGO - PLANTIO DIRETO (ALTA UTILIZAÇÃO DE INSUMOS)",
+      "yield_kg_ha": null,
+      "variable": 906,
+      "operational": 1097,
+      "total": 1498
+     },
+     {
+      "season": "2011",
+      "month": "",
+      "system": "TRIGO - PLANTIO DIRETO (ALTA UTILIZAÇÃO DE INSUMOS)",
+      "yield_kg_ha": null,
+      "variable": 1040,
+      "operational": 1234,
+      "total": 1636
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2900,
+      "variable": 2963,
+      "operational": 3474,
+      "total": 3645
+     },
+     {
+      "season": "2022-03",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2700,
+      "variable": 4789,
+      "operational": 6221,
+      "total": 6568
+     },
+     {
+      "season": "2022-11",
+      "month": "Novembro/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2700,
+      "variable": 4338,
+      "operational": 5708,
+      "total": 6346
+     },
+     {
+      "season": "2023-03",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2700,
+      "variable": 3905,
+      "operational": 5185,
+      "total": 5840
+     },
+     {
+      "season": "2023-11",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2700,
+      "variable": 3567,
+      "operational": 4736,
+      "total": 5617
+     },
+     {
+      "season": "2024-11",
+      "month": "Novembro/2024",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2700,
+      "variable": 3525,
+      "operational": 4660,
+      "total": 5394
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2700,
+      "variable": 3539,
+      "operational": 4709,
+      "total": 5523
+     },
+     {
+      "season": "2025-11",
+      "month": "Novembro/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 2700,
+      "variable": 3572,
+      "operational": 4731,
+      "total": 5681
+     }
+    ],
+    "Ajuricaba-RS": [
+     {
+      "season": "2016",
+      "month": "",
+      "system": "TRIGO EM GRÃOS - PD - CONVENCIONAL",
+      "yield_kg_ha": null,
+      "variable": 1535,
+      "operational": 1782,
+      "total": 2451
+     },
+     {
+      "season": "2017",
+      "month": "",
+      "system": "TRIGO EM GRÃOS - PD - CONVENCIONAL",
+      "yield_kg_ha": null,
+      "variable": 1498,
+      "operational": 1770,
+      "total": 2438
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3300,
+      "variable": 2293,
+      "operational": 2670,
+      "total": 2858
+     },
+     {
+      "season": "2022",
+      "month": "Março/2022",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3300,
+      "variable": 4019,
+      "operational": 4676,
+      "total": 5307
+     },
+     {
+      "season": "2023-03",
+      "month": "Março/2023",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3300,
+      "variable": 3044,
+      "operational": 3683,
+      "total": 4829
+     },
+     {
+      "season": "2023-11",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3300,
+      "variable": 2903,
+      "operational": 3604,
+      "total": 5245
+     },
+     {
+      "season": "2024-10",
+      "month": "Outubro/2024",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3300,
+      "variable": 2715,
+      "operational": 3387,
+      "total": 4771
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3300,
+      "variable": 2841,
+      "operational": 3572,
+      "total": 5162
+     }
+    ],
+    "São Luiz Gonzaga-RS": [
+     {
+      "season": "2022",
+      "month": "Novembro/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": null,
+      "variable": 5264,
+      "operational": 6581,
+      "total": 7141
+     },
+     {
+      "season": "2023-03",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": null,
+      "variable": 4610,
+      "operational": 5914,
+      "total": 6524
+     },
+     {
+      "season": "2023-11",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": null,
+      "variable": 4264,
+      "operational": 5593,
+      "total": 6516
+     },
+     {
+      "season": "2024-11",
+      "month": "Novembro/2024",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": null,
+      "variable": 4307,
+      "operational": 5702,
+      "total": 6523
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": null,
+      "variable": 4381,
+      "operational": 5776,
+      "total": 6647
+     },
+     {
+      "season": "2025-11",
+      "month": "Novembro/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": null,
+      "variable": 4442,
+      "operational": 5858,
+      "total": 6853
+     }
+    ],
+    "Liberato Salzano-RS": [
+     {
+      "season": "2024",
+      "month": "Outubro/2024",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": null,
+      "variable": 4309,
+      "operational": 5022,
+      "total": 5778
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": null,
+      "variable": 4573,
+      "operational": 5282,
+      "total": 6130
+     }
+    ],
+    "Santa Rosa-RS": [
+     {
+      "season": "2024",
+      "month": "Outubro/2024",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 3630,
+      "operational": 4178,
+      "total": 6323
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 3681,
+      "operational": 4259,
+      "total": 6463
+     },
+     {
+      "season": "2025-11",
+      "month": "Outubro/2025",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3000,
+      "variable": 3567,
+      "operational": 4175,
+      "total": 6202
+     }
+    ],
+    "Itaberá-SP": [
+     {
+      "season": "2023",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3840,
+      "variable": 3919,
+      "operational": 4496,
+      "total": 6013
+     },
+     {
+      "season": "2024",
+      "month": "Outubro/2024",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3840,
+      "variable": 4140,
+      "operational": 4631,
+      "total": 5810
+     },
+     {
+      "season": "2025",
+      "month": "Março/2025",
+      "system": "AGRICULTURA FAMILIAR - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3840,
+      "variable": 4377,
+      "operational": 4772,
+      "total": 6141
+     }
+    ],
+    "Itapeva-SP": [
+     {
+      "season": "2020",
+      "month": "Março/2020",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3250,
+      "variable": 2496,
+      "operational": 2994,
+      "total": 3890
+     },
+     {
+      "season": "2021",
+      "month": "Março/2021",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3250,
+      "variable": 3255,
+      "operational": 3979,
+      "total": 4300
+     },
+     {
+      "season": "2022-03",
+      "month": "Março/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3250,
+      "variable": 5502,
+      "operational": 6379,
+      "total": 7381
+     },
+     {
+      "season": "2022-11",
+      "month": "Novembro/2022",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3250,
+      "variable": 5087,
+      "operational": 5900,
+      "total": 7828
+     },
+     {
+      "season": "2023-03",
+      "month": "Março/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3250,
+      "variable": 4751,
+      "operational": 5658,
+      "total": 7788
+     },
+     {
+      "season": "2023-11",
+      "month": "Novembro/2023",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 3603,
+      "operational": 5279,
+      "total": 6025
+     },
+     {
+      "season": "2024-11",
+      "month": "Novembro/2024",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 3579,
+      "operational": 4966,
+      "total": 5615
+     },
+     {
+      "season": "2025-03",
+      "month": "Março/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 3700,
+      "operational": 4942,
+      "total": 5653
+     },
+     {
+      "season": "2025-11",
+      "month": "Novembro/2025",
+      "system": "AGRICULTURA EMPRESARIAL - TRIGO - PLANTIO DIRETO - ALTA TECNOLOGIA",
+      "yield_kg_ha": 3500,
+      "variable": 3650,
+      "operational": 4745,
+      "total": 5639
+     }
+    ]
+   }
+  }
+ }
+}

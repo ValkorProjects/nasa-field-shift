@@ -1,0 +1,14 @@
+node_modules
+dist
+.DS_Store
+*.local
+.env
+.env.*
+!.env.example
+__pycache__/
+.venv/
+*.pyc
+
+# Recommendation API
+backend/data/cache/
+.pytest_cache/

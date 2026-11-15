@@ -1,0 +1,105 @@
+key,type,sample value in prototype,screens
+alert.frost_years,number/date (shown dotted),3 of 10,7 Pre-planting alert
+alert.planting,number/date (shown dotted),Feb 10,7 Pre-planting alert
+alert.rain_years,number/date (shown dotted),7 of 10,7 Pre-planting alert
+alert.weeks,number/date (shown dotted),4,7 Pre-planting alert
+best.alt,text/label,Option A · Soybean → Wheat,4 Priorities
+best.name,text/label,Option B · Soybean → Cover crop mix,4 Priorities
+conf.level,text/label,Medium,5 Results; 6 Strategy detail
+conf.rules_met,number/date (shown dotted),2 of 4,5 Results; 6 Strategy detail
+crops.second.1,text/label,Corn,2 Crops
+crops.second.2,text/label,Wheat,2 Crops
+crops.second.3,text/label,Cover crop,2 Crops
+crops.second.4,text/label,Leave it empty,2 Crops
+crops.summer.1,text/label,Soybean,2 Crops
+crops.summer.2,text/label,Corn,2 Crops
+crops.summer.3,text/label,Beans,2 Crops
+det.bare_days,number/date (shown dotted),[X],6 Strategy detail
+det.name,text/label,Soybean → Cover crop,6 Strategy detail
+det.rain_years,number/date (shown dotted),7 of the last 10,6 Strategy detail
+det.slope,text/label,gentle,6 Strategy detail
+det.slope_pct,number/date (shown dotted),[X],6 Strategy detail
+ev.current.seasons,number/date (shown dotted),4 of the last 6,5 Results; 6 Strategy detail
+farm.name,text/label,Example Farm,1 Map / Mark field; 10 Costs – big picture; 2 Crops; 3 Soil; 4 Priorities; 5 Results; 6 Strategy detail; 7 Pre-planting alert; 8 How we calculated; 9 Costs – your money
+farm.region,text/label,São Paulo state,1 Map / Mark field; 10 Costs – big picture; 2 Crops; 3 Soil; 4 Priorities; 5 Results; 6 Strategy detail; 7 Pre-planting alert; 8 How we calculated; 9 Costs – your money
+field.1.area,number/date (shown dotted),42,1 Map / Mark field
+field.1.harvest,number/date (shown dotted),early Feb,1 Map / Mark field
+field.1.name,text/label,Field 1,1 Map / Mark field
+field.1.next,text/label,Second-crop corn,1 Map / Mark field
+field.1.planting,number/date (shown dotted),Feb 10,1 Map / Mark field
+field.1.slope,text/label,gentle,1 Map / Mark field
+field.1.summer,text/label,Soybean,1 Map / Mark field
+money.a.avg,number/date (shown dotted),[X],9 Costs – your money
+money.a.dry,number/date (shown dotted),[X],9 Costs – your money
+money.a.name,text/label,Soybean → Wheat,9 Costs – your money
+money.a.normal,number/date (shown dotted),[X],9 Costs – your money
+money.at_risk_max,number/date (shown dotted),[X],5 Results; 9 Costs – your money
+money.at_risk_min,number/date (shown dotted),[X],5 Results; 9 Costs – your money
+money.b.avg,number/date (shown dotted),[X],9 Costs – your money
+money.b.dry,number/date (shown dotted),[X],9 Costs – your money
+money.b.name,text/label,Soybean → Cover crop,9 Costs – your money
+money.b.normal,number/date (shown dotted),[X],9 Costs – your money
+money.current.avg,number/date (shown dotted),[X],9 Costs – your money
+money.current.dry,number/date (shown dotted),[X],9 Costs – your money
+money.current.name,text/label,Soybean → Corn,9 Costs – your money
+money.current.normal,number/date (shown dotted),[X],9 Costs – your money
+money.dry_years,number/date (shown dotted),7 of the last 10,9 Costs – your money
+money.in.area,number/date (shown dotted),42,9 Costs – your money
+money.in.cost,number/date (shown dotted),[X],9 Costs – your money
+money.in.loss,number/date (shown dotted),[X],9 Costs – your money
+money.in.price,number/date (shown dotted),[X],9 Costs – your money
+money.in.yield,number/date (shown dotted),[X],9 Costs – your money
+scen.area,number/date (shown dotted),[X],10 Costs – big picture
+scen.past_drop,number/date (shown dotted),[X],10 Costs – big picture
+scen.past_price,number/date (shown dotted),[X],10 Costs – big picture
+scen.past_year,number/date (shown dotted),[X],10 Costs – big picture
+scen.share,number/date (shown dotted),[X],10 Costs – big picture
+scen.share_br,number/date (shown dotted),[X],10 Costs – big picture
+scen.tonnes,number/date (shown dotted),[X],10 Costs – big picture
+scenario.today,number/date (shown dotted),"Jan 15, 2027",1 Map / Mark field; 10 Costs – big picture; 2 Crops; 3 Soil; 4 Priorities; 5 Results; 6 Strategy detail; 7 Pre-planting alert; 8 How we calculated; 9 Costs – your money
+soil.drainage_est,text/label,drains normally,3 Soil
+soil.slope_pct,number/date (shown dotted),[X],3 Soil
+soil.slope_sat,text/label,gentle slope,3 Soil
+strat.a.bare,text/label,3 months,5 Results; 6 Strategy detail
+strat.a.crop2,text/label,Wheat,5 Results; 6 Strategy detail
+strat.a.erosion,text/label,High risk,5 Results; 6 Strategy detail
+strat.a.frost,text/label,Often,5 Results; 6 Strategy detail
+strat.a.name,text/label,Soybean → Wheat,5 Results; 6 Strategy detail
+strat.a.nitro,text/label,Soybean only,5 Results; 6 Strategy detail
+strat.a.rain,text/label,Usually enough,5 Results; 6 Strategy detail
+strat.a.verdict,text/label,"Needs little rain, but frost and bare soil are risks.",5 Results; 6 Strategy detail
+strat.b.bare,text/label,Never,5 Results; 6 Strategy detail
+strat.b.crop2,text/label,Millet + sunn hemp,5 Results; 6 Strategy detail
+strat.b.erosion,text/label,Low risk,5 Results; 6 Strategy detail
+strat.b.frost,text/label,Little harm,5 Results; 6 Strategy detail
+strat.b.name,text/label,Soybean → Cover crop,5 Results; 6 Strategy detail
+strat.b.nitro,text/label,"Yes, sunn hemp too",5 Results; 6 Strategy detail
+strat.b.rain,text/label,Usually enough,5 Results; 6 Strategy detail
+strat.b.verdict,text/label,Best for soil and water. No grain to sell this season.,5 Results; 6 Strategy detail
+strat.current.bare,text/label,1 month,5 Results; 6 Strategy detail
+strat.current.crop2,text/label,Corn,5 Results; 6 Strategy detail
+strat.current.erosion,text/label,Some risk,5 Results; 6 Strategy detail
+strat.current.frost,text/label,Sometimes,5 Results; 6 Strategy detail
+strat.current.name,text/label,Soybean → Corn,5 Results; 6 Strategy detail
+strat.current.nitro,text/label,Soybean only,5 Results; 6 Strategy detail
+strat.current.rain,text/label,Often too little,5 Results; 6 Strategy detail
+strat.current.verdict,text/label,"Good income, but corn often gets too little rain in April–May.",5 Results; 6 Strategy detail
+map.fields[].polygon,geometry,5 field outlines drawn on the illustrative image,1 Map; 2 Crops; 7 Alert
+map.fields[].status,text/label,Looks fine / Needs attention / High risk,1 Map
+map.basemap,image,Illustrative image (replace with HLS true colour),1 Map; 7 Alert
+map.layer.plant_cover,image,Plant-cover colour layer (HLS NDVI),7 Alert
+alert.card.title + text,text/label,Field 1 needs a look before planting...,1 Map
+alert.modal.title,text/label,Corn may get too little rain on Field 1,7 Alert
+strat.*.light,text/label,Risky / Caution / Good,5 Results; 6 Detail
+strat.*.rows[].answer + tone,text/label,Plain answer per indicator (e.g. 'Often too little') + colour good/watch/bad,5 Results
+strat.*.fits,text/label,"✓ / ~ / ✗ per priority (soil, water, income, cost)",5 Results
+strat.*.evidence,text/label,"Evidence sentence + chip, incl. 'No field data for this crop'",5 Results; 6 Detail
+strat.*.photos,image,Crop photos (illustrative images),2 Crops; 5 Results; 6 Detail
+best.explainer,text/label,Best for you: Option B... / If Income came first...,4 Priorities; 5 Results
+cal.bands.heavy_rain,months,Oct–Mar heavy-rain band,5 Results
+cal.bands.frost,months,Jun–Aug frost band,5 Results
+conf.rules[].status + text,text/label,4 checks with pass / fail,5 Results
+det.why / good / watch_out / unknown,text/label,Sentences and bullets in the detail panel,6 Detail
+alert.context.smap,text/label,Soil in your area is drier than a normal January,7 Alert
+money.in.* sources,text/label,"Source chip per input (IBGE, CEPEA, CONAB, FAO)",9 Costs – your money
+money.chain[],text/label,5 steps field → food price,10 Costs – big picture

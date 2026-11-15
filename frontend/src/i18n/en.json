@@ -1,0 +1,49 @@
+{
+  "app": { "name": "Field Shift" },
+  "banner": {
+    "lead": "SAMPLE DATA",
+    "text": "Prototype: every value, date, place and image below is an example, not a real measurement.",
+    "dotted": "Dotted values",
+    "tail": "will be replaced by real data.",
+    "mixedLead": "REAL + SAMPLE DATA",
+    "mixedText": "Values without a mark come from public data (NASA POWER, SoilGrids, IBGE, CONAB): past records, not forecasts.",
+    "mixedTail": "are still examples."
+  },
+  "nav": {
+    "farm": "My farm",
+    "fields": "My fields",
+    "plant": "When to plant",
+    "alerts": "Alerts",
+    "how": "How we calculated",
+    "help": "Help",
+    "sketch": "sketch",
+    "example": "example"
+  },
+  "top": { "exampleDate": "Example date:" },
+  "steps": ["Mark field", "Crops", "Soil", "Priorities", "Results"],
+  "common": {
+    "back": "← Back",
+    "illustrative": "illustrative image",
+    "illustrativeMap": "Illustrative image · not a real farm",
+    "seeDetails": "See details →",
+    "changePriorities": "Change priorities",
+    "noFieldData": "No field data for this crop"
+  },
+  "agro": {
+    "strong": "This tool supports your decision. It does not replace it.",
+    "rest": "Check with your agronomist before you buy seeds or change your plan."
+  },
+  "scale": {
+    "legend": "Where the data comes from:",
+    "how": "How we calculated →"
+  },
+  "map": {
+    "photo": "Satellite photo",
+    "veg": "Plant cover",
+    "moist": "Soil moisture",
+    "regional": "regional",
+    "fine": "Looks fine",
+    "attention": "Needs attention",
+    "high": "High risk"
+  }
+}
