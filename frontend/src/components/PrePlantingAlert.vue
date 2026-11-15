@@ -34,7 +34,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKey))
         <div class="redtop"><div class="aic"><Icon name="warn" /></div>Before planting · {{ selected?.name }}</div>
         <h2 id="alert-title">{{ a.title }}</h2>
         <p v-if="a.unavailable" class="lead">Pre-planting check not available: {{ a.unavailable }}</p>
-        <p v-else-if="a.weeks.unavailable || a.planting.unavailable" class="lead">Planting date: <SampleValue :v="a.planting" />. {{ a.planting.unavailable }}</p>
+        <p v-else-if="a.weeks?.unavailable || a.planting?.unavailable" class="lead">Planting date: <SampleValue :v="a.planting" />. {{ a.planting.unavailable }}</p>
         <p v-else-if="a.weeks.value === '0'" class="lead">The planting window is open now (from <SampleValue :v="a.planting" />). Decide before you buy seed.</p>
         <p v-else class="lead">Planting starts <SampleValue :v="a.planting" />, in about <SampleValue :v="a.weeks" /> weeks. You still have time to change.</p>
         <div class="fact">

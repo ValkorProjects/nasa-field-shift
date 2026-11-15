@@ -9,15 +9,17 @@ const obj = computed(() => (props.v && typeof props.v === 'object' ? props.v : n
 const MODE_TXT = { mock: 'NASA data from offline copy', cache: 'NASA data from cache', live: 'Live data' }
 const title = computed(() => {
   const v = obj.value
+  if (v?.loading) return 'Loading field data…'
   if (v?.unavailable) return v.unavailable
   if (v?.pending) return 'Coming soon: satellite terrain data is in progress'
   if (v && v.sample === false) return [v.source, MODE_TXT[v.mode]].filter(Boolean).join(' · ') || undefined
   return v?.source ? `Sample value · source: ${v.source}` : 'Sample value'
 })
-const flag = computed(() => (obj.value?.unavailable ? 'na' : obj.value?.pending ? 'soon' : null))
+const flag = computed(() => (obj.value?.loading ? 'load' : obj.value?.unavailable ? 'na' : obj.value?.pending ? 'soon' : null))
 </script>
 <template>
-  <span v-if="flag" :class="['nodata', flag]" :title="title">{{ value }}</span>
+  <span v-if="flag === 'load'" :title="title">{{ value }}</span>
+  <span v-else-if="flag" :class="['nodata', flag]" :title="title">{{ value }}</span>
   <span v-else-if="sample && dotted" class="ex" :title="title">{{ value }}</span>
   <span v-else :title="sample ? undefined : title">{{ value }}</span>
 </template>

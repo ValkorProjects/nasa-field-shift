@@ -48,8 +48,12 @@ export async function getRecommendation({ lat, lon, crop, name }, { signal } = {
   try {
     res = await fetch(`/api/recommendation?${q}`, { signal, headers: { Accept: 'application/json' } })
   } catch (e) {
+    if (timedOut) throw new Error('The backend took too long to answer. Try again.')
     if (e.name === 'AbortError') throw e
     throw new Error('Could not reach the backend. Is it running?')
+  } finally {
+    clearTimeout(timer)
+    signal?.removeEventListener('abort', onAbort)
   }
   if (res.status >= 500) throw new Error(`The backend is not answering (${res.status}). Is it running? In dev, /api is sent to VITE_BACKEND_URL.`)
   if (!res.ok) throw new Error(`Backend answered ${res.status} ${res.statusText}`.trim())
@@ -75,10 +79,16 @@ export async function getFieldProfile({ feature, name }, { signal } = {}) {
     p.mock = true
     return p
   }
+  // Browser-side timeout, combined with the caller's signal.
+  const ctl = new AbortController()
+  let timedOut = false
+  const timer = setTimeout(() => { timedOut = true; ctl.abort() }, 35000)
+  const onAbort = () => ctl.abort()
+  if (signal?.aborted) ctl.abort(); else signal?.addEventListener('abort', onAbort)
   let res
   try {
     res = await fetch('/api/field/profile', {
-      method: 'POST', signal,
+      method: 'POST', signal: ctl.signal,
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: JSON.stringify({ field: feature, name })
     })

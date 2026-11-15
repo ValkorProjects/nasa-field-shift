@@ -63,7 +63,9 @@ test('mock profile and missing profile', () => {
   assert.equal(m.meta.sampleOnly, true)
   assert.equal(m.alert.rain_years.sample, true)
   const n = toFieldData(sample, null, field, ctx)
-  assert.equal(n.alert.rain_years.unavailable, 'Loading field data…')
+  assert.equal(n.alert.rain_years.loading, true)
+  assert.equal(n.alert.rain_years.value, 'Loading…')
+  assert.equal(n.alert.rain_years.unavailable, undefined)
 })
 
 test('reactive (Proxy) sample does not break the adapter', () => {
@@ -108,4 +110,29 @@ test('sampling notes and texts', () => {
   assert.match(d.alert.title, /^Wheat /)
   d = toFieldData(sample, p, field, { ...ctx, nextCrop: 'cover' })
   assert.doesNotMatch(d.alert.title, /^Corn /)
+})
+
+test('loading leaves are not errors; real errors stay "Not available"', () => {
+  const l = toFieldData(sample, null, field, { ...ctx, apiMode: 'api', loading: true })
+  for (const leaf of [l.soil.texture_est, l.alert.rain_years, l.money.dry_years, l.field.planting, l.strategies[0].rows[0].answer]) {
+    assert.equal(leaf.loading, true)
+    assert.equal(leaf.unavailable, undefined)
+  }
+  const e = toFieldData(sample, null, field, { ...ctx, apiMode: 'api', error: 'boom' })
+  assert.equal(e.soil.texture_est.value, 'Not available')
+  assert.equal(e.soil.texture_est.unavailable, 'boom')
+  assert.equal(e.soil.texture_est.loading, undefined)
+})
+
+test('mock mode marks drawer texts as example text', () => {
+  const m = toFieldData(sample, { ...contract, mock: true }, field, ctx)
+  for (const d of Object.values(m.details)) assert.equal(d.sampleText, true)
+})
+
+test('why has a fallback when there are no past records', () => {
+  const p = structuredClone(contract)
+  p.weather_summary.data.by_year_month = []
+  const d = toFieldData(sample, p, field, ctx)
+  assert.doesNotMatch(d.details.current.why, /Past records: \./)
+  assert.match(d.details.current.why, /Past weather records for this field are not available yet\./)
 })

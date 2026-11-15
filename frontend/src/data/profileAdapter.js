@@ -2,6 +2,7 @@
 // Pure (no Vue). Starts from the sample and overwrites only the leaves that have a real source;
 // everything without a source stays `sample: true` (dotted on screen).
 //   real leaf        { value, sample:false, source, scale, mode }
+//   loading          { value:'Loading…', sample:false, loading:true, ... }
 //   failed block     { value:'Not available', sample:false, unavailable:'<reason>', source, scale }
 //   terrain pending  { value:'Coming soon', sample:false, pending:true, ... }
 import {
@@ -10,7 +11,8 @@ import {
 } from './rules.js'
 
 export const real = (value, source, scale, mode = null) => ({ value, sample: false, source, scale, mode })
-export const missing = (reason, source, scale) => ({ value: 'Not available', sample: false, unavailable: reason || 'Not available', source, scale })
+const loadingLeaf = (source, scale) => ({ value: 'Loading…', sample: false, loading: true, source, scale })
+export const missingLeaf = (reason, source, scale) => ({ value: 'Not available', sample: false, unavailable: reason || 'Not available', source, scale })
 const pending = (source = 'NASADEM / SRTM (in progress)') => ({ value: 'Coming soon', sample: false, pending: true, source, scale: 'field' })
 
 const POWER = 'NASA POWER'
@@ -55,6 +57,7 @@ export function toFieldData(sample, profile, field, ctx = {}) {
     if (typeof ctx.areaHa === 'number') setArea(+ctx.areaHa.toFixed(1))
     data.alert.title = alertTitle({ rain: true, frost: false }, name, 'Corn')
     data.meta.sampleOnly = true
+    for (const d of Object.values(data.details)) d.sampleText = true
     data.profile = profile ?? null
     data.blocks = {}
     data.info = {}
@@ -66,6 +69,8 @@ export function toFieldData(sample, profile, field, ctx = {}) {
   // with the real reason; while loading the screens show "loading", not an error.
   const loading = !profile && !ctx.error
   data.meta.loading = loading
+  // Inside this function, "missing" becomes a "Loading…" leaf (no error style) while the answer is pending.
+  const missing = (reason, source, scale) => (loading ? loadingLeaf(source, scale) : missingLeaf(reason, source, scale))
   const noProfile = ctx.error || 'Loading field data…'
   const p = profile ?? {
     field: null,
@@ -195,7 +200,9 @@ export function toFieldData(sample, profile, field, ctx = {}) {
     const parts = []
     if (rain?.total) parts.push(`April–May rain was low in ${ofText(rain, { last: true })} years`)
     if (frost?.total) parts.push(`frost hit in June–August in ${ofText(frost, { last: true })} years`)
-    dc.why = `This is what you plan today. Past records: ${parts.join(' and ')}.`
+    dc.why = parts.length
+      ? `This is what you plan today. Past records: ${parts.join(' and ')}.`
+      : 'This is what you plan today. Past weather records for this field are not available yet.'
     if (rw && rw.tone === 'g') dc.watch = dc.watch.filter((x) => !/Dry April/i.test(x))
     if (fwCorn && fwCorn.tone === 'g') dc.watch = dc.watch.filter((x) => !/frost/i.test(x))
   } else if (dc) {
