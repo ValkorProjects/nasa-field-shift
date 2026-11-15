@@ -32,6 +32,17 @@ const rows = [
         </div>
       </div>
       <div class="card">
+        <div class="h2">Where RollCrop works</div>
+        <div class="howmodes">
+          <div><b>MVP area: Itaberá and Itapeva (SP)</b>
+            <span>Where the team loaded the satellite data. Fields must be inside these two towns (yellow outline on the map).
+              Data comes from live calls, saved copies of them (cache) or the downloaded demo data (shown as "mock").</span></div>
+          <div><b>Exploratory mode: anywhere else in Brazil</b>
+            <span>Live data only: no downloaded data is used. If a source does not answer, that block says "not available"; it is never replaced by examples.
+              Calendars and alerts were validated for São Paulo state only.</span></div>
+        </div>
+      </div>
+      <div class="card">
         <div class="h2">What we show and where it comes from</div>
         <table class="tbl t2">
           <thead><tr><th scope="col">What you see</th><th scope="col">Data</th><th scope="col">How detailed</th><th scope="col">Limit</th></tr></thead>

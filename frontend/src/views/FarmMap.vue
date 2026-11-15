@@ -13,7 +13,8 @@ import PrePlantingAlert from '@/components/PrePlantingAlert.vue'
 import { state, profileOf, ensureProfile } from '@/data/store.js'
 import { apiMode } from '@/api/index.js'
 import { fieldStatus } from '@/data/rules.js'
-import { farm, selected, addField, removeField, resetSample, downloadGeoJSON, areaHa, fmtHa, fieldPath } from '@/data/fields.js'
+import { farm, selected, addField, removeField, removeAllFields, downloadGeoJSON, areaHa, fmtHa, fieldPath, fieldScope, centroidOf } from '@/data/fields.js'
+import { MSG, MVP_TOWNS, inSaoPauloBox } from '@/data/areas.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -35,14 +36,25 @@ const useSample = () => { apiMode.value = 'mock' }
 const retry = () => ensureProfile(f.value, { force: true })
 const PILL = { g: ['pg', 'Looks fine'], y: ['py', 'Needs attention'], r: ['pr', 'High risk'], new: ['pn2', 'Not analysed yet'] }
 
+// issue #39: why the last drawing / corner move was refused
+const rejected = ref('')
+const exploreOutsideSp = computed(() => f.value && fieldScope(f.value) === 'explore' && !inSaoPauloBox(centroidOf(f.value.coords)))
+function explore() { rejected.value = ''; farm.scope = 'explore' }
+const cropName = (season) => state.data?.crops?.[season]?.find((x) => x.id === state.crops[season])?.name
+
 function select(id) {
   if (mode.value === 'draw') return
+  const x = farm.fields.find((y) => y.id === id)
+  if (x && fieldScope(x) !== farm.scope) farm.scope = fieldScope(x) // show the field in its own map mode
   farm.selectedId = id
   mode.value = 'view'
   mapRef.value?.fitField(id)
 }
-function startDraw() { mode.value = 'draw' }
+// refused drawing: leave draw mode (the draft is cleared) and explain why
+function onRejected(msg) { rejected.value = msg; if (mode.value === 'draw') mode.value = 'view' }
+function startDraw() { rejected.value = ''; mode.value = 'draw' }
 async function onDrawn(coords) {
+  rejected.value = ''
   const nf = addField(coords)
   mode.value = 'view'
   await nextTick()
@@ -52,8 +64,8 @@ function del() {
   if (!f.value) return
   if (window.confirm(`Delete ${f.value.name}? This cannot be undone.`)) { removeField(f.value.id); mode.value = 'view' }
 }
-function reset() {
-  if (window.confirm('Replace your fields with the 3 sample fields?')) { resetSample(); mode.value = 'view'; nextTick(() => mapRef.value?.fitAll()) }
+function clearFields() {
+  if (window.confirm('Delete all your fields? This cannot be undone.')) { removeAllFields(); mode.value = 'view'; nextTick(() => mapRef.value?.fitAll()) }
 }
 </script>
 
@@ -63,9 +75,19 @@ function reset() {
       <div class="resh" style="padding:14px 26px 0"><Stepper :cur="1" /></div>
       <div class="content" style="padding-top:12px">
         <FieldMap ref="mapRef" v-model:layer="state.layer" :mode="mode"
-          @select="select" @drawn="onDrawn" />
+          @select="select" @drawn="onDrawn" @rejected="onRejected" />
 
         <div class="panel">
+          <!-- issue #39: drawing refused outside the allowed area -->
+          <div v-if="rejected" class="card scopemsg" role="alert">
+            <b>That field can't be used here.</b>
+            <p class="pp">{{ rejected }}</p>
+            <div class="factions">
+              <button v-if="farm.scope === 'mvp'" class="btn green small" @click="explore">Explore another place in Brazil</button>
+              <button class="btn ghost small" @click="rejected = ''">OK</button>
+            </div>
+          </div>
+
           <!-- drawing -->
           <div v-if="mode === 'draw'" class="card" role="status">
             <div class="h2">Draw a new field</div>
@@ -89,7 +111,7 @@ function reset() {
                 <input v-model="f.name" class="fname" aria-label="Field name" maxlength="40" />
                 <div class="t-sub">
                   {{ fmtHa(areaHa(f.coords)) }} ha · from your map
-                  <template v-if="!loading && !failed"> · slope from satellite: <SampleValue :v="d.field.slope" :dotted="false" /></template>
+                  <template v-if="!loading && !failed"> · slope from satellite: <SampleValue :v="d.field.slope" /></template>
                 </div>
               </div>
             </div>
@@ -102,8 +124,9 @@ function reset() {
               </div>
             </div>
             <template v-else>
-              <div class="kv"><span>Summer crop now</span><b><SampleValue :v="d.field.summer" :dotted="false" /> · harvest <SampleValue :v="d.field.harvest" /></b></div>
-              <div class="kv"><span>Next crop planned</span><b><SampleValue :v="d.field.next" :dotted="false" /> · planting from <SampleValue :v="d.field.planting" /></b></div>
+              <div class="kv"><span>Summer crop</span><b>{{ cropName('summer') ?? 'Not told yet' }}</b></div>
+              <div class="kv"><span>Second crop</span><b>{{ cropName('second') ?? 'Not told yet' }}</b></div>
+              <div v-if="exploreOutsideSp" class="fnote warn">{{ MSG.outsideSp }}</div>
               <div v-if="updating" class="fnote" role="status">Updating the data for the new border…</div>
               <div v-if="d.meta.sampleOnly" class="fnote">Sample values for the demo: they were not computed for this field. Use the real backend (<code>npm run dev:api</code>) for NASA data.</div>
               <div v-if="!demo" class="fnote">
@@ -126,9 +149,11 @@ function reset() {
             </div>
           </div>
 
-          <div v-else class="card">
-            <div class="h2">No fields yet</div>
-            <p class="pp">Find your farm on the map and draw your first field.</p>
+          <div v-else class="card emptyfarm">
+            <div class="h2">Draw your area on the map</div>
+            <p class="pp" v-if="farm.scope === 'mvp'">This MVP works in <b>{{ MVP_TOWNS }}</b> (yellow outline). Zoom in on your farm and click <b>Draw a new field</b>.</p>
+            <p class="pp" v-else>Find your farm anywhere in Brazil (search a town), then click <b>Draw a new field</b>. Live data only.</p>
+            <button class="btn green" @click="startDraw"><Icon name="pencil" /> Draw a new field</button>
           </div>
 
           <div v-if="f && !loading && !failed && d.alert.active && !d.meta.sampleOnly && mode !== 'draw'" class="alert alert-click" role="button" tabindex="0"
@@ -139,19 +164,20 @@ function reset() {
           </div>
 
           <button v-if="f && !loading && !failed && mode !== 'draw'" class="btn green" @click="router.push(fieldPath('crops'))">This is my field — next →</button>
-          <button v-if="mode !== 'draw'" class="btn ghost" @click="startDraw"><Icon name="pencil" /> Draw a new field</button>
+          <button v-if="mode !== 'draw' && f" class="btn ghost" @click="startDraw"><Icon name="pencil" /> Draw a new field</button>
 
-          <div class="card list">
+          <div v-if="farm.fields.length" class="card list">
             <div class="h2">Your fields ({{ farm.fields.length }})</div>
             <div v-for="x in farm.fields" :key="x.id" :class="['row', { on: x.id === farm.selectedId }]"
               role="button" tabindex="0" @click="select(x.id)" @keydown.enter.prevent="select(x.id)">
               <FieldThumb :field="x.id" :w="44" :h="44" :pad="3" />
               <span>{{ x.name }}<small>{{ fmtHa(areaHa(x.coords)) }} ha</small></span>
+              <span v-if="fieldScope(x) === 'explore'" class="pill pexp" title="Exploratory mode: live data only">Explore</span>
               <span :class="['pill', PILL[x.status][0]]">{{ PILL[x.status][1] }}</span>
             </div>
             <div class="tools">
               <button @click="downloadGeoJSON">Download fields (GeoJSON)</button>
-              <button @click="reset">Reset sample fields</button>
+              <button @click="clearFields">Delete all fields</button>
             </div>
           </div>
         </div>

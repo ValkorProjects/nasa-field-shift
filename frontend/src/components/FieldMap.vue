@@ -4,7 +4,8 @@
 import { ref, shallowRef, watch, onMounted, onBeforeUnmount, computed } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { farm, fieldById, LAYERS, BASEMAP, areaHa, fmtHa } from '@/data/fields.js'
+import { farm, fieldById, fieldScope, LAYERS, BASEMAP, areaHa, fmtHa } from '@/data/fields.js'
+import { areas, loadAreas, BOUNDS, MSG, scopeProblem, pointInArea } from '@/data/areas.js'
 import { t } from '@/i18n'
 
 const props = defineProps({
@@ -13,7 +14,7 @@ const props = defineProps({
   showFields: { type: Boolean, default: true },
   showControls: { type: Boolean, default: true }
 })
-const emit = defineEmits(['update:layer', 'select', 'drawn'])
+const emit = defineEmits(['update:layer', 'select', 'drawn', 'rejected'])
 
 const COL = {
   r: ['#ff4d4d', 'rgba(224,72,72,.28)'],
@@ -28,6 +29,7 @@ let overlay = null
 let fieldLayer = null
 let editLayer = null
 let drawLayer = null
+let areaLayer = null
 const drawPts = ref([])
 
 /* ---------- layers ---------- */
@@ -69,10 +71,19 @@ function drawEditHandles() {
   if (props.mode !== 'edit' || !f) return
   const vIcon = L.divIcon({ className: 'vtx', iconSize: [16, 16] })
   const mIcon = L.divIcon({ className: 'vtx mid', iconSize: [12, 12] })
+  // a corner dragged outside the allowed area (issue #39) goes back to where it was
+  let before = null
+  const snapshot = () => { before = f.coords.map((c) => [...c]) }
+  const checkEdit = () => {
+    const problem = areas.mvp ? scopeProblem(f.coords, fieldScope(f)) : null
+    if (problem && before) { f.coords = before; emit('rejected', problem) }
+    drawEditHandles()
+  }
   f.coords.forEach((c, i) => {
     const m = L.marker(c, { icon: vIcon, draggable: true, title: 'Drag to move · right-click to remove' })
+    m.on('dragstart', snapshot)
     m.on('drag', (e) => { const p = e.target.getLatLng(); f.coords[i] = [p.lat, p.lng] })
-    m.on('dragend', drawEditHandles)
+    m.on('dragend', checkEdit)
     m.on('contextmenu', () => { if (f.coords.length > 3) { f.coords.splice(i, 1); drawEditHandles() } })
     editLayer.addLayer(m)
   })
@@ -80,9 +91,9 @@ function drawEditHandles() {
     const n = f.coords[(i + 1) % f.coords.length]
     const m = L.marker([(c[0] + n[0]) / 2, (c[1] + n[1]) / 2], { icon: mIcon, draggable: true, title: 'Drag to add a corner' })
     let idx = null
-    m.on('dragstart', () => { f.coords.splice(i + 1, 0, [c[0], c[1]]); idx = i + 1 })
+    m.on('dragstart', () => { snapshot(); f.coords.splice(i + 1, 0, [c[0], c[1]]); idx = i + 1 })
     m.on('drag', (e) => { const p = e.target.getLatLng(); f.coords[idx] = [p.lat, p.lng] })
-    m.on('dragend', drawEditHandles)
+    m.on('dragend', checkEdit)
     editLayer.addLayer(m)
   })
 }
@@ -108,6 +119,9 @@ function finishDraw() {
     return i === a.length - 1 ? true : Math.hypot(p[0] - q[0], p[1] - q[1]) > 1e-6
   })
   if (pts.length < 3) return
+  // issue #39: MVP fields only inside Itaberá + Itapeva; explore fields only inside Brazil
+  const problem = areas.mvp ? scopeProblem(pts, farm.scope) : null
+  if (problem) { emit('rejected', problem); return }
   emit('drawn', pts)
   drawPts.value = []
 }
@@ -125,8 +139,11 @@ async function search() {
     const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q=${encodeURIComponent(query.value)}`
     const res = await fetch(url, { headers: { 'Accept-Language': 'en' } })
     const [hit] = await res.json()
-    if (hit) map.value.flyToBounds([[+hit.boundingbox[0], +hit.boundingbox[2]], [+hit.boundingbox[1], +hit.boundingbox[3]]], { maxZoom: 15 })
-    else searchMsg.value = 'Place not found'
+    if (!hit) searchMsg.value = 'Place not found'
+    else if (farm.scope === 'mvp' && areas.mvp && !pointInArea(+hit.lat, +hit.lon, 'mvp')) {
+      searchMsg.value = 'Outside the MVP area'
+      emit('rejected', MSG.outsideMvp)
+    } else map.value.flyToBounds([[+hit.boundingbox[0], +hit.boundingbox[2]], [+hit.boundingbox[1], +hit.boundingbox[3]]], { maxZoom: 15 })
   } catch { searchMsg.value = 'Search is offline' }
   searching.value = false
 }
@@ -143,10 +160,30 @@ function fitField(id) {
   if (f && map.value) map.value.flyToBounds(f.coords, { padding: [60, 60], maxZoom: 17, duration: 0.6 })
 }
 function fitAll() {
-  const all = farm.fields.flatMap((f) => f.coords)
+  const all = farm.fields.filter((f) => fieldScope(f) === farm.scope).flatMap((f) => f.coords)
   if (all.length) map.value.fitBounds(all, { padding: [50, 50], maxZoom: 16 })
-  else map.value.setView([-23.5, -48.5], 7) // São Paulo state
+  else map.value.fitBounds(farm.scope === 'mvp' ? BOUNDS.mvp : [[-25.4, -53.2], [-19.7, -44.1]]) // MVP towns, or São Paulo state
 }
+/* ---------- area of the map mode (issue #39) ---------- */
+function applyScope() {
+  if (!map.value) return
+  const mvp = farm.scope === 'mvp'
+  map.value.setMinZoom(mvp ? 10 : 4)
+  map.value.setMaxBounds(L.latLngBounds(mvp ? BOUNDS.mvp : BOUNDS.brazil).pad(mvp ? 0.15 : 0.05))
+  drawArea()
+}
+function drawArea() {
+  if (!map.value || !areas.mvp) return
+  areaLayer?.remove()
+  const mvp = farm.scope === 'mvp'
+  areaLayer = L.geoJSON(areas.mvp, {
+    interactive: false,
+    style: { color: '#ffd23f', weight: mvp ? 3 : 2, opacity: mvp ? 0.95 : 0.6, dashArray: '8 6', fillColor: '#ffd23f', fillOpacity: mvp ? 0.06 : 0 },
+    onEachFeature: (feat, layer) => layer.bindTooltip(feat.properties.name, { permanent: mvp, direction: 'center', className: 'area-tt' })
+  }).addTo(map.value)
+  areaLayer.bringToBack()
+}
+
 defineExpose({ fitField, fitAll, finishDraw, undoPoint, draft })
 
 /* ---------- lifecycle ---------- */
@@ -160,7 +197,9 @@ onMounted(() => {
   map.value.on('click', onMapClick)
   setOverlay(props.layer)
   drawFields()
+  applyScope()
   fitAll()
+  loadAreas().then(drawArea)
   // The side panel changes height (draw / edit / view), which resizes the map box.
   // Keep the top-left corner fixed so what is under the cursor does not jump.
   ro = new ResizeObserver(() => map.value?.invalidateSize({ pan: false }))
@@ -170,6 +209,7 @@ let ro = null
 onBeforeUnmount(() => { ro?.disconnect(); map.value?.remove() })
 
 watch(() => props.layer, setOverlay)
+watch(() => farm.scope, () => { applyScope(); fitAll() })
 watch(() => [farm.fields, farm.selectedId, props.showFields], () => { drawFields() }, { deep: true })
 watch(() => [farm.selectedId, props.mode], drawEditHandles)
 watch(() => props.mode, (m) => {
@@ -208,6 +248,18 @@ const layers = [
       <button aria-label="Zoom in" @click="map.zoomIn()">+</button>
       <button aria-label="Zoom out" @click="map.zoomOut()">−</button>
       <button aria-label="Show all fields" title="Show all fields" @click="fitAll">⤢</button>
+    </div>
+
+    <!-- issue #39: map mode, always visible -->
+    <div v-if="showControls" :class="['scopebar', farm.scope]" role="note">
+      <template v-if="farm.scope === 'mvp'">
+        <span><b>MVP area:</b> Itaberá and Itapeva (SP), where we loaded the satellite data.</span>
+        <button type="button" @click="farm.scope = 'explore'">Explore another place in Brazil</button>
+      </template>
+      <template v-else>
+        <span><b>{{ MSG.exploreBadge }}</b></span>
+        <button type="button" @click="farm.scope = 'mvp'">Back to the MVP area</button>
+      </template>
     </div>
 
     <!-- draw / edit controls live in the side panel so they never cover the map -->

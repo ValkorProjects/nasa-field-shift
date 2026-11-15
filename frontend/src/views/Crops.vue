@@ -43,13 +43,14 @@ const sel = (season) => c.value[season].find((x) => x.id === state.crops[season]
         <div class="summary" aria-live="polite">
           <div class="h2" style="color:#fff">Your plan today</div>
           <div class="srot">
-            <IllustrativeImg :src="sel('summer')?.img" cls="sq" :alt="sel('summer')?.name" /><span>→</span>
-            <IllustrativeImg :src="sel('second')?.img" cls="sq" :alt="sel('second')?.name" />
+            <IllustrativeImg v-if="sel('summer')" :src="sel('summer').img" cls="sq" :alt="sel('summer').name" /><span v-else class="img sq empty">?</span><span>→</span>
+            <IllustrativeImg v-if="sel('second')" :src="sel('second').img" cls="sq" :alt="sel('second').name" /><span v-else class="img sq empty">?</span>
           </div>
-          <div class="srt"><span>{{ sel('summer')?.name }}</span><span>{{ sel('second')?.name }}</span></div>
-          <p>Wrong? Just click another photo.</p>
+          <div class="srt"><span>{{ sel('summer')?.name ?? 'Summer crop?' }}</span><span>{{ sel('second')?.name ?? 'Second crop?' }}</span></div>
+          <p v-if="sel('summer') && sel('second')">Wrong? Just click another photo.</p>
+          <p v-else>Click one photo in each row.</p>
         </div>
-        <button class="btn green" style="margin-top:auto" @click="router.push(fieldPath('soil'))">Next: soil →</button>
+        <button class="btn green" style="margin-top:auto" :disabled="!state.crops.summer || !state.crops.second" @click="router.push(fieldPath('soil'))">Next: soil →</button>
         <button class="btn ghost" @click="router.push('/farm')">← Back</button>
       </div>
     </div>

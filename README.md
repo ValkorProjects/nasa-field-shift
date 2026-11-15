@@ -102,7 +102,7 @@ src/api/mock/                     sample /api/recommendation responses (corn, so
 src/data/store.js                 loads the field JSON, keeps the farmer's answers,
                                   computes "Best for you" and "How sure are we?"
 src/data/fields.js                the farmer's fields (polygons), area, GeoJSON export
-src/components/                   AppShell, SideNav, Chip, SampleValue, StrategyCard, TimelineChart, …
+src/components/                   AppShell, TopNav, Welcome, Onboarding, Chip, SampleValue, StrategyCard, TimelineChart, …
 src/views/                        one file per screen
 src/i18n/en.json                  UI strings (add pt.json later)
 src/styles/prototype.css          visual rules ported 1:1 from the v3.3 prototype
@@ -117,8 +117,16 @@ Screen 1 uses a real satellite map (Leaflet):
 - Drag and zoom the map, search a town (OpenStreetMap Nominatim) or jump to your location.
 - **Draw a new field:** click each corner, then *Finish field*. The area in hectares is computed from the polygon (geodesic).
 - **Fix the border:** drag the corners, drag a small dot to add a corner, right-click a corner to remove it. Rename a field by editing its name.
-- Fields are saved in the browser (`localStorage`) and can be downloaded as **GeoJSON** (`fields.geojson`), which is the input for the Python pipeline.
-- The 3 sample fields are traced on crop fields near Taquarituba (SP). Their colours are sample values; only Field 1 has sample results.
+- **Area (issue #39):** by default the map is limited to the MVP area, **Itaberá and Itapeva (SP)** (yellow outline), and a field must be fully inside it. *Explore another place in Brazil* switches to exploratory mode: any field in Brazil, live data only, with a permanent badge. Each field remembers its mode and sends it to the backend as `scope`. Outlines: `public/data/areas/` (`src/data/areas.js`).
+- The app starts with **no field and no answers** (issue #38): the farmer draws a field, then chooses the crops, the soil answers and the order of priorities; results wait for those answers.
+- Fields are saved in the browser under the local profile and can be downloaded as **GeoJSON** (`fields.geojson`), which is the input for the Python pipeline.
+
+## Local profile and first visit (issue #38)
+
+- **Local profile:** a nickname only, no password and no personal data. Everything stays in this browser (`localStorage`, keys `fieldshift.*`); several profiles can share a browser. If storage is blocked (private window), the app keeps working in memory for the visit. Code: `src/data/account.js`, `src/data/storage.js`.
+- The profile menu (top right) can switch or create profiles, export or import a profile (JSON), reopen the welcome tour, delete the profile, or sign out and clear all RollCrop data.
+- **Welcome tour:** 4 short steps on the first visit of a profile (what RollCrop does, draw your area, how to read results, where the data comes from). It can be skipped and reopened from *Help*.
+- **Layout:** a top menu replaces the side bar. There is no global "sample data" banner any more: every value that is still an example keeps its own dotted mark and source label.
 
 ## Data format
 

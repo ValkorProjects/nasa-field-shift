@@ -52,7 +52,7 @@ watch(() => backendProfile(costsField())?.geom ?? null, (g) => {
 
 const BAG_KG = 60
 const SCENARIO_SHARE = 50 // % of the state's 2nd-crop corn area hit, for the "big picture" scenario
-const FALLBACK = { lat: -23.53, lon: -49.24 } // Taquarituba (SP), when there is no field on the map
+const FALLBACK = { lat: -23.98, lon: -48.88 } // Itapeva (SP, MVP area), when there is no field on the map
 
 export const costs = reactive({ status: 'idle', error: null, key: null, muni: null, info: null, patch: null })
 

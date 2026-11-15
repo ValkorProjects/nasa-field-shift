@@ -4,5 +4,5 @@ import SampleValue from './SampleValue.vue'
 defineProps({ v: { type: [Object, String], required: true }, tone: { type: String, required: true } })
 </script>
 <template>
-  <span :class="['ans', `a${tone}`]"><i aria-hidden="true"></i><SampleValue :v="v" :dotted="false" /></span>
+  <span :class="['ans', `a${tone}`]"><i aria-hidden="true"></i><SampleValue :v="v" /></span>
 </template>

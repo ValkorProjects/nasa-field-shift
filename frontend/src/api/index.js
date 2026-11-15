@@ -16,11 +16,10 @@ export const apiMode = ref(import.meta.env.VITE_API_MODE === 'api' || import.met
 // is no proxy) set VITE_API_BASE=https://your-backend.example.com; the backend allows CORS from any origin.
 export const API_BASE = (import.meta.env.VITE_API_BASE ?? '').replace(/\/+$/, '')
 
-// Demo locations (issue #7: start with 2–3 predefined points). Your own fields are added in the UI.
+// MVP places (issue #39: the MVP covers Itaberá and Itapeva, SP). Your own fields are added in the UI.
 export const PRESET_LOCATIONS = [
-  { id: 'taquarituba', name: 'Taquarituba, SP', lat: -23.53, lon: -49.24 },
   { id: 'itapeva', name: 'Itapeva, SP', lat: -23.98, lon: -48.88 },
-  { id: 'capao-bonito', name: 'Capão Bonito, SP', lat: -24.01, lon: -48.35 }
+  { id: 'itabera', name: 'Itaberá, SP', lat: -23.86, lon: -49.14 }
 ]
 
 export const CROPS = [
@@ -65,7 +64,7 @@ export async function getRecommendation({ lat, lon, crop, name }, { signal } = {
 // One call per field (issue: field profile). Data only; the business rules live in src/data/rules.js.
 // mock: the shipped contract sample, re-centred on the field; it is marked `mock: true` so the
 //   adapter shows it as sample data. api: POST /api/field/profile (the backend returns real NASA/ISRIC data).
-export async function getFieldProfile({ feature, name }, { signal } = {}) {
+export async function getFieldProfile({ feature, name, scope = 'mvp' }, { signal } = {}) {
   if (apiMode.value === 'mock') {
     await wait(350, signal)
     const p = structuredClone(fieldProfile)
@@ -91,7 +90,7 @@ export async function getFieldProfile({ feature, name }, { signal } = {}) {
       res = await fetch(`${API_BASE}/api/field/profile`, {
         method: 'POST', signal: ctl.signal,
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ field: feature, name })
+        body: JSON.stringify({ field: feature, name, scope })
       })
     } catch (e) {
       if (timedOut) throw new Error('The backend took too long to answer. Try again.')

@@ -17,6 +17,7 @@ function move(from, to) {
   const [x] = o.splice(from, 1)
   o.splice(to, 0, x)
   state.order = o
+  state.orderChosen = true // moving a card counts as choosing the order
 }
 
 // HTML5 drag & drop
@@ -38,14 +39,14 @@ const label = (s) => `${s.tag} · ${s.name.value}`
       <div class="wl">
         <Stepper :cur="4" />
         <div class="q">What matters most to you?</div>
-        <p class="lead">Put the most important at the top. Drag the cards or use the arrows.</p>
+        <p class="lead">Put the most important at the top. Drag the cards or use the arrows. Nothing is chosen for you.</p>
         <ol class="prios" aria-label="Your priorities, most important first" style="list-style:none">
           <li v-for="(p, i) in items" :key="p.id"
             :class="['prio', { dragging: dragFrom === i, over: over === i && dragFrom !== i }]"
             draggable="true"
             @dragstart="dragFrom = i" @dragend="dragFrom = over = null"
             @dragover.prevent="over = i" @drop.prevent="onDrop(i)">
-            <div class="pn">{{ i + 1 }}</div>
+            <div class="pn">{{ state.orderChosen ? i + 1 : '·' }}</div>
             <Icon name="grip" cls="grip" />
             <div class="pi"><Icon :name="p.icon" /></div>
             <div class="pt"><b>{{ p.label }}</b><span>{{ p.desc }}</span></div>
@@ -57,7 +58,12 @@ const label = (s) => `${s.tag} · ${s.name.value}`
         </ol>
       </div>
       <div class="wr">
-        <div class="card preview" aria-live="polite">
+        <div v-if="!state.orderChosen" class="card preview" aria-live="polite">
+          <div class="k">Nothing chosen yet</div>
+          <p class="pp">Sort the cards: drag them or use the arrows, most important at the top. If this order is already right, confirm it.</p>
+          <button class="btn ghost small" @click="state.orderChosen = true">This order is right</button>
+        </div>
+        <div v-else class="card preview" aria-live="polite">
           <div class="k">With this order, the best option is</div>
           <div class="pvname">{{ label(best) }}</div>
           <p class="pp">Because you put <b>{{ priorityLabel(state.order[0]) }}</b> and <b>{{ priorityLabel(state.order[1]) }}</b> first.</p>
@@ -66,7 +72,7 @@ const label = (s) => `${s.tag} · ${s.name.value}`
           </div>
           <div class="how">How we rank: each option gets Good / OK / Poor for each priority. Higher priorities count more (4, 3, 2, 1).</div>
         </div>
-        <button class="btn green" style="margin-top:auto" @click="router.push(fieldPath('results'))">See results →</button>
+        <button class="btn green" style="margin-top:auto" :disabled="!state.orderChosen" @click="router.push(fieldPath('results'))">See results →</button>
         <button class="btn ghost" @click="router.push(fieldPath('soil'))">← Back</button>
       </div>
     </div>
