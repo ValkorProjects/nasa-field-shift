@@ -45,6 +45,9 @@ In dev, Vite proxies every `/api/*` call to the backend, so the browser never se
 |---|---|---|
 | `VITE_API_MODE` (or `npm run dev:api`) | `mock` · `api` | `mock` |
 | `VITE_BACKEND_URL` | backend used by the dev proxy | `http://localhost:8000` |
+| `VITE_API_BASE` | backend URL for a **production build** (Vercel has no proxy); the backend allows CORS | empty (use the dev proxy) |
+
+**Production (e.g. Vercel):** build with `VITE_API_MODE=api` and `VITE_API_BASE=https://<backend>`. Without a backend, deploy with `VITE_API_MODE=mock` (plan B).
 
 If the backend is not running in `api` mode, the screen shows an error with **Try again** and **Use sample data**.
 
@@ -167,7 +170,7 @@ The Costs screens (`/field/1/costs`, `/field/1/costs/big-picture`) and the money
 | Step | Source | Recipe |
 |---|---|---|
 | Where is Field 1? | OpenStreetMap Nominatim + IBGE localidades | Field centroid → municipality → IBGE code |
-| Dry autumns | NASA POWER monthly `PRECTOTCORR` (2001–last year) | April + May rain ≥ 25 % below the average = dry autumn |
+| Dry autumns | NASA POWER, from the backend field profile when loaded (api mode), else monthly `PRECTOTCORR` fetched by the browser | Last 10 years; April + May rain below `DRY_AUTUMN_MM` (150 mm, `src/data/rules.js`), the same rule as the pre-planting alert |
 | Yield | IBGE PAM table 839 (2nd-crop corn) and 1612 (wheat), last 10 harvests | Normal = mean of the other years; dry = mean of dry years; the state when the town has < 5 harvests |
 | Price | IBGE PAM table 1612 | Value of production ÷ quantity, latest year, R$ per 60 kg bag (price received by farmers) |
 | R$ per plan | — | Field area (map) × yield × price; second crop only, before costs; cover crop = R$ 0 |

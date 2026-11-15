@@ -1,7 +1,9 @@
 // Costs from free public data (replaces the sample numbers on the Costs screens and the Results money bar).
 //
-// The field's municipality → IBGE PAM yields of the last 10 harvests, NASA POWER April–May rain.
-//   dry autumn   = April–May rain ≥ 25 % below average (NASA POWER, ~50 km)
+// The field's municipality → IBGE PAM yields, NASA POWER April–May rain of the last 10 years.
+//   rain         = the backend field profile (POST /api/field/profile) when it is loaded,
+//                  otherwise NASA POWER monthly data fetched by the browser
+//   dry autumn   = rules.js DRY_AUTUMN_MM, the same rule as the pre-planting alert
 //   normal yield = average yield in the other years · dry yield = average in dry years
 //   loss         = 1 − dry yield / normal yield (worst = the worst dry year)
 //   price        = value of production ÷ quantity, latest year (IBGE PAM, price received by farmers)
@@ -10,12 +12,43 @@
 //
 // This module never changes the field data: it keeps its own patch and the screens show
 // withCosts(state.data), so it works whatever builds state.data (sample JSON or field profile).
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { areaHa, selected } from '@/data/fields.js'
+import { profileOf } from '@/data/store.js'
+import { DRY_AUTUMN_MM, AUTUMN_MONTHS } from '@/data/rules.js'
+import { sidra, municipalityAt, autumnRain, conabCost, PRODUCTS, IPCA_ITEMS, SOURCES } from '@/api/publicData.js'
 
 // The field the Costs screens are about (/field/:id selects it).
 export const costsField = () => selected.value
-import { sidra, municipalityAt, autumnRain, conabCost, PRODUCTS, IPCA_ITEMS, SOURCES } from '@/api/publicData.js'
+
+const RAIN_YEARS = 10
+
+// Real backend profile of a field (null in mock mode, while loading or on error).
+function backendProfile(field) {
+  const e = field && profileOf(field.id)
+  return e?.status === 'ready' && !e.profile?.mock && e.profile?.weather_summary?.status === 'ok' ? e : null
+}
+
+/** April + May rain (mm) per year: from the backend profile when loaded, else NASA POWER in the browser. */
+async function rainByYear(field, p) {
+  const e = backendProfile(field)
+  if (e) {
+    const years = {}
+    for (const r of e.profile.weather_summary.data.by_year_month ?? []) {
+      if (!AUTUMN_MONTHS.includes(r.month) || typeof r.prcp_mm !== 'number') continue
+      const y = (years[r.year] ??= { n: 0, mm: 0 })
+      y.n += 1; y.mm += r.prcp_mm
+    }
+    const mm = Object.fromEntries(Object.entries(years).filter(([, v]) => v.n === AUTUMN_MONTHS.length).map(([y, v]) => [y, Math.round(v.mm)]))
+    return { mm, from: 'backend' }
+  }
+  return { ...(await autumnRain(p.lat, p.lon)), from: 'browser' }
+}
+
+// When the field profile arrives from the backend, recompute with its rain (same numbers as the alert).
+watch(() => backendProfile(costsField())?.geom ?? null, (g) => {
+  if (g && costs.status !== 'idle' && costs.info?.rainFrom !== 'backend') loadCosts({ force: true })
+})
 
 const BAG_KG = 60
 const SCENARIO_SHARE = 50 // % of the state's 2nd-crop corn area hit, for the "big picture" scenario
@@ -80,7 +113,7 @@ export async function loadCosts({ field = costsField(), force = false } = {}) {
     const [c2, crops, rain, cornCostRaw, wheatCostRaw] = await Promise.all([
       sidra(839, [112, 109, 214], `${N6}|${N3}|N1[all]`, { cls: `81[${PRODUCTS.corn2.cls}]` }),
       sidra(1612, [112, 214, 215], `${N6}|${N3}`, { cls: `81[${PRODUCTS.corn.cls},${PRODUCTS.wheat.cls}]` }),
-      autumnRain(p.lat, p.lon),
+      rainByYear(field, p),
       conabCost('corn2', p.lat, p.lon).catch(() => null),
       conabCost('wheat', p.lat, p.lon).catch(() => null)
     ])
@@ -89,15 +122,18 @@ export async function loadCosts({ field = costsField(), force = false } = {}) {
     const cornCost = withMonth(cornCostRaw), wheatCost = withMonth(wheatCostRaw)
 
     const k = (loc, cls) => `${loc}:${cls}`
-    const ibgeYears = Object.keys(c2[112]?.[k(muni.id, PRODUCTS.corn2.cls)] ?? {})
-    const dryYears = rain.dry.filter((y) => ibgeYears.includes(y))
-    const N = ibgeYears.filter((y) => rain.mm[y] != null).length
+    // the last 10 years with rain data; dry = same rule as the alert (rules.js)
+    const rainYears = Object.keys(rain.mm).sort().slice(-RAIN_YEARS)
+    const N = rainYears.length
+    const dryYears = rainYears.filter((y) => rain.mm[y] < DRY_AUTUMN_MM)
+    const rainMean = Math.round(mean(rainYears.map((y) => rain.mm[y])))
+    const inWindow = (s) => Object.fromEntries(Object.entries(s).filter(([y]) => rainYears.includes(y)))
 
-    // ---- crops ----
+    // ---- crops (only harvests inside the rain window) ----
     const cornS = pickSeries(c2[112], k(muni.id, PRODUCTS.corn2.cls), k(muni.ufId, PRODUCTS.corn2.cls))
     const wheatS = pickSeries(crops[112], k(muni.id, PRODUCTS.wheat.cls), k(muni.ufId, PRODUCTS.wheat.cls))
-    const corn = yieldStats(cornS.s, dryYears)
-    const wheat = yieldStats(wheatS.s, dryYears)
+    const corn = yieldStats(inWindow(cornS.s), dryYears)
+    const wheat = yieldStats(inWindow(wheatS.s), dryYears)
     const priceLoc = (cls) => {
       const m = priceOf(crops[214]?.[k(muni.id, cls)], crops[215]?.[k(muni.id, cls)])
       return m ? { ...m, level: 'muni' } : { ...priceOf(crops[214]?.[k(muni.ufId, cls)], crops[215]?.[k(muni.ufId, cls)]), level: 'state' }
@@ -116,7 +152,7 @@ export async function loadCosts({ field = costsField(), force = false } = {}) {
     const m = {}
     m.at_risk_min = leaf(fmt(income(corn.normal - corn.dry, cornP.perBag)), 'IBGE PAM + NASA POWER', 'est')
     m.at_risk_max = leaf(fmt(income(corn.normal - corn.worst, cornP.perBag)), 'IBGE PAM + NASA POWER', 'est')
-    m.dry_years = leaf(`${corn.dryCount} of the last ${N}`, 'NASA POWER')
+    m.dry_years = leaf(`${dryYears.length} of the last ${N}`, 'NASA POWER')
     m.worst_year = leaf(corn.worstYear, srcY(cornS.level))
     const inp = {}
     inp.yield = leaf(+(corn.normal / BAG_KG).toFixed(1), `IBGE PAM, normal years`)
@@ -174,15 +210,15 @@ export async function loadCosts({ field = costsField(), force = false } = {}) {
       r.past_year = leaf(past.year, 'IBGE PAM')
       r.past_drop = leaf(pct(past.drop), 'IBGE PAM')
       r.past_price = leaf(Number.isFinite(priceRise) ? pct(priceRise) : '—', 'IBGE PAM, price received')
-      r.past_rain = rain.dry.includes(past.year) ? rain.mm[past.year] : null
-      r.rain_mean = rain.mean
+      r.past_rain = dryYears.includes(past.year) ? rain.mm[past.year] : null
+      r.rain_mean = rainMean
       r.food = await foodPrices(past.year)
     }
 
     costs.patch = { money: m, inputs: inp, plans, regional: r }
     costs.muni = muni
     costs.info = {
-      span, rainPeriod: rain.period, dryYears, rainMean: rain.mean, cornLevel: cornS.level,
+      span, rainPeriod: `${rainYears[0]}–${rainYears.at(-1)}`, dryYears, rainMean, rainFrom: rain.from, threshold: DRY_AUTUMN_MM, cornLevel: cornS.level,
       costRefs: [cornCost && { crop: 'corn', ...cornCost }, wheatCost && { crop: 'wheat', ...wheatCost }].filter(Boolean),
       sources: [SOURCES.pam, SOURCES.power, ...(cornCost || wheatCost ? [SOURCES.conab] : []), ...(r.food ? [SOURCES.ipca] : [])]
     }

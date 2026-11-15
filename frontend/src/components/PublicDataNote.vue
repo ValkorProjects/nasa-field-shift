@@ -15,7 +15,8 @@ import { costs, loadCosts } from '@/data/costs.js'
     <b>Public data for {{ costs.muni.name }} ({{ costs.muni.uf }})</b>
     <span>
       harvests {{ costs.info.span }}<template v-if="costs.info.cornLevel === 'state'"> (state average, the town has too few)</template>
-      · dry autumn = April–May rain ≥ 25 % below the {{ costs.info.rainPeriod }} average of {{ costs.info.rainMean }} mm
+      · dry autumn = April–May rain below {{ costs.info.threshold }} mm, same rule as the alert ({{ costs.info.rainPeriod }},
+      {{ costs.info.rainFrom === 'backend' ? 'NASA POWER via our backend' : 'NASA POWER' }})
       · dry years: {{ costs.info.dryYears.join(', ') || 'none' }}
     </span>
     <span class="srcs">

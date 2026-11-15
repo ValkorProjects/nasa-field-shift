@@ -12,6 +12,10 @@ const MOCKS = { corn, soybean }
 // `npm run dev:api` (vite --mode api) or VITE_API_MODE=api switch to the real backend.
 export const apiMode = ref(import.meta.env.VITE_API_MODE === 'api' || import.meta.env.MODE === 'api' ? 'api' : 'mock')
 
+// Where the backend lives. Empty in dev (Vite proxies /api). In a production build (e.g. Vercel, where there
+// is no proxy) set VITE_API_BASE=https://your-backend.example.com; the backend allows CORS from any origin.
+export const API_BASE = (import.meta.env.VITE_API_BASE ?? '').replace(/\/+$/, '')
+
 // Demo locations (issue #7: start with 2–3 predefined points). Your own fields are added in the UI.
 export const PRESET_LOCATIONS = [
   { id: 'taquarituba', name: 'Taquarituba, SP', lat: -23.53, lon: -49.24 },
@@ -46,7 +50,7 @@ export async function getRecommendation({ lat, lon, crop, name }, { signal } = {
   const q = new URLSearchParams({ lat: lat.toFixed(4), lon: lon.toFixed(4), crop })
   let res
   try {
-    res = await fetch(`/api/recommendation?${q}`, { signal, headers: { Accept: 'application/json' } })
+    res = await fetch(`${API_BASE}/api/recommendation?${q}`, { signal, headers: { Accept: 'application/json' } })
   } catch (e) {
     if (e.name === 'AbortError') throw e
     throw new Error('Could not reach the backend. Is it running?')
@@ -84,7 +88,7 @@ export async function getFieldProfile({ feature, name }, { signal } = {}) {
   try {
     let res
     try {
-      res = await fetch('/api/field/profile', {
+      res = await fetch(`${API_BASE}/api/field/profile`, {
         method: 'POST', signal: ctl.signal,
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify({ field: feature, name })
