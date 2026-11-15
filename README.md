@@ -12,8 +12,8 @@ RollCrop is a free decision-support tool for farmers in São Paulo state. For ea
 
 ```
 frontend/   Vue 3 + Vite app (this README covers it)
-backend/    FastAPI app with the NASA POWER client (PR #10)
-docs/       spec, data requirements, reference screens, API contract example
+backend/    FastAPI app (NASA POWER, SoilGrids, crop catalog; see backend/README.md)
+docs/       API contract examples, reference screens, list of sample values
 ```
 
 ## Run
@@ -33,7 +33,7 @@ npm run build      # production build in frontend/dist/, calls https://rollcrop-
 
 1. Run `cd ./backend`
 2. Run `pip install "fastapi[standard]" requests` or `pip install fastapi requests`
-3. Run `fastapi dev main.py` or `uv fastapi run dev` (serves on http://localhost:8000, docs at `/docs`)
+3. Run `fastapi dev main.py` (serves on http://localhost:8000, docs at `/docs`)
 
 Every endpoint lives under `/api/`. The full list is in [`backend/README.md`](backend/README.md#endpoints); `GET /api/recommendation`, `GET /api/weather`, `GET /api/soil` and `POST /api/field/profile` are detailed in "Recommendation API" below.
 
@@ -101,7 +101,7 @@ Events are **past frequency** ("3 of the last 10 years"), never a forecast.
 | 10 | Costs: big picture | `/field/1/costs/big-picture` |
 | 11 | When to plant (planting window + critical events) | `/planting?loc=…&crop=corn\|soybean` |
 
-Reference screens and the original spec are in [`docs/`](docs/) (`PROMPT.md`, `DATA_REQUIREMENTS.md`, `CHANGELOG.md`, `placeholders.csv`, `reference/*.png`).
+Reference screens (`reference/*.png`), the list of values that are still sample data (`placeholders.csv`) and the API contract examples (`contract-*.json`) are in [`docs/`](docs/).
 
 ## Front-end layout (`frontend/`)
 

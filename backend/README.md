@@ -98,7 +98,7 @@ The MODIS and SMAP clients share `appeears.py`, which reads each AppEEARS `*-Sta
 
 ## Crop catalog (`data/crops/`)
 
-Qualitative agronomic base for São Paulo, from `data/crops/source/rotacoes_agricolas_SP_55_culturas.xlsx` (55 crops, starting rotation pairs, green manures, climate events). See `docs/plano/ARQUITETURA.md`, section 3.
+Qualitative agronomic base for São Paulo, from `data/crops/source/rotacoes_agricolas_SP_55_culturas.xlsx` (55 crops, starting rotation pairs, green manures, climate events).
 
 | File | What | Edit? |
 |---|---|---|
