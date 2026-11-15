@@ -1,6 +1,6 @@
 # Backend
 
-FastAPI service for Field Shift: NASA POWER (history + CMIP6 projections), SoilGrids and SRTM elevation.
+FastAPI service for RollCrop: NASA POWER (history + CMIP6 projections), SoilGrids and SRTM elevation.
 
 ## Run
 
