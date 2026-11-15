@@ -2,7 +2,7 @@
 // The front only reads one pre-computed JSON per field. No satellite processing here.
 import { reactive, computed, watch, shallowRef, toRaw } from 'vue'
 import { apiMode, getFieldProfile } from '@/api/index.js'
-import { farm, selected, toFeature, geomKey, areaHa } from './fields.js'
+import { farm, selected, toFeature, geomKey, areaHa, fieldScope } from './fields.js'
 import { toFieldData } from './profileAdapter.js'
 import { fieldStatus } from './rules.js'
 
@@ -24,6 +24,7 @@ export const state = reactive({
   crops: { summer: null, second: null },
   soil: { texture: null, drainage: null, slope: null },
   order: [],
+  orderChosen: false, // the farmer confirmed the order of priorities (issue #38: nothing pre-chosen)
   layer: 'photo'
 })
 
@@ -62,9 +63,12 @@ export async function loadSample(id = '1') {
       state.usingSample = true
     }
     sampleRef.value = data
-    state.crops = { ...data.crops.defaults }
-    state.soil = { ...data.soil.defaults }
-    state.order = [...data.priorities.defaultOrder]
+    // Issue #38: start with nothing chosen. The order below is only how the cards are listed
+    // until the farmer sorts them; results wait for orderChosen.
+    state.crops = { summer: null, second: null }
+    state.soil = { texture: null, drainage: null, slope: null }
+    state.order = data.priorities.items.map((p) => p.id)
+    state.orderChosen = false
   } catch (e) {
     state.error = e.message
   } finally {
@@ -92,7 +96,7 @@ export function ensureProfile(field, { force = false } = {}) {
   const run = async () => {
     const ctrl = (ctrls[field.id] = new AbortController())
     try {
-      const profile = await getFieldProfile({ feature: toFeature(field), name: field.name }, { signal: ctrl.signal })
+      const profile = await getFieldProfile({ feature: toFeature(field), name: field.name, scope: fieldScope(field) }, { signal: ctrl.signal })
       if (profiles[field.id]?.geom !== geom) return
       profiles[field.id] = { status: 'ready', error: null, geom, profile }
       const f = farm.fields.find((x) => x.id === field.id)
@@ -120,6 +124,14 @@ watch(() => farm.fields.map((f) => f.id).join(','), () => {
 watch(() => [farm.selectedId, geomKey(selected.value), apiMode.value], () => ensureProfile(selected.value), { immediate: true })
 
 // Plain value of a { value, sample, ... } leaf (or a raw value).
+// Which wizard step still needs an answer (null when the farmer can see results).
+export function missingStep() {
+  if (!state.crops.summer || !state.crops.second) return 'crops'
+  if (!state.soil.texture || !state.soil.drainage || !state.soil.slope) return 'soil'
+  if (!state.orderChosen) return 'priorities'
+  return null
+}
+
 export const val = (x) => (x && typeof x === 'object' && 'value' in x ? x.value : x)
 
 /* ---------- "Best for you" ----------

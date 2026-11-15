@@ -102,7 +102,7 @@ src/api/mock/                     sample /api/recommendation responses (corn, so
 src/data/store.js                 loads the field JSON, keeps the farmer's answers,
                                   computes "Best for you" and "How sure are we?"
 src/data/fields.js                the farmer's fields (polygons), area, GeoJSON export
-src/components/                   AppShell, SideNav, Chip, SampleValue, StrategyCard, TimelineChart, …
+src/components/                   AppShell, TopNav, Welcome, Onboarding, Chip, SampleValue, StrategyCard, TimelineChart, …
 src/views/                        one file per screen
 src/i18n/en.json                  UI strings (add pt.json later)
 src/styles/prototype.css          visual rules ported 1:1 from the v3.3 prototype
@@ -117,8 +117,16 @@ Screen 1 uses a real satellite map (Leaflet):
 - Drag and zoom the map, search a town (OpenStreetMap Nominatim) or jump to your location.
 - **Draw a new field:** click each corner, then *Finish field*. The area in hectares is computed from the polygon (geodesic).
 - **Fix the border:** drag the corners, drag a small dot to add a corner, right-click a corner to remove it. Rename a field by editing its name.
-- Fields are saved in the browser (`localStorage`) and can be downloaded as **GeoJSON** (`fields.geojson`), which is the input for the Python pipeline.
-- The 3 sample fields are traced on crop fields near Taquarituba (SP). Their colours are sample values; only Field 1 has sample results.
+- **Area (issue #39):** by default the map is limited to the MVP area, **Itaberá and Itapeva (SP)** (yellow outline), and a field must be fully inside it. *Explore another place in Brazil* switches to exploratory mode: any field in Brazil, live data only, with a permanent badge. Each field remembers its mode and sends it to the backend as `scope`. Outlines: `public/data/areas/` (`src/data/areas.js`).
+- The app starts with **no field and no answers** (issue #38): the farmer draws a field, then chooses the crops, the soil answers and the order of priorities; results wait for those answers.
+- Fields are saved in the browser under the local profile and can be downloaded as **GeoJSON** (`fields.geojson`), which is the input for the Python pipeline.
+
+## Local profile and first visit (issue #38)
+
+- **Local profile:** a nickname only, no password and no personal data. Everything stays in this browser (`localStorage`, keys `fieldshift.*`); several profiles can share a browser. If storage is blocked (private window), the app keeps working in memory for the visit. Code: `src/data/account.js`, `src/data/storage.js`.
+- The profile menu (top right) can switch or create profiles, export or import a profile (JSON), reopen the welcome tour, delete the profile, or sign out and clear all RollCrop data.
+- **Welcome tour:** 4 short steps on the first visit of a profile (what RollCrop does, draw your area, how to read results, where the data comes from). It can be skipped and reopened from *Help*.
+- **Layout:** a top menu replaces the side bar. There is no global "sample data" banner any more: every value that is still an example keeps its own dotted mark and source label.
 
 ## Data format
 
@@ -219,7 +227,13 @@ Endpoints used by the front end:
 
 **`GET /api/soil?lat=&lon=`** - soil profile (clay, sand, silt, organic carbon, pH in water) for 0-5, 5-15 and 15-30 cm, plus a 0-30 cm summary and the textural group. **SoilGrids 2.0 by ISRIC - complementary source, not NASA data (CC-BY 4.0, 250 m, modelled estimate).** Same `mode` logic as above (cache `backend/data/cache/soilgrids_v1_*`, then live, then the slice in `backend/data/demo/soil/`). `SOILGRIDS_TIMEOUT` (seconds, default 20) controls the request timeout; `SOILGRIDS_NEIGHBOR_PAUSE` (seconds, default 2) is the pause between calls of the neighbor-pixel search (up to 8 extra calls within ~1.6 km, only when the requested pixel is masked and the point has no demo slice). `source.sampling` is `requested`, `nearest_neighbor` or `curated_rural_pixel`. Returns 404 when SoilGrids has no data for the point (water, urban, outside coverage) and 503 when it is unavailable and there is no slice.
 
-**`POST /api/field/profile`** - data package for one field (talhao). Body: `{ "field": <GeoJSON Polygon or Feature<Polygon>, [lon, lat] order, closed ring>, "name"?: string }` (`name` is accepted but ignored for now). Always 200 for a valid polygon; each block degrades on its own. Business rules (alerts, scores, strategies) live in the front end: the back end only returns data with provenance. Example response: [`docs/contract-field-profile.json`](docs/contract-field-profile.json) (generated with `FIELD_SHIFT_OFFLINE=1` for the sample Field 1).
+**`POST /api/field/profile`** - data package for one field (talhao). Body: `{ "field": <GeoJSON Polygon or Feature<Polygon>, [lon, lat] order, closed ring>, "name"?: string, "scope"?: "mvp" | "explore" }` (`name` is accepted but ignored for now). Always 200 for a valid polygon inside the scope; each block degrades on its own.
+
+**Area scope (issue #39).** The MVP covers **Itaberá and Itapeva (SP)**, where the team loaded the satellite data:
+- `scope: "mvp"` (default): the whole field (vertices, centroid and points along every edge) must be inside the union of the two municipalities, so a field can cross the border between them. Otherwise the answer is **422** with a readable message. Data can come from cache, live or the offline demo slices (`mode: "mock"`).
+- `scope: "explore"`: any field inside Brazil (otherwise 422). **Live data only**: cache of live calls or the live APIs. No offline slice, no nearest demo point, and `FIELD_SHIFT_OFFLINE` is ignored. Without network a block is `unavailable` with the reason; it is never `mock`.
+- The outlines are static files: `backend/data/areas/` and `frontend/public/data/areas/` (`mvp.geojson`: Itaberá 3521705 + Itapeva 3522406; `brazil.geojson`). They come from the IBGE "malhas" API and were downloaded once; nothing calls IBGE at run time.
+- Of the offline demo slices, only Itapeva is inside the MVP area. Itaberá has no slice yet (`backend/scripts/build_demo_slice.py`). Business rules (alerts, scores, strategies) live in the front end: the back end only returns data with provenance. Example response: [`docs/contract-field-profile.json`](docs/contract-field-profile.json) (generated with `FIELD_SHIFT_OFFLINE=1` for the sample Field 1).
 
 | Block | Content | Source |
 |---|---|---|

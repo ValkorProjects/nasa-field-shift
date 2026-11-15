@@ -1,37 +1,35 @@
 // The farmer's fields (talhões): polygons drawn on the real satellite map.
-// Stored in the browser (localStorage) for now; exported as GeoJSON for the Python pipeline.
+// Saved in the browser under the active local profile (account.js); exported as GeoJSON.
+// The app starts with no field (issue #38): the farmer draws their own.
+// Each field keeps the map mode it was drawn in (issue #39): 'mvp' (Itaberá + Itapeva, may use the
+// team's downloaded data) or 'explore' (elsewhere in Brazil, live data only).
 import { reactive, computed, watch } from 'vue'
+import { account, profileKey } from './account.js'
+import { getJSON, setJSON } from './storage.js'
 
-const KEY = 'fieldshift.fields.v2'
+const valid = (f) => f && typeof f.id === 'string' && Array.isArray(f.coords) && f.coords.length >= 3
 
-// Sample fields so the demo flow works out of the box: 3 crop fields traced on the satellite
-// image near Taquarituba, southwest São Paulo state. They are examples, not a real farm's records.
-// Only Field 1 has sample analysis data (field-1.sample.json). Status colours are sample values.
-const SAMPLE = [
-  { id: '1', name: 'Field 1', status: 'r', coords: [[-23.53727, -49.23343], [-23.53639, -49.23096], [-23.54013, -49.22559], [-23.54219, -49.22796], [-23.54042, -49.23182]] },
-  { id: '2', name: 'Field 2', status: 'g', coords: [[-23.5296, -49.23074], [-23.52862, -49.22871], [-23.52852, -49.2257], [-23.5296, -49.2242], [-23.53196, -49.22441], [-23.53245, -49.22678], [-23.53216, -49.22999], [-23.53098, -49.23085]] },
-  { id: '3', name: 'Field 3', status: 'y', coords: [[-23.53354, -49.23429], [-23.53334, -49.23214], [-23.5357, -49.22999], [-23.53668, -49.23128], [-23.53727, -49.23332], [-23.53629, -49.23418]] }
-]
-
-function load() {
-  try {
-    const raw = localStorage.getItem(KEY)
-    if (raw) {
-      const list = JSON.parse(raw)
-      if (Array.isArray(list)) return list
-    }
-  } catch { /* storage blocked or corrupt: use the sample */ }
-  return structuredClone(SAMPLE)
+function loadFields() {
+  if (!account.activeId) return []
+  const list = getJSON(profileKey('fields'), [])
+  return Array.isArray(list) ? list.filter(valid) : []
 }
 
 export const farm = reactive({
-  fields: load(),
-  selectedId: '1'
+  fields: loadFields(),
+  selectedId: null,
+  scope: account.activeId ? getJSON(profileKey('scope'), 'mvp') : 'mvp' // map mode for new fields
 })
+farm.selectedId = farm.fields[0]?.id ?? null
 
-watch(() => farm.fields, (v) => {
-  try { localStorage.setItem(KEY, JSON.stringify(v)) } catch { /* ignore */ }
-}, { deep: true })
+// another profile → its own fields and map mode
+watch(() => account.activeId, () => {
+  farm.fields = loadFields()
+  farm.selectedId = farm.fields[0]?.id ?? null
+  farm.scope = getJSON(profileKey('scope'), 'mvp')
+})
+watch(() => farm.fields, (v) => { if (account.activeId) setJSON(profileKey('fields'), v) }, { deep: true })
+watch(() => farm.scope, (v) => { if (account.activeId) setJSON(profileKey('scope'), v) })
 
 /* Geodesic polygon area (m²) on the WGS84 sphere — same formula Leaflet.draw uses. */
 export function areaM2(coords) {
@@ -52,7 +50,7 @@ export const selected = computed(() => fieldById(farm.selectedId))
 
 export function addField(coords) {
   const n = farm.fields.reduce((m, f) => Math.max(m, parseInt(f.name.replace(/\D/g, '')) || 0), 0) + 1
-  const f = { id: `f${Date.now()}`, name: `Field ${n}`, status: 'new', coords }
+  const f = { id: `f${Date.now()}`, name: `Field ${n}`, status: 'new', scope: farm.scope, coords }
   farm.fields.push(f)
   farm.selectedId = f.id
   return f
@@ -63,10 +61,13 @@ export function removeField(id) {
   if (farm.selectedId === id) farm.selectedId = farm.fields[0]?.id ?? null
 }
 
-export function resetSample() {
-  farm.fields = structuredClone(SAMPLE)
-  farm.selectedId = '1'
+export function removeAllFields() {
+  farm.fields = []
+  farm.selectedId = null
 }
+
+// Map mode of a field (fields drawn before issue #39 count as MVP)
+export const fieldScope = (f) => (f?.scope === 'explore' ? 'explore' : 'mvp')
 
 // One field as a GeoJSON Feature ([lng, lat] order, closed ring). Body of POST /api/field/profile.
 export function toFeature(f) {

@@ -23,7 +23,7 @@ const locations = computed(() => [
     const [lat, lon] = centroid(f.coords)
     return { id: `field-${f.id}`, name: f.name, group: 'Your fields', lat, lon }
   }),
-  ...PRESET_LOCATIONS.map((p) => ({ ...p, group: 'Demo places' }))
+  ...PRESET_LOCATIONS.map((p) => ({ ...p, group: 'MVP places' }))
 ])
 const locId = computed({
   get: () => (locations.value.some((l) => l.id === route.query.loc) ? route.query.loc : locations.value[0]?.id),
