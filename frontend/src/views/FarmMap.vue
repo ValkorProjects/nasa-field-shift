@@ -10,8 +10,10 @@ import FieldThumb from '@/components/FieldThumb.vue'
 import SampleValue from '@/components/SampleValue.vue'
 import Icon from '@/components/Icon.vue'
 import PrePlantingAlert from '@/components/PrePlantingAlert.vue'
-import { state } from '@/data/store.js'
-import { farm, selected, addField, removeField, resetSample, downloadGeoJSON, areaHa, fmtHa } from '@/data/fields.js'
+import { state, profileOf, ensureProfile } from '@/data/store.js'
+import { apiMode } from '@/api/index.js'
+import { fieldStatus } from '@/data/rules.js'
+import { farm, selected, addField, removeField, resetSample, downloadGeoJSON, areaHa, fmtHa, fieldPath } from '@/data/fields.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -20,7 +22,17 @@ const mode = ref('view') // view | draw | edit
 const showAlert = computed(() => route.meta.alert === true)
 const d = computed(() => state.data)
 const f = computed(() => selected.value)
-const hasData = computed(() => f.value?.id === '1') // only Field 1 has sample analysis
+// Profile of the selected field (POST /api/field/profile). Field 1 in mock mode has none: it shows the demo sample.
+const p = computed(() => profileOf(f.value?.id))
+const demo = computed(() => !d.value?.meta?.live) // sample JSON shown as is (mock mode)
+// First load shows the waiting message; a new border keeps the previous profile on screen while it updates.
+const loading = computed(() => p.value?.status === 'loading' && !p.value.profile)
+const updating = computed(() => p.value?.status === 'loading' && !!p.value.profile)
+const failed = computed(() => p.value?.status === 'error')
+const pillKey = computed(() => (demo.value ? f.value?.status : fieldStatus(d.value)) ?? 'new')
+const blocks = computed(() => d.value?.blocks ?? {})
+const useSample = () => { apiMode.value = 'mock' }
+const retry = () => ensureProfile(f.value, { force: true })
 const PILL = { g: ['pg', 'Looks fine'], y: ['py', 'Needs attention'], r: ['pr', 'High risk'], new: ['pn2', 'Not analysed yet'] }
 
 function select(id) {
@@ -77,18 +89,32 @@ function reset() {
                 <input v-model="f.name" class="fname" aria-label="Field name" maxlength="40" />
                 <div class="t-sub">
                   {{ fmtHa(areaHa(f.coords)) }} ha · from your map
-                  <template v-if="hasData"> · slope from satellite: <SampleValue :v="d.field.slope" :dotted="false" /></template>
+                  <template v-if="!loading && !failed"> · slope from satellite: <SampleValue :v="d.field.slope" :dotted="false" /></template>
                 </div>
               </div>
             </div>
-            <template v-if="hasData">
+            <div v-if="loading" class="fnote" role="status">Fetching NASA data for this field…</div>
+            <div v-else-if="failed" class="fnote warn" role="alert">
+              Could not get the data for this field: {{ p.error }}
+              <div class="factions">
+                <button class="btn ghost small" @click="retry">Try again</button>
+                <button class="btn ghost small" @click="useSample">Use sample data</button>
+              </div>
+            </div>
+            <template v-else>
               <div class="kv"><span>Summer crop now</span><b><SampleValue :v="d.field.summer" :dotted="false" /> · harvest <SampleValue :v="d.field.harvest" /></b></div>
               <div class="kv"><span>Next crop planned</span><b><SampleValue :v="d.field.next" :dotted="false" /> · planting from <SampleValue :v="d.field.planting" /></b></div>
+              <div v-if="updating" class="fnote" role="status">Updating the data for the new border…</div>
+              <div v-if="d.meta.sampleOnly" class="fnote">Sample values for the demo: they were not computed for this field. Use the real backend (<code>npm run dev:api</code>) for NASA data.</div>
+              <div v-if="!demo" class="fnote">
+                <span :class="['pill', PILL[pillKey][0]]" style="margin:0 6px 0 0">{{ PILL[pillKey][1] }}</span>
+                <template v-if="d.alert.unavailable">Pre-planting check not available: {{ d.alert.unavailable }}</template>
+                <template v-else>Rain and frost from {{ d.profile?.weather_summary?.source?.dataset }} past records.</template>
+              </div>
+              <div v-if="d.info?.weatherNote" class="fnote">{{ d.info.weatherNote }}</div>
+              <div v-if="blocks.soil && blocks.soil.status !== 'ok'" class="fnote">Soil not available for this field: {{ blocks.soil.reason }}</div>
+              <div v-else-if="d.info?.soilNote" class="fnote">{{ d.info.soilNote }}</div>
             </template>
-            <div v-else class="fnote">
-              <span :class="['pill', PILL[f.status][0]]" style="margin:0 6px 0 0">{{ PILL[f.status][1] }}</span>
-              In this prototype only Field 1 has sample results. Real results for this field will come from the NASA data pipeline.
-            </div>
             <div v-if="mode === 'edit'" class="fnote" role="status">
               <b>Drag the white corners</b> to fix the border. Drag a small blue dot to add a corner. Right-click a corner to remove it.
             </div>
@@ -105,14 +131,14 @@ function reset() {
             <p class="pp">Find your farm on the map and draw your first field.</p>
           </div>
 
-          <div v-if="hasData && d.alert.active && mode !== 'draw'" class="alert alert-click" role="button" tabindex="0"
+          <div v-if="f && !loading && !failed && d.alert.active && !d.meta.sampleOnly && mode !== 'draw'" class="alert alert-click" role="button" tabindex="0"
             @click="router.push('/farm/alert')" @keydown.enter.space.prevent="router.push('/farm/alert')">
             <div class="aic"><Icon name="warn" /></div>
             <div><b>{{ f.name }} needs a look before planting</b>
               <p>Past rain records show dry autumns here. Compare options before you buy seed.</p></div>
           </div>
 
-          <button v-if="hasData && mode !== 'draw'" class="btn green" @click="router.push('/field/1/crops')">This is my field — next →</button>
+          <button v-if="f && !loading && !failed && mode !== 'draw'" class="btn green" @click="router.push(fieldPath('crops'))">This is my field — next →</button>
           <button v-if="mode !== 'draw'" class="btn ghost" @click="startDraw"><Icon name="pencil" /> Draw a new field</button>
 
           <div class="card list">
@@ -136,7 +162,7 @@ function reset() {
     <div v-else class="content"><FieldMap layer="veg" :show-controls="false" /></div>
 
     <template #overlay>
-      <PrePlantingAlert v-if="showAlert" @close="router.push('/farm')" @compare="router.push('/field/1/results')" />
+      <PrePlantingAlert v-if="showAlert" @close="router.push('/farm')" @compare="router.push(fieldPath('results'))" />
     </template>
   </AppShell>
 </template>

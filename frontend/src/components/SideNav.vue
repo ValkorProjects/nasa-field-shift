@@ -1,17 +1,19 @@
 <script setup>
+import { computed } from 'vue'
 import Icon from './Icon.vue'
+import { fieldPath } from '@/data/fields.js'
 import SampleValue from './SampleValue.vue'
 import { t } from '@/i18n'
 import { state } from '@/data/store.js'
 defineProps({ active: String })
-const items = [
+const items = computed(() => [
   { id: 'farm', icon: 'map', to: '/farm' },
-  { id: 'fields', icon: 'list', to: '/field/1/crops' },
+  { id: 'fields', icon: 'list', to: fieldPath('crops') },
   { id: 'plant', icon: 'cal', to: '/planting' },
   { id: 'alerts', icon: 'bell', to: '/farm/alert', badge: 1, sketch: true },
   { id: 'how', icon: 'calc', to: '/how' },
   { id: 'help', icon: 'help', to: null, sketch: true }
-]
+])
 </script>
 <template>
   <aside class="side" aria-label="Main">

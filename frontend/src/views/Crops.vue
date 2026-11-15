@@ -7,6 +7,7 @@ import Stepper from '@/components/Stepper.vue'
 import FieldThumb from '@/components/FieldThumb.vue'
 import IllustrativeImg from '@/components/IllustrativeImg.vue'
 import { state } from '@/data/store.js'
+import { farm, fieldPath, selected } from '@/data/fields.js'
 
 const router = useRouter()
 const c = computed(() => state.data.crops)
@@ -18,11 +19,11 @@ const sel = (season) => c.value[season].find((x) => x.id === state.crops[season]
 </script>
 
 <template>
-  <AppShell active="fields" crumb="My fields › Field 1" title="Tell us what you grow">
+  <AppShell active="fields" :crumb="`My fields › ${selected?.name}`" title="Tell us what you grow">
     <div class="wiz">
       <div class="wl">
         <Stepper :cur="2" />
-        <div class="q">What do you grow on Field 1?</div>
+        <div class="q">What do you grow on {{ selected?.name }}?</div>
         <template v-for="s in seasons" :key="s.id">
           <div class="season" :id="`season-${s.id}`">{{ s.label }} <small>{{ s.months }}</small></div>
           <div class="crops" role="radiogroup" :aria-labelledby="`season-${s.id}`">
@@ -36,7 +37,7 @@ const sel = (season) => c.value[season].find((x) => x.id === state.crops[season]
       </div>
       <div class="wr">
         <div class="mini">
-          <FieldThumb field="1" w="340" h="210" />
+          <FieldThumb :field="farm.selectedId" w="340" h="210" />
           <span class="illmap" style="left:10px;right:auto">Illustrative image</span>
         </div>
         <div class="summary" aria-live="polite">
@@ -48,7 +49,7 @@ const sel = (season) => c.value[season].find((x) => x.id === state.crops[season]
           <div class="srt"><span>{{ sel('summer')?.name }}</span><span>{{ sel('second')?.name }}</span></div>
           <p>Wrong? Just click another photo.</p>
         </div>
-        <button class="btn green" style="margin-top:auto" @click="router.push('/field/1/soil')">Next: soil →</button>
+        <button class="btn green" style="margin-top:auto" @click="router.push(fieldPath('soil'))">Next: soil →</button>
         <button class="btn ghost" @click="router.push('/farm')">← Back</button>
       </div>
     </div>

@@ -7,6 +7,7 @@ import Icon from '@/components/Icon.vue'
 import Chip from '@/components/Chip.vue'
 import SampleValue from '@/components/SampleValue.vue'
 import { state } from '@/data/store.js'
+import { fieldPath, selected } from '@/data/fields.js'
 
 const r = computed(() => state.data.regional)
 const chain = [
@@ -19,7 +20,7 @@ const chain = [
 </script>
 
 <template>
-  <AppShell active="fields" crumb="My fields › Field 1 › Costs" title="What if nothing changes?">
+  <AppShell active="fields" :crumb="`My fields › ${selected?.name} › Costs`" title="What if nothing changes?">
     <div class="cost">
       <CostTabs active="big" />
       <div class="bigintro"><b>One farm alone does not change food prices.</b> But when many farms in a region lose part of the harvest in the same dry season, it adds up.</div>

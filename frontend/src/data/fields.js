@@ -68,16 +68,40 @@ export function resetSample() {
   farm.selectedId = '1'
 }
 
+// One field as a GeoJSON Feature ([lng, lat] order, closed ring). Body of POST /api/field/profile.
+export function toFeature(f) {
+  return {
+    type: 'Feature',
+    properties: { id: f.id, name: f.name, area_ha: +areaHa(f.coords).toFixed(2) },
+    geometry: { type: 'Polygon', coordinates: [[...f.coords, f.coords[0]].map(([lat, lng]) => [lng, lat])] }
+  }
+}
+
+// Area centroid of [lat, lng] coords (local equirectangular projection). Falls back to the vertex mean.
+export function centroidOf(coords) {
+  const lat0 = coords.reduce((s, c) => s + c[0], 0) / coords.length
+  const lng0 = coords.reduce((s, c) => s + c[1], 0) / coords.length
+  const k = Math.cos((lat0 * Math.PI) / 180)
+  let a = 0, cx = 0, cy = 0
+  for (let i = 0; i < coords.length; i++) {
+    const x1 = (coords[i][1] - lng0) * k, y1 = coords[i][0] - lat0
+    const x2 = (coords[(i + 1) % coords.length][1] - lng0) * k, y2 = coords[(i + 1) % coords.length][0] - lat0
+    const cr = x1 * y2 - x2 * y1
+    a += cr; cx += (x1 + x2) * cr; cy += (y1 + y2) * cr
+  }
+  if (Math.abs(a) < 1e-12) return { lat: lat0, lon: lng0 }
+  return { lat: lat0 + cy / (3 * a), lon: lng0 + cx / (3 * a) / k }
+}
+
+// Same geometry → same key (used to avoid refetching the profile).
+export const geomKey = (f) => (f ? JSON.stringify(f.coords) : '')
+
+// Route of a screen of the selected field, e.g. fieldPath('crops') → /field/1/crops
+export const fieldPath = (sub, id = farm.selectedId) => `/field/${id}/${sub}`
+
 // GeoJSON FeatureCollection ([lng, lat] order, closed rings).
 export function toGeoJSON() {
-  return {
-    type: 'FeatureCollection',
-    features: farm.fields.map((f) => ({
-      type: 'Feature',
-      properties: { id: f.id, name: f.name, area_ha: +areaHa(f.coords).toFixed(2) },
-      geometry: { type: 'Polygon', coordinates: [[...f.coords, f.coords[0]].map(([lat, lng]) => [lng, lat])] }
-    }))
-  }
+  return { type: 'FeatureCollection', features: farm.fields.map(toFeature) }
 }
 
 export function downloadGeoJSON() {

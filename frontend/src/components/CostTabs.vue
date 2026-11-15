@@ -1,9 +1,11 @@
 <script setup>
+import { computed } from 'vue'
+import { fieldPath } from '@/data/fields.js'
 defineProps({ active: { type: String, required: true } })
-const tabs = [
-  { id: 'money', label: 'Your money', to: '/field/1/costs' },
-  { id: 'big', label: 'Big picture: food prices', to: '/field/1/costs/big-picture' }
-]
+const tabs = computed(() => [
+  { id: 'money', label: 'Your money', to: fieldPath('costs') },
+  { id: 'big', label: 'Big picture: food prices', to: fieldPath('costs/big-picture') }
+])
 </script>
 <template>
   <nav class="tabs" aria-label="Costs">
