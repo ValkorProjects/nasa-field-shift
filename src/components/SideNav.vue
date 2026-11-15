@@ -1,0 +1,34 @@
+<script setup>
+import Icon from './Icon.vue'
+import SampleValue from './SampleValue.vue'
+import { t } from '@/i18n'
+import { state } from '@/data/store.js'
+defineProps({ active: String })
+const items = [
+  { id: 'farm', icon: 'map', to: '/farm' },
+  { id: 'fields', icon: 'list', to: '/field/1/crops' },
+  { id: 'alerts', icon: 'bell', to: '/farm/alert', badge: 1, sketch: true },
+  { id: 'how', icon: 'calc', to: '/how' },
+  { id: 'help', icon: 'help', to: null, sketch: true }
+]
+</script>
+<template>
+  <aside class="side" aria-label="Main">
+    <div class="logo"><div class="dot"><Icon name="leaf" /></div>{{ t('app.name') }}</div>
+    <template v-for="it in items" :key="it.id">
+      <router-link v-if="it.to" :to="it.to" :class="['nav', { on: active === it.id }]">
+        <Icon :name="it.icon" />{{ t(`nav.${it.id}`) }}
+        <span v-if="it.badge" class="badge">{{ it.badge }}</span>
+        <span v-if="it.sketch" class="sk">{{ t('nav.sketch') }}</span>
+      </router-link>
+      <div v-else class="nav disabled" aria-disabled="true">
+        <Icon :name="it.icon" />{{ t(`nav.${it.id}`) }}<span class="sk">{{ t('nav.sketch') }}</span>
+      </div>
+    </template>
+    <div class="spacer"></div>
+    <div class="farm" v-if="state.data">
+      <SampleValue :v="state.data.farm.name" :dotted="false" /><br />
+      <small><SampleValue :v="state.data.farm.region" :dotted="false" /> · {{ t('nav.example') }}</small>
+    </div>
+  </aside>
+</template>

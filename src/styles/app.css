@@ -1,0 +1,91 @@
+/* Overrides that turn the static prototype (stacked 1280px screens) into an app.
+   The visual rules themselves live in prototype.css, ported 1:1 from the v3.3 prototype. */
+body{background:#f4f6f1;min-width:1280px}
+.screen{width:auto;min-width:1280px;min-height:100vh;margin:0}
+.side{position:sticky;top:0;height:100vh}
+a{color:inherit;text-decoration:none}
+.nav.disabled{opacity:.75;cursor:default}
+.nav,.step,.crop,.choice,.tab,.layer>div,.zoom>div,.edit,.lnk,.close,.pud span,.row,.prio,.slegend a{cursor:pointer}
+.nav:hover:not(.on):not(.disabled){background:#1d4229;color:#fff}
+.btn{min-height:44px}
+.btn:hover:not([disabled]){filter:brightness(1.05)}
+.btn[disabled]{cursor:not-allowed}
+:focus-visible{outline:3px solid #1f6bd1;outline-offset:2px}
+.crop,.choice{font-family:Inter,sans-serif;text-align:left;color:inherit}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.boot{min-height:100vh;display:flex;align-items:center;justify-content:center;font:700 18px Inter,sans-serif;color:#12301c}
+/* drag & drop priority ranking */
+.prio.dragging{opacity:.45}
+.prio.over{box-shadow:0 0 0 3px #bfe3bd}
+/* real <button>s where the prototype used <div>s */
+.layer button{padding:9px 14px;border-radius:10px;font:800 14px Inter,sans-serif;color:#3c4c3e;display:flex;align-items:center;gap:6px;border:0;background:none;cursor:pointer}
+.layer button.on{background:#2e8b3d;color:#fff}
+.zoom button{width:44px;height:44px;font:700 24px Inter,sans-serif;display:flex;align-items:center;justify-content:center;border:0;border-bottom:1px solid #e5e5e5;background:#fff;cursor:pointer;color:#16241a}
+.pud button{width:44px;height:44px;border-radius:10px;border:2px solid #d5ddd2;display:flex;align-items:center;justify-content:center;color:#3c4c3e;background:#fff;cursor:pointer}
+.pud button[disabled]{opacity:.35;cursor:default}
+.list .row{cursor:default}
+.alert-click{cursor:pointer}
+.mapbox .moist{mix-blend-mode:multiply}
+.mapbox .handle{fill:#fff;stroke:#1f6bd1;stroke-width:5}
+.editnote{position:absolute;top:76px;left:16px;background:#fff;border-radius:12px;padding:8px 12px;font-size:13px;font-weight:700;color:#1f4d8a;box-shadow:0 3px 12px rgba(0,0,0,.25)}
+/* drawer & modal stay on screen while the page scrolls */
+.drawer{position:fixed;top:31px;right:0;bottom:0;overflow-y:auto;z-index:20}
+.overlay{position:fixed;z-index:20}
+.backdrop{position:fixed;inset:0;z-index:10;background:transparent}
+.close{border:0;cursor:pointer;color:#16241a;flex-shrink:0}
+.c2 .btn.small{margin-top:auto}
+.best2 .edit,.lnk{background:none;border:0;font-family:Inter,sans-serif;cursor:pointer}
+.lnk{font-size:inherit;padding:0}
+/* editable finance inputs */
+.inbtn{background:none;border:0;padding:0;font-family:Inter,sans-serif;color:inherit;cursor:pointer;text-align:left}
+.inbtn b{font-size:16px;display:flex;align-items:center;gap:6px}.inbtn .ic{width:14px;height:14px;color:#8a978a}
+.inedit{width:100%;font:800 16px Inter,sans-serif;padding:4px 6px;border:2px solid #2e8b3d;border-radius:8px}
+ol.chain{padding:0;margin:0}
+.link .chip2{flex:0 0 auto;font-size:11px;font-weight:800;line-height:normal}
+.link .chip2 svg{width:13px;height:13px}
+/* ===== real map (Leaflet) ===== */
+.mapbox .lmap{position:absolute;inset:0;z-index:0;background:#1d2a20}
+.mapbox .lmap.drawing{cursor:crosshair}
+.mapbox .lmap.drawing .leaflet-interactive{cursor:crosshair}
+.mapbox>.layer,.mapbox>.zoom,.mapbox>.legend,.mapbox>.illmap,.mapbox>.msearch,.mapbox>.drawbar{z-index:500}
+.mapbox>.illmap{bottom:26px}
+.leaflet-container{font-family:Inter,sans-serif}
+.leaflet-control-attribution{font-size:10px}
+.leaflet-tooltip.plabel-tt{background:transparent;border:0;box-shadow:none;color:#fff;font:800 17px Inter,sans-serif;text-shadow:0 0 4px #000,0 0 2px #000;padding:0}
+.leaflet-tooltip.plabel-tt::before{display:none}
+.risk-bang{background:#e04848;color:#fff;border:4px solid #fff;border-radius:50%;font:800 18px/26px Inter,sans-serif;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.vtx{background:#fff;border:3px solid #1f6bd1;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.vtx.mid{background:#1f6bd1;border:2px solid #fff;opacity:.85}
+.msearch{position:absolute;top:72px;left:16px;display:flex;gap:6px;align-items:center;background:#fff;border-radius:14px;padding:4px;box-shadow:0 3px 12px rgba(0,0,0,.25)}
+.msearch input{border:0;font:600 14px Inter,sans-serif;padding:9px 10px;width:220px;outline-offset:0;border-radius:10px}
+.msearch button{border:0;background:#2e8b3d;color:#fff;font:800 14px Inter,sans-serif;border-radius:10px;min-width:40px;height:38px;cursor:pointer}
+.msearch button[type=button]{background:#eef1ec;color:#1f6b2c;font-size:18px}
+.smsg{position:absolute;top:52px;right:0;background:#fff;border-radius:8px;padding:4px 8px;font-size:12px;font-weight:700;color:#a61f1f;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.drawbar{position:absolute;left:50%;transform:translateX(-50%);bottom:70px;background:#12301c;color:#fff;border-radius:14px;padding:10px 12px 10px 16px;display:flex;align-items:center;gap:8px;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.35);max-width:calc(100% - 32px)}
+.drawbar span{flex:1;min-width:0}
+.dbtn{border:0;background:#2e8b3d;color:#fff;font:800 14px Inter,sans-serif;border-radius:10px;padding:0 14px;height:40px;cursor:pointer;white-space:nowrap}
+.dbtn.ghost2{background:transparent;border:2px solid #6f8e74;color:#e6efe3}
+.dbtn[disabled]{opacity:.4;cursor:default}
+.legend .grad{width:60px;height:12px;border-radius:4px}
+.grad.veg{background:linear-gradient(90deg,#a5532a,#d9b25c,#f1ec9a,#9fd06a,#3f9a3a,#14582a)}
+.grad.moist{background:linear-gradient(90deg,#c98a4a,#f1e3a0,#7fc4d8,#2a5ea8)}
+.lthumb{overflow:hidden;background:#1d2a20}
+.lthumb .leaflet-container{background:#1d2a20}
+.mini .lthumb{border-radius:0}
+.mleft .lthumb{width:100%!important;height:100%!important}
+/* field panel */
+.fname{font:800 22px Inter,sans-serif;border:2px solid transparent;border-radius:8px;padding:0 4px;margin-left:-6px;width:100%;color:#16241a;background:transparent}
+.fname:hover,.fname:focus{border-color:#d5ddd2;background:#fff}
+.fnote{font-size:13.5px;color:#4c5d4f;font-weight:600;line-height:1.4;background:#f5f7f3;border-radius:10px;padding:8px 10px;margin-top:10px}
+.factions{display:flex;gap:8px;margin-top:10px}
+.factions .btn{font-size:14px;padding:8px 10px}
+.btn.danger{background:#fff;color:#b02a2a;border:2.5px solid #e04848}
+.list .row{cursor:pointer;border-radius:10px}
+.list .row:hover{background:#f5f7f3}
+.list .row.on{background:#eef8ec}
+.list .row small{color:#617061;font-weight:600;margin-left:6px}
+.pill.pn2{background:#8a978a}
+.tools{display:flex;justify-content:space-between;font-size:13px;font-weight:700}
+.tools button{background:none;border:0;color:#1f6b2c;font:700 13px Inter,sans-serif;cursor:pointer;text-decoration:underline;padding:4px 0}
+.legend .lnote{font-size:11.5px;font-weight:700;color:#8a978a;font-style:italic}
+.draftinfo{font-size:15px;background:#f5f7f3;border-radius:10px;padding:10px 12px;margin:4px 0 10px}
