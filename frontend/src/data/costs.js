@@ -10,7 +10,7 @@
 import { reactive } from 'vue'
 import { state } from '@/data/store.js'
 import { farm, fieldById, areaHa } from '@/data/fields.js'
-import { sidra, municipalityAt, autumnRain, PRODUCTS, IPCA_ITEMS, SOURCES } from '@/api/publicData.js'
+import { sidra, municipalityAt, autumnRain, conabCost, PRODUCTS, IPCA_ITEMS, SOURCES } from '@/api/publicData.js'
 
 const BAG_KG = 60
 const SCENARIO_SHARE = 50 // % of the state's 2nd-crop corn area hit, for the "big picture" scenario
@@ -22,6 +22,9 @@ const leaf = (value, source, scale = 'area', extra = {}) => ({ value, sample: fa
 const mean = (a) => (a.length ? a.reduce((s, x) => s + x, 0) / a.length : NaN)
 const money = (x) => Math.round(x / 100) * 100
 const fmt = (x) => money(x).toLocaleString('en-US')
+const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const enMonth = (s = '') => { const [m, y] = s.split('/'); const i = MESES.indexOf(m?.toLowerCase()); return i >= 0 ? `${MONTHS[i]} ${y}` : s }
 const pct = (x) => Math.round(x * 100)
 
 function fieldPoint() {
@@ -70,12 +73,16 @@ export async function loadCosts({ force = false } = {}) {
   try {
     const muni = await municipalityAt(p.lat, p.lon)
     const N6 = `N6[${muni.id}]`, N3 = `N3[${muni.ufId}]`
-    const [c2, crops, rain] = await Promise.all([
+    const [c2, crops, rain, cornCostRaw, wheatCostRaw] = await Promise.all([
       sidra(839, [112, 109, 214], `${N6}|${N3}|N1[all]`, { cls: `81[${PRODUCTS.corn2.cls}]` }),
       sidra(1612, [112, 214, 215], `${N6}|${N3}`, { cls: `81[${PRODUCTS.corn.cls},${PRODUCTS.wheat.cls}]` }),
-      autumnRain(p.lat, p.lon)
+      autumnRain(p.lat, p.lon),
+      conabCost('corn2', p.lat, p.lon).catch(() => null),
+      conabCost('wheat', p.lat, p.lon).catch(() => null)
     ])
     if (costs.key !== key) return // the field changed meanwhile
+    const withMonth = (c) => c && { ...c, month: enMonth(c.month) }
+    const cornCost = withMonth(cornCostRaw), wheatCost = withMonth(wheatCostRaw)
 
     const k = (loc, cls) => `${loc}:${cls}`
     const ibgeYears = Object.keys(c2[112]?.[k(muni.id, PRODUCTS.corn2.cls)] ?? {})
@@ -111,12 +118,15 @@ export async function loadCosts({ force = false } = {}) {
     inp.yield.v = leaf(+(corn.normal / BAG_KG).toFixed(1), `IBGE PAM, normal years`)
     inp.price.v = leaf(+cornP.perBag.toFixed(2), `IBGE PAM ${cornP.year}`)
     inp.loss.v = leaf(+(corn.loss * 100).toFixed(1), 'IBGE + NASA POWER', 'est')
-    inp.cost.v = { value: '—', sample: false, source: 'no free source', scale: 'field', empty: true }
+    const costSrc = (c) => `CONAB ${c.town}-${c.uf} ${c.month.split(' ')[1] ?? c.season}`
+    inp.cost.v = cornCost
+      ? leaf(cornCost.variable, costSrc(cornCost), 'area', { ref: cornCost })
+      : { value: '—', sample: false, source: 'no recent CONAB data', scale: 'field', empty: true }
 
     for (const s of state.data.strategies) {
       const name = String(s.name?.value ?? s.name)
-      const crop = /corn/i.test(name) ? { st: corn, pr: cornP, lvl: cornS.level }
-        : /wheat/i.test(name) ? { st: wheat, pr: wheatP, lvl: wheatS.level } : null
+      const crop = /corn/i.test(name) ? { st: corn, pr: cornP, lvl: cornS.level, cost: cornCost }
+        : /wheat/i.test(name) ? { st: wheat, pr: wheatP, lvl: wheatS.level, cost: wheatCost } : null
       if (!crop || !Number.isFinite(crop.st.normal) || !crop.pr?.perBag) {
         // cover crop: no grain to sell
         s.money.dry = leaf('0', 'no grain sold', 'book')
@@ -129,6 +139,13 @@ export async function loadCosts({ force = false } = {}) {
       s.money.normal = leaf(fmt(income(crop.st.normal, crop.pr.perBag)), src)
       s.money.avg = leaf(fmt(income(crop.st.avg, crop.pr.perBag)), src)
       s.money.loss = pct(crop.st.loss)
+      if (crop.cost) {
+        // what is left after the cash cost to grow (CONAB variable cost: seed, fertiliser, sprays, machines, interest)
+        const spent = area * crop.cost.variable
+        s.money.cost = leaf(fmt(spent), costSrc(crop.cost))
+        s.money.net_normal = leaf(fmt(income(crop.st.normal, crop.pr.perBag) - spent), `${src} − CONAB`, 'est')
+        s.money.net_dry = leaf(fmt(income(crop.st.dry, crop.pr.perBag) - spent), `${src} − CONAB`, 'est')
+      }
     }
 
     // ---- screen 10: big picture (state level) ----
@@ -167,7 +184,8 @@ export async function loadCosts({ force = false } = {}) {
     costs.muni = muni
     costs.info = {
       span, rainPeriod: rain.period, dryYears, rainMean: rain.mean, cornLevel: cornS.level,
-      sources: [SOURCES.pam, SOURCES.power, ...(r.food ? [SOURCES.ipca] : [])]
+      costRefs: [cornCost && { crop: 'corn', ...cornCost }, wheatCost && { crop: 'wheat', ...wheatCost }].filter(Boolean),
+      sources: [SOURCES.pam, SOURCES.power, ...(cornCost || wheatCost ? [SOURCES.conab] : []), ...(r.food ? [SOURCES.ipca] : [])]
     }
     costs.status = 'ok'
   } catch (e) {

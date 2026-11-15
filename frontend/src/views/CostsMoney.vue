@@ -58,6 +58,8 @@ const userLoss = computed(() => {
   const r = num('area') * num('yield') * (num('loss') / 100) * num('price')
   return Number.isFinite(r) ? (Math.round(r / 100) * 100).toLocaleString('en-US') : null
 })
+const neg = (x) => String(val(x)).startsWith('-')
+const brl = (x) => (neg(x) ? `−R$ ${String(val(x)).slice(1)}` : `R$ ${val(x)}`)
 const typedOwn = computed(() => Object.keys(own).length > 0)
 const editValue = (inp) => {
   const v = val(shown(inp))
@@ -99,10 +101,15 @@ const editValue = (inp) => {
             <div><span>Normal autumn</span><b>R$ <SampleValue :v="p.money.normal" /></b></div>
             <div><span>10-year average</span><b>R$ <SampleValue :v="p.money.avg" /></b></div>
           </div>
+          <div v-if="real && p.money.net_normal" class="netrow" :title="`Cost to grow: ${p.money.cost.source}`">
+            After the cost to grow (R$ {{ p.money.cost.value }}):
+            <b :class="{ neg: neg(p.money.net_normal) }">{{ brl(p.money.net_normal) }}</b> normal · <b :class="{ neg: neg(p.money.net_dry) }">{{ brl(p.money.net_dry) }}</b> dry
+          </div>
           <div class="pnote">{{ p.money.note }}<template v-if="real && p.money.loss != null"> Past dry autumns cut it by {{ p.money.loss }}%.</template></div>
         </div>
       </div>
-      <div v-if="real" class="pcfoot">Income from the second crop on your {{ val(shown(m.inputs[0])) }} ha, before costs: past yields of this town × the price farmers received.</div>
+      <div v-if="real" class="pcfoot">Income from the second crop on your {{ val(shown(m.inputs[0])) }} ha: past yields of this town × the price farmers received.
+        Cost to grow = CONAB cash cost per hectare in the nearest reference town<template v-for="c in costs.info.costRefs" :key="c.crop"> · {{ c.crop }}: {{ c.town }}-{{ c.uf }}, {{ c.month }}, {{ c.km }} km</template>.</div>
 
       <div class="card">
         <div class="inh"><div class="h2" style="margin:0">Numbers we used</div><span>Filled from public data. Click a number to use your own.</span></div>

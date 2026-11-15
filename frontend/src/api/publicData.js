@@ -16,7 +16,8 @@ const TTL = 24 * 3600 * 1000
 export const SOURCES = {
   pam: { name: 'IBGE PAM', url: 'https://sidra.ibge.gov.br/pesquisa/pam/tabelas' },
   ipca: { name: 'IBGE IPCA', url: 'https://sidra.ibge.gov.br/tabela/7060' },
-  power: { name: 'NASA POWER', url: 'https://power.larc.nasa.gov/' }
+  power: { name: 'NASA POWER', url: 'https://power.larc.nasa.gov/' },
+  conab: { name: 'CONAB costs', url: 'https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/custos-de-producao' }
 }
 
 // IBGE product codes
@@ -73,6 +74,30 @@ export async function sidra(table, vars, loc, { periods = '-10', cls, opt } = {}
     }
   }
   return out
+}
+
+/**
+ * CONAB cost of production (no API: built into /data/conab-costs.json by scripts/build-conab-costs.cjs).
+ * Picks the nearest reference town with a season from the last `maxAge` years.
+ */
+export async function conabCost(crop, lat, lon, { maxAge = 2, opt } = {}) {
+  const res = await fetch('/data/conab-costs.json', { signal: opt?.signal })
+  if (!res.ok) throw new Error('CONAB cost file missing')
+  const d = await res.json()
+  const towns = d.crops[crop]?.towns ?? {}
+  const minYear = new Date().getFullYear() - maxAge
+  const rad = (x) => (x * Math.PI) / 180
+  const km = (a, b) => 2 * 6371 * Math.asin(Math.sqrt(Math.sin(rad(b.lat - a.lat) / 2) ** 2 +
+    Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(rad(b.lon - a.lon) / 2) ** 2))
+  let best = null
+  for (const [key, seasons] of Object.entries(towns)) {
+    const loc = d.locations.find((l) => l.key === key)
+    const last = seasons.at(-1)
+    if (!loc?.lat || +last.season.slice(0, 4) < minYear) continue
+    const dist = km({ lat, lon }, loc)
+    if (!best || dist < best.km) best = { town: loc.name, uf: loc.uf, km: Math.round(dist), ...last }
+  }
+  return best && { ...best, page: d.page }
 }
 
 /** Municipality (IBGE code, name, state) for a point. Nominatim reverse → IBGE localidades by name. */
