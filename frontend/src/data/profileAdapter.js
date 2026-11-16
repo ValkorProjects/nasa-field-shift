@@ -199,7 +199,7 @@ export function toFieldData(sample, profile, field, ctx = {}) {
   if (dc && wOk) {
     const parts = []
     if (rain?.total) parts.push(`April–May rain was low in ${ofText(rain, { last: true })} years`)
-    if (frost?.total) parts.push(`frost hit in June–August in ${ofText(frost, { last: true })} years`)
+    if (frost?.total) parts.push(`at least one frost day (≤ 3 °C) in June–August in ${ofText(frost, { last: true })} years`)
     dc.why = parts.length
       ? `This is what you plan today. Past records: ${parts.join(' and ')}.`
       : 'This is what you plan today. Past weather records for this field are not available yet.'
@@ -219,7 +219,7 @@ export function toFieldData(sample, profile, field, ctx = {}) {
         e.n = wLeaf(rain && ofText(rain, { last: true }), rain)
         e.chip = { scale: 'area', source: `${POWER} ~50 km` }
       } else if (e.icon === 'frost') {
-        e.text = 'Frost in June–August in {n} years'
+        e.text = 'At least one frost day in June–August in {n} years'
         e.n = wLeaf(frost && ofText(frost, { last: true }), frost)
       } else if (e.icon === 'slope') {
         e.text = 'Field slope: {n}'

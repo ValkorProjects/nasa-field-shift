@@ -138,7 +138,12 @@ export const getValidation = (lat, lon, opt) => getApi(`/api/validation?${q(lat,
 
 // 2025 NASA AppEEARS extract (Itaberá–Itapeva study area): NDVI, SMAP soil moisture, MODIS surface temperature.
 // Each one may fail on its own (404 outside the study area).
+// Study-area box of the AppEEARS extract (backend: in_study_area). Outside it the endpoints answer 404.
+const SAT_BOX = { minLon: -49.06, maxLon: -48.91, minLat: -23.95, maxLat: -23.81 }
+export const inSatelliteBox = (lat, lon) => lon >= SAT_BOX.minLon && lon <= SAT_BOX.maxLon && lat >= SAT_BOX.minLat && lat <= SAT_BOX.maxLat
+
 export async function getSatellite2025(lat, lon, opt) {
+  if (!inSatelliteBox(lat, lon)) return { ndvi: null, moisture: null, lst: null, error: null }
   const [ndvi, moisture, lst] = await Promise.allSettled([
     getApi(`/api/ndvi?${q(lat, lon)}`, opt),
     getApi(`/api/soil-moisture?${q(lat, lon)}`, opt),

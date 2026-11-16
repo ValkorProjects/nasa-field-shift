@@ -78,7 +78,8 @@ const editValue = (inp) => {
         <div class="hic"><Icon name="warn" /></div>
         <div>
           <div class="hk">If you plant second-crop corn and the autumn is dry</div>
-          <div class="hv">{{ selected?.name }} could lose
+          <div class="hv" v-if="m.no_loss && !typedOwn">No yield loss on record in past dry autumns</div>
+          <div class="hv" v-else>{{ selected?.name }} could lose
             <b v-if="userLoss">R$ {{ userLoss }}</b>
             <b v-else>R$ <SampleValue :v="m.at_risk_min" /> – <SampleValue :v="m.at_risk_max" /></b>
           </div>
@@ -87,7 +88,7 @@ const editValue = (inp) => {
             Compared with a normal year. <template v-if="m.dry_years.unavailable">Dry autumns: <SampleValue :v="m.dry_years" />.</template>
             <template v-else>Dry autumns happened in <SampleValue :v="m.dry_years" /> years.</template>
             <Chip scale="area" :source="m.dry_years.source" />
-            <template v-if="real && m.worst_year">In the worst one ({{ m.worst_year.value }}) the loss would be R$ {{ m.at_risk_max.value }}.</template>
+            <template v-if="real && m.worst_year && !m.no_loss">In the worst one ({{ m.worst_year.value }}) the loss would be R$ {{ m.at_risk_max.value }}.</template>
             Past records, not a forecast.
           </div>
         </div>

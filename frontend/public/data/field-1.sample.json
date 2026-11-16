@@ -43,13 +43,20 @@
     "summer": [
       { "id": "soy", "name": "Soybean", "img": "/img/soja.jpg" },
       { "id": "corn", "name": "Corn", "img": "/img/milho.jpg" },
-      { "id": "beans", "name": "Beans", "img": "/img/feijao.jpg" }
+      { "id": "beans", "name": "Beans", "img": "/img/feijao.jpg" },
+      { "id": "peanut", "name": "Peanut", "img": null, "limited": true },
+      { "id": "sunflower", "name": "Sunflower", "img": null, "limited": true },
+      { "id": "sorghum", "name": "Sorghum", "img": null, "limited": true }
     ],
     "second": [
       { "id": "corn", "name": "Corn", "img": "/img/milho.jpg" },
       { "id": "wheat", "name": "Wheat", "img": "/img/trigo.jpg" },
       { "id": "cover", "name": "Cover crop", "img": "/img/cover.jpg" },
-      { "id": "empty", "name": "Leave it empty", "img": "/img/palha.jpg" }
+      { "id": "empty", "name": "Leave it empty", "img": "/img/palha.jpg" },
+      { "id": "oat", "name": "Oat", "img": null, "limited": true },
+      { "id": "beans", "name": "Beans", "img": "/img/feijao.jpg" },
+      { "id": "sorghum", "name": "Sorghum", "img": null, "limited": true },
+      { "id": "sunflower", "name": "Sunflower", "img": null, "limited": true }
     ],
     "defaults": { "summer": "soy", "second": "corn" }
   },
@@ -147,7 +154,7 @@
       "lightTxt": "Good",
       "photos": [
         { "img": "/img/soja.jpg", "cap": "Soybean" },
-        { "img": "/img/cover.jpg", "cap": "Millet + sunn hemp" }
+        { "img": "/img/cover.jpg", "cap": "Black oat" }
       ],
       "verdict": { "value": "Best for soil and water. No grain to sell this season.", "sample": true, "source": "model", "scale": null },
       "rows": [
@@ -155,7 +162,7 @@
         { "icon": "frost", "label": "Frost", "answer": { "value": "Little harm", "sample": true, "source": "POWER", "scale": "area" }, "tone": "g" },
         { "icon": "erosion", "label": "Rain washing soil away", "answer": { "value": "Low risk", "sample": true, "source": "slope + cover", "scale": "est" }, "tone": "g" },
         { "icon": "bare", "label": "Soil left bare", "answer": { "value": "Never", "sample": true, "source": "HLS", "scale": "field" }, "tone": "g" },
-        { "icon": "nitro", "label": "Feeds the soil (nitrogen)", "answer": { "value": "Yes, sunn hemp too", "sample": true, "source": "crop fact", "scale": "book" }, "tone": "g" }
+        { "icon": "nitro", "label": "Feeds the soil (nitrogen)", "answer": { "value": "Soybean only", "sample": true, "source": "crop fact", "scale": "book" }, "tone": "y" }
       ],
       "fit": { "soil": "Good", "water": "Good", "income": "Poor", "cost": "Good" },
       "evidence": { "scale": "area", "source": "GPM + crop facts", "text": "No cover crop seen on this field before. Based on crop knowledge and area rain data." },
@@ -171,16 +178,16 @@
 
   "details": {
     "b": {
-      "why": "You chose <b>Protect soil</b> and <b>Save water</b>. This plan keeps the soil covered until the next soybean and needs little rain.",
+      "why": "Black oat is a grass: it covers the soil in winter and is not a host of white mold (Sclerotinia), so the next soybean tends to suffer less from it. It needs little rain and adds no grain income.",
       "evidence": [
         { "icon": "rain", "text": "Rain in April–May was too low in {n} years", "n": { "value": "7 of the last 10", "sample": true, "source": "GPM", "scale": "area" }, "chip": { "scale": "area", "source": "GPM ~10 km" } },
         { "icon": "slope", "text": "Field slope: gentle ({n}%)", "n": { "value": "[X]", "sample": true, "source": "NASADEM", "scale": "field" }, "chip": { "scale": "field", "source": "NASADEM 30 m" } },
         { "icon": "bare", "text": "Soil was bare about {n} days a year (last 5 years)", "n": { "value": "[X]", "sample": true, "source": "HLS", "scale": "field" }, "chip": { "scale": "field", "source": "HLS 30 m" } },
-        { "icon": "nitro", "text": "Sunn hemp feeds the soil with nitrogen", "chip": { "scale": "book", "source": "crop fact" } }
+        { "icon": "nitro", "text": "Only the soybean feeds the soil with nitrogen; black oat does not", "chip": { "scale": "book", "source": "crop fact" } }
       ],
       "nodata": "No cover crop has been seen on this field. The rating uses crop knowledge and area rain data.",
-      "good": ["Soil covered all year", "Less soil washed away", "Nitrogen for next soybean", "Low cost"],
-      "watch": ["<b>No grain to sell</b> this season", "Frost can end the mix early", "Must be ended before soybean planting"],
+      "good": ["Soil covered in winter", "Less soil washed away", "Less white mold in the next soybean", "Low cost"],
+      "watch": ["<b>No grain to sell</b> this season", "Must be ended before soybean planting", "Seed price and sowing date near you"],
       "unknown": ["Your soil test", "Seed price near you", "Effect on next soybean yield"]
     },
     "a": {

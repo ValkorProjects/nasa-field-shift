@@ -37,7 +37,7 @@ function evidenceStatus(edge) {
       .flatMap((p) => { const [k, v] = p.split(/:(.*)/); return k === 'a e b' ? [['a', v], ['b', v]] : [[k, v]] }))
     if (parts[letter]) t = parts[letter]
   }
-  if (edge.to_key === 'sorghum' && /sorgo: candidato condicional/.test(t)) return { status: 'hypothesis', note: 'Conditional candidate in the starting pairs: compare water and critical stages first' }
+  if (edge.to_key === 'sorghum' && /sorgo: candidato condicional/.test(t)) return { status: 'hypothesis', note: 'Conditional candidate in the starting pairs. Compare water use and critical stages before choosing.' }
   if (/hip[oó]tese/.test(t)) return { status: 'hypothesis', note: 'Hypothesis to validate on the field (general reference)' }
   if (/brasil central/.test(t)) return { status: 'documented', note: 'Documented for central Brazil; still to validate in São Paulo' }
   if (/reforma/.test(t)) return { status: 'documented', note: 'Documented for sugarcane renewal' }

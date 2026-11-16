@@ -98,7 +98,7 @@ export function centroidOf(coords) {
 export const geomKey = (f) => (f ? JSON.stringify(f.coords) : '')
 
 // Route of a screen of the selected field, e.g. fieldPath('crops') → /field/1/crops
-export const fieldPath = (sub, id = farm.selectedId) => `/field/${id}/${sub}`
+export const fieldPath = (sub, id = farm.selectedId) => (id ? `/field/${id}/${sub}` : '/farm') // no field yet: back to the map
 
 // GeoJSON FeatureCollection ([lng, lat] order, closed rings).
 export function toGeoJSON() {
