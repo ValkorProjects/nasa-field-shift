@@ -78,7 +78,7 @@ const questions = [
             </template>
           </div>
 
-          <!-- Slope is always suggested from NASADEM -->
+          <!-- Slope is always suggested from NASA SRTM -->
           <div v-if="q.key === 'slope'" class="estnote ok">
             <Icon name="slope" />
             <template v-if="state.data.soil.slope_sat.pending">Satellite slope coming soon (terrain data in progress)</template>
