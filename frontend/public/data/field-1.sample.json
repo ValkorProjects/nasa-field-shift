@@ -31,8 +31,8 @@
   "field": {
     "name": { "value": "Field 1", "sample": true, "source": "user", "scale": null },
     "area_ha": { "value": 42, "sample": true, "source": "your map", "scale": "field" },
-    "slope": { "value": "gentle", "sample": true, "source": "NASADEM 30 m", "scale": "field" },
-    "slope_pct": { "value": "[X]", "sample": true, "source": "NASADEM 30 m", "scale": "field" },
+    "slope": { "value": "gentle", "sample": true, "source": "NASA SRTM 30 m", "scale": "field" },
+    "slope_pct": { "value": "[X]", "sample": true, "source": "NASA SRTM 30 m", "scale": "field" },
     "summer": { "value": "Soybean", "sample": true, "source": "user", "scale": null },
     "harvest": { "value": "early Feb", "sample": true, "source": "ZARC", "scale": "area" },
     "next": { "value": "Second-crop corn", "sample": true, "source": "user", "scale": null },
@@ -64,8 +64,8 @@
   "soil": {
     "texture_est": { "value": "medium", "sample": true, "source": "SoilGrids 250 m", "scale": "est" },
     "drainage_est": { "value": "drains normally", "sample": true, "source": "SoilGrids 250 m", "scale": "est" },
-    "slope_sat": { "value": "gentle slope", "sample": true, "source": "NASADEM 30 m", "scale": "field" },
-    "slope_pct": { "value": "[X]", "sample": true, "source": "NASADEM 30 m", "scale": "field" },
+    "slope_sat": { "value": "gentle slope", "sample": true, "source": "NASA SRTM 30 m", "scale": "field" },
+    "slope_pct": { "value": "[X]", "sample": true, "source": "NASA SRTM 30 m", "scale": "field" },
     "defaults": { "texture": "medium", "drainage": "idk", "slope": "gentle" }
   },
 
@@ -181,7 +181,7 @@
       "why": "Black oat is a grass: it covers the soil in winter and is not a host of white mold (Sclerotinia), so the next soybean tends to suffer less from it. It needs little rain and adds no grain income.",
       "evidence": [
         { "icon": "rain", "text": "Rain in April–May was too low in {n} years", "n": { "value": "7 of the last 10", "sample": true, "source": "GPM", "scale": "area" }, "chip": { "scale": "area", "source": "GPM ~10 km" } },
-        { "icon": "slope", "text": "Field slope: gentle ({n}%)", "n": { "value": "[X]", "sample": true, "source": "NASADEM", "scale": "field" }, "chip": { "scale": "field", "source": "NASADEM 30 m" } },
+        { "icon": "slope", "text": "Field slope: gentle ({n}%)", "n": { "value": "[X]", "sample": true, "source": "NASA SRTM", "scale": "field" }, "chip": { "scale": "field", "source": "NASA SRTM 30 m" } },
         { "icon": "bare", "text": "Soil was bare about {n} days a year (last 5 years)", "n": { "value": "[X]", "sample": true, "source": "HLS", "scale": "field" }, "chip": { "scale": "field", "source": "HLS 30 m" } },
         { "icon": "nitro", "text": "Only the soybean feeds the soil with nitrogen; black oat does not", "chip": { "scale": "book", "source": "crop fact" } }
       ],
@@ -196,7 +196,7 @@
         { "icon": "rain", "text": "Rain in April–May was too low in {n} years", "n": { "value": "7 of the last 10", "sample": true, "source": "GPM", "scale": "area" }, "chip": { "scale": "area", "source": "GPM ~10 km" } },
         { "icon": "frost", "text": "Frost in June–August in {n} years", "n": { "value": "3 of the last 10", "sample": true, "source": "POWER", "scale": "area" }, "chip": { "scale": "area", "source": "POWER ~50 km" } },
         { "icon": "bare", "text": "Soil would be bare about {n} months a year", "n": { "value": "3", "sample": true, "source": "crop calendar", "scale": "book" }, "chip": { "scale": "book", "source": "crop calendar" } },
-        { "icon": "slope", "text": "Field slope: gentle ({n}%)", "n": { "value": "[X]", "sample": true, "source": "NASADEM", "scale": "field" }, "chip": { "scale": "field", "source": "NASADEM 30 m" } }
+        { "icon": "slope", "text": "Field slope: gentle ({n}%)", "n": { "value": "[X]", "sample": true, "source": "NASA SRTM", "scale": "field" }, "chip": { "scale": "field", "source": "NASA SRTM 30 m" } }
       ],
       "nodata": "No wheat has been seen on this field. The rating uses crop knowledge and area data.",
       "good": ["Needs little rain", "Some grain to sell", "Uses machines you have"],
@@ -209,7 +209,7 @@
         { "icon": "rain", "text": "Rain in April–May was too low in {n} years", "n": { "value": "7 of the last 10", "sample": true, "source": "GPM", "scale": "area" }, "chip": { "scale": "area", "source": "GPM ~10 km" } },
         { "icon": "leaf", "text": "Corn seen on this field in {n} seasons", "n": { "value": "4 of the last 6", "sample": true, "source": "HLS", "scale": "field" }, "chip": { "scale": "field", "source": "HLS 30 m" } },
         { "icon": "frost", "text": "Frost in June in {n} years", "n": { "value": "3 of the last 10", "sample": true, "source": "POWER", "scale": "area" }, "chip": { "scale": "area", "source": "POWER ~50 km" } },
-        { "icon": "slope", "text": "Field slope: gentle ({n}%)", "n": { "value": "[X]", "sample": true, "source": "NASADEM", "scale": "field" }, "chip": { "scale": "field", "source": "NASADEM 30 m" } }
+        { "icon": "slope", "text": "Field slope: gentle ({n}%)", "n": { "value": "[X]", "sample": true, "source": "NASA SRTM", "scale": "field" }, "chip": { "scale": "field", "source": "NASA SRTM 30 m" } }
       ],
       "nodata": null,
       "good": ["Best income in a normal year", "You know this crop", "Straw after harvest"],

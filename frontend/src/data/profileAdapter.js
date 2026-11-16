@@ -13,7 +13,7 @@ import {
 export const real = (value, source, scale, mode = null) => ({ value, sample: false, source, scale, mode })
 const loadingLeaf = (source, scale) => ({ value: 'Loading…', sample: false, loading: true, source, scale })
 export const missingLeaf = (reason, source, scale) => ({ value: 'Not available', sample: false, unavailable: reason || 'Not available', source, scale })
-const pending = (source = 'NASADEM / SRTM (in progress)') => ({ value: 'Coming soon', sample: false, pending: true, source, scale: 'field' })
+const pending = (source = 'NASA SRTM 30 m (in progress)') => ({ value: 'Coming soon', sample: false, pending: true, source, scale: 'field' })
 
 const POWER = 'NASA POWER'
 const SOILGRIDS = 'SoilGrids 250 m'
@@ -93,7 +93,7 @@ export function toFieldData(sample, profile, field, ctx = {}) {
   const slopePct = okBlock(terrain) ? terrain.data?.slope_pct?.mean : null
   const cls = slopeClass(slopePct)
   const slopeLeaf = (what) => {
-    if (cls == null) return pending(terrain?.source?.dataset ? 'NASADEM / SRTM (in progress)' : undefined)
+    if (cls == null) return pending(terrain?.source?.dataset ? 'NASA SRTM 30 m (in progress)' : undefined)
     return real(what === 'pct' ? +slopePct.toFixed(1) : cls, 'NASA SRTM 30 m', 'field', terrain.source?.mode)
   }
   data.field.slope = slopeLeaf('class')

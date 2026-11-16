@@ -187,7 +187,7 @@ function rate(s, crop, counts) {
   const name = label(crop).toLowerCase()
   const bits = []
   if (out.rain && out.rain.tone !== 'g') bits.push(`${name} ${out.rain.tone === 'r' ? 'often' : 'sometimes'} ${name.endsWith('s') ? 'get' : 'gets'} too little rain in April–May (${ofText(counts.rain, { last: true })} years)`)
-  if (out.frost && out.frost.tone !== 'g') bits.push(`frost ${out.frost.tone === 'r' ? 'often' : 'sometimes'} hits (at least one day ≤ 3 °C in June–August in ${ofText(counts.frost, { last: true })} years)`)
+  if (out.frost && out.frost.tone !== 'g') bits.push(`frost ${out.frost.tone === 'r' ? 'often' : 'sometimes'} hits (at least one day ≤ 3 °C in June–August in ${ofText(counts.frost, { last: true })} years${FROST_SENSITIVE.has(crop) ? '; the sensitive stage is heading and flowering, which we do not check' : ''})`)
   s.verdict = { value: crop === 'cover' || crop === 'fallow' ? 'No grain to lose to dry autumns or frost.'
     : bits.length ? `In the past records, ${bits.join(' and ')}.` : `Rain and frost records look fine for ${name}.`,
     sample: false, source: 'NASA POWER + crop catalog', scale: 'area' }
@@ -226,6 +226,21 @@ function rateAll(s, crop, slope, hasClimate) {
   set('bare', { value: bare[0], sample: false, source: 'crop calendar (rough estimate)', scale: 'est' }, bare[1])
 }
 
+// The drawer's example lists (good / watch / evidence) talk about bare soil and erosion with other numbers than the
+// card. Drop those example lines and repeat the card's own values, so the card and the drawer never disagree.
+const SOIL_TXT = /bare soil|soil would be bare|soil was bare|washed away|soil covered/i
+function alignDrawerWithCard(s, d) {
+  const row = (icon) => s.rows?.find((r) => r.icon === icon)?.answer
+  d.good = (d.good ?? []).filter((x) => !SOIL_TXT.test(x))
+  d.watch = (d.watch ?? []).filter((x) => !SOIL_TXT.test(x))
+  d.evidence = (d.evidence ?? []).filter((e) => e.icon !== 'bare' && !SOIL_TXT.test(e.text ?? ''))
+  const add = (icon, label, a) => {
+    if (a?.value && a.sample === false && !a.unavailable) d.evidence.push({ icon, text: `${label}: ${String(a.value).toLowerCase()}`, chip: { scale: a.scale ?? 'est', source: a.source ?? 'crop calendar' } })
+  }
+  add('bare', 'Soil left bare', row('bare'))
+  add('slope', 'Rain washing soil away', row('erosion'))
+}
+
 /** The field data with the 3 plans rebuilt from the farmer's crops (unchanged until both are chosen). */
 export function withPlans(data, crops) {
   if (!data?.strategies || !crops?.summer || !crops?.second) return data
@@ -254,6 +269,7 @@ export function withPlans(data, crops) {
     d.evidence = (d.evidence ?? []).filter((e) => !(e.n?.sample && /HLS/i.test(e.n.source ?? '')))
     if (counts) rate(s, crop, counts)
     rateAll(s, crop, fieldSlope(data), !!counts)
+    alignDrawerWithCard(s, d)
     strategies.push(s)
     details[id] = d
   }
