@@ -56,7 +56,8 @@ onMounted(() => loadCosts()) // money bar: public data (IBGE, NASA POWER)
         <Icon name="coin" />
         <div>
           <b>What if nothing changes?</b>
-          <span>If you plant second-crop corn and the autumn is dry, {{ selected?.name }} could lose
+          <span v-if="money.no_loss">In the dry autumns on record, the corn yields we found were not lower than in normal years, so we show no loss. Past records, not a forecast.</span>
+          <span v-else>If you plant second-crop corn and the autumn is dry, {{ selected?.name }} could lose
             <b>R$ <SampleValue :v="money.at_risk_min" /> – <SampleValue :v="money.at_risk_max" /></b>.</span>
         </div>
         <button class="btn red small" style="width:auto;padding:10px 18px" @click="router.push(fieldPath('costs'))">See the costs →</button>
