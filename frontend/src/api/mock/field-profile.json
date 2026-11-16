@@ -1832,7 +1832,7 @@
     "status": "pending",
     "reason": "Terrain (elevation and slope) is being integrated in issues #11 (Open Topo Data) and #12 (OpenTopography).",
     "source": {
-      "dataset": "NASA SRTM / NASADEM (planned)",
+      "dataset": "NASA SRTM 30 m (via Open Topo Data)",
       "url": null,
       "mode": null
     },

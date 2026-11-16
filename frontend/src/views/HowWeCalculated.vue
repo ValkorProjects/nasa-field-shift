@@ -15,8 +15,8 @@ const rows = [
   ['Soil moisture', 'NASA SMAP', 'area', '9 km · since 2015', 'Never a measurement of your field'],
   ['Bare soil, plant cover, crop history', 'NASA HLS (Landsat + Sentinel-2)', 'field', '30 m · every 2–3 days', 'Clouds leave gaps in summer'],
   ['Frost', 'NASA POWER', 'area', '~50 km · daily · 40+ years', 'Low spots can be colder'],
-  ['Slope', 'NASADEM', 'field', '30 m', 'Does not see terraces'],
-  ['Rain washing soil away', 'GPM + NASADEM + HLS + soil type', 'est', 'Relative: low / some / high', 'Not tons of soil lost'],
+  ['Slope', 'NASA SRTM', 'field', '30 m', 'Does not see terraces'],
+  ['Rain washing soil away', 'GPM + NASA SRTM + HLS + soil type', 'est', 'Relative: low / some / high', 'Not tons of soil lost'],
   ['Soil type, drainage', 'Your answers, or public soil maps', 'est', 'Maps ~250 m', 'Lower confidence'],
   ['Nitrogen, water needs, crop calendars', 'Crop knowledge tables', 'book', 'General', 'Not measured on your field'],
   ['Prices, costs, harvest area', 'CEPEA · CONAB · IBGE', 'area', 'Region / state', 'Past data, no price forecast']

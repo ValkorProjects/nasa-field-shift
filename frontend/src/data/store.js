@@ -6,6 +6,8 @@ import { farm, selected, toFeature, geomKey, areaHa, fieldScope, centroidOf } fr
 import { toFieldData } from './profileAdapter.js'
 import { fieldStatus } from './rules.js'
 import { withPlans, loadCatalog } from './strategies.js'
+import { account, profileKey } from './account.js'
+import { getJSON, setJSON } from './storage.js'
 
 // Profile of each field (POST /api/field/profile):
 //   { [fieldId]: { status: 'loading'|'ready'|'error', error, geom, profile } }
@@ -27,6 +29,32 @@ export const state = reactive({
   order: [],
   orderChosen: false, // the farmer confirmed the order of priorities (issue #38: nothing pre-chosen)
   layer: 'photo'
+})
+
+/* ---------- answers survive a reload (crops, soil, priorities), per local profile ---------- */
+// Restored right here, before the first navigation: the router guard (missingStep) runs before loadSample ends.
+const ANSWERS = () => profileKey('answers')
+let answersRestored = false
+const str = (x) => (typeof x === 'string' ? x : null)
+function applyAnswers(a) { // a saved record, or nothing: back to "nothing chosen"
+  const ok = a && typeof a === 'object'
+  state.crops = { summer: str(ok && a.crops?.summer), second: str(ok && a.crops?.second) }
+  state.soil = { texture: str(ok && a.soil?.texture), drainage: str(ok && a.soil?.drainage), slope: str(ok && a.soil?.slope) }
+  state.order = ok && Array.isArray(a.order) ? a.order.filter((x) => typeof x === 'string') : []
+  state.orderChosen = ok && a.orderChosen === true
+  return !!ok
+}
+if (account.activeId) answersRestored = applyAnswers(getJSON(ANSWERS(), null))
+// Another local profile: its own answers (or none) replace the previous ones; never write one profile's answers into another.
+watch(() => account.activeId, () => {
+  applyAnswers(account.activeId ? getJSON(ANSWERS(), null) : null)
+  const ids = sampleRef.value?.priorities?.items?.map((p) => p.id) ?? []
+  if (ids.length && state.order.length !== ids.length) state.order = ids
+}, { flush: 'sync' })
+watch(() => JSON.stringify([state.crops, state.soil, state.order, state.orderChosen]), (v) => {
+  if (!account.activeId || state.loading) return
+  const [crops, soil, order, orderChosen] = JSON.parse(v)
+  setJSON(ANSWERS(), { crops, soil, order, orderChosen })
 })
 
 // The 3 plans follow the farmer's crops (strategies.js); everything else comes from the sample or the profile.
@@ -72,10 +100,13 @@ export async function loadSample(id = '1') {
     sampleRef.value = data
     // Issue #38: start with nothing chosen. The order below is only how the cards are listed
     // until the farmer sorts them; results wait for orderChosen.
-    state.crops = { summer: null, second: null }
-    state.soil = { texture: null, drainage: null, slope: null }
-    state.order = data.priorities.items.map((p) => p.id)
-    state.orderChosen = false
+    if (!answersRestored) { // first visit: nothing chosen; otherwise keep what the farmer answered before
+      state.crops = { summer: null, second: null }
+      state.soil = { texture: null, drainage: null, slope: null }
+      state.orderChosen = false
+    }
+    const ids = data.priorities.items.map((p) => p.id)
+    if (!(state.order.length === ids.length && ids.every((i) => state.order.includes(i)))) state.order = ids
   } catch (e) {
     state.error = e.message
   } finally {
