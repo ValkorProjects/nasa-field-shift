@@ -8,6 +8,7 @@
 // their existing cards (real NASA POWER rows when the backend answered, sample values otherwise).
 // Any other crop is "Not rated yet": no invented Good/OK/Poor, and it is left out of "Best for you".
 import { shallowRef } from 'vue'
+import { countDryAutumns, countFrostYears, rainWord, frostWord, ofText } from './rules.js'
 
 export const catalog = shallowRef(null)
 export async function loadCatalog() {
@@ -99,6 +100,53 @@ function buildPlan(data, id, tag, summer, crop, edge) {
   return [s, d]
 }
 
+/* ---------- independent rating of each plan with the field's NASA POWER records ----------
+ * Each plan's second crop is checked against its own risks from the catalog (risk_keys):
+ *   rain row  → dry autumns (April + May < 150 mm), only if the crop lists a drought risk
+ *   frost row → frost years (a day ≤ 3 °C in June–August), only if the crop lists frost
+ *   a risk the crop does not list → "Not a key risk"; a cover crop → "No grain at risk"
+ * Light and verdict come from these two rows. Thresholds: rules.js (rainWord, frostWord). */
+const DROUGHT = ['reproductive_drought', 'establishment_drought']
+const FROST_SENSITIVE = new Set(['wheat', 'oat', 'barley', 'triticale']) // winter cereals: stricter frost scale
+
+function weatherCounts(data) {
+  const p = data?.profile
+  const rows = p && !p.mock && p.weather_summary?.status === 'ok' ? p.weather_summary.data?.by_year_month : null
+  if (!rows) return null
+  const rain = countDryAutumns(rows), frost = countFrostYears(rows)
+  return rain.total && frost.total ? { rain, frost, mode: p.weather_summary.source?.mode ?? null } : null
+}
+
+function rate(s, crop, counts) {
+  const src = (word) => ({ sample: false, source: 'NASA POWER', scale: 'area', mode: counts.mode, value: word })
+  const notKey = { value: 'Not a key risk', sample: false, source: 'crop catalog', scale: 'book' }
+  const noGrain = { value: 'No grain at risk', sample: false, source: 'crop fact', scale: 'book' }
+  const risks = crop === 'cover' ? [] : catalog.value?.crops?.[crop]?.risks ?? []
+  const set = (icon, answer, tone) => { const r = s.rows.find((x) => x.icon === icon); if (r) { r.answer = answer; r.tone = tone } }
+  const out = {}
+  if (crop === 'cover' || crop === 'fallow') {
+    set('rain', noGrain, 'g'); set('frost', noGrain, 'g')
+  } else {
+    if (risks.some((r) => DROUGHT.includes(r))) {
+      const w = rainWord(counts.rain.hit, counts.rain.total); set('rain', src(w.text), w.tone); out.rain = w
+    } else set('rain', notKey, 'g')
+    if (risks.includes('frost')) {
+      const w = frostWord(counts.frost.hit, counts.frost.total, FROST_SENSITIVE.has(crop) ? 'wheat' : 'corn'); set('frost', src(w.text), w.tone); out.frost = w
+    } else set('frost', notKey, 'g')
+  }
+  const tones = [out.rain?.tone, out.frost?.tone].filter(Boolean)
+  s.light = tones.includes('r') ? 'r' : tones.includes('y') ? 'y' : 'g'
+  s.lightTxt = { r: 'Risky', y: 'Caution', g: 'Good' }[s.light]
+  const name = label(crop).toLowerCase()
+  const bits = []
+  if (out.rain && out.rain.tone !== 'g') bits.push(`${name} ${out.rain.tone === 'r' ? 'often' : 'sometimes'} ${name.endsWith('s') ? 'get' : 'gets'} too little rain in April–May (${ofText(counts.rain, { last: true })} years)`)
+  if (out.frost && out.frost.tone !== 'g') bits.push(`frost ${out.frost.tone === 'r' ? 'often' : 'sometimes'} hits in June–August (${ofText(counts.frost, { last: true })} years)`)
+  s.verdict = { value: crop === 'cover' || crop === 'fallow' ? 'No grain to lose to dry autumns or frost.'
+    : bits.length ? `In the past records, ${bits.join(' and ')}.` : `Rain and frost records look fine for ${name}.`,
+    sample: false, source: 'NASA POWER + crop catalog', scale: 'area' }
+  s.rated = true
+}
+
 /** The field data with the 3 plans rebuilt from the farmer's crops (unchanged until both are chosen). */
 export function withPlans(data, crops) {
   if (!data?.strategies || !crops?.summer || !crops?.second) return data
@@ -115,8 +163,10 @@ export function withPlans(data, crops) {
 
   const plans = [['current', 'Your current plan', second, null], ...options.slice(0, 2).map(([c, e], i) => [['a', 'b'][i], `Option ${'AB'[i]}`, c, e])]
   const strategies = [], details = {}
+  const counts = weatherCounts(data)
   for (const [id, tag, crop, edge] of plans) {
     const [s, d] = buildPlan(data, id, tag, summer, crop, edge)
+    if (counts) rate(s, crop, counts)
     strategies.push(s)
     details[id] = d
   }

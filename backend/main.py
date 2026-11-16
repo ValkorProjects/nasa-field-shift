@@ -16,6 +16,7 @@ from field_api import router as field_router
 from recommendation import recommend
 from schemas import ElevationRequest
 from soil import SoilNoData, SoilUnavailable, get_soil, soil_payload
+import validation
 from weather import WeatherUnavailable, get_weather
 
 # API conventions (every route follows them; tests/test_api.py checks the prefix):
@@ -431,3 +432,61 @@ def api_climate_risks():
     ]
     return {"count": len(risks), "risks": risks, "source": CATALOG_SOURCE}
 #-----------------------
+
+
+#------------------------
+# Validation metrics (validation.py)
+#-----------------------
+@app.get("/api/validation")
+def api_validation(
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+):
+    """How much to trust the numbers for this point: data coverage, stability of the planting windows
+    (leave one season out) and, inside the AppEEARS study area, 2025 cross-checks against MODIS and SMAP."""
+    try:
+        hist = get_weather(lat, lon, HISTORY_START, HISTORY_END)
+    except WeatherUnavailable:
+        raise HTTPException(status_code=503, detail=WEATHER_UNAVAILABLE_MSG)
+    body = {
+        "location": {"lat": lat, "lon": lon},
+        "history": {"dataset": "NASA POWER", "start": HISTORY_START.isoformat(), "end": HISTORY_END.isoformat(),
+                    "mode": hist.mode, "coverage": validation.coverage(hist.records, HISTORY_START, HISTORY_END)},
+        "stability": [validation.stability(hist.records, c) for c in ("corn", "soybean")],
+        "cross_checks_2025": None,
+        "thresholds": {
+            "planting_levels": "share of past seasons with the event in the sensitive stage: ≤ 10 % recommended, ≤ 30 % risky, above avoid",
+            "frost": "daily minimum air temperature ≤ 3 °C at 2 m (corn, 60–110 days after planting)",
+            "white_mold": "3+ days in a row with mean temperature 15–22 °C and relative humidity ≥ 85 % (soybean, 45–75 days)",
+            "dry_autumn": "April + May rain below 150 mm",
+            "note": "Project heuristics based on Embrapa references; to be validated with agronomists.",
+        },
+    }
+    try:
+        inside = in_study_area(lat, lon)
+    except AppEEARSDataError:
+        inside = False
+    if not inside:
+        body["cross_checks_2025"] = {"status": "unavailable", "reason": f"Only inside the {STUDY_AREA_NAME}"}
+        return body
+    y0, y1 = date(2025, 1, 1), date(2025, 12, 31)
+    try:
+        p25 = get_weather(lat, lon, y0, y1, offline_ok=False).records
+    except WeatherUnavailable:
+        body["cross_checks_2025"] = {"status": "unavailable", "reason": "NASA POWER 2025 not available right now"}
+        return body
+    try:
+        lst_night = get_lst(y0, y1, "night")
+        smap = get_soil_moisture(y0, y1, "rootzone")
+    except AppEEARSDataError:
+        body["cross_checks_2025"] = {"status": "unavailable", "reason": APPEEARS_UNAVAILABLE_MSG}
+        return body
+    body["cross_checks_2025"] = {
+        "status": "ok",
+        "area": STUDY_AREA_NAME,
+        "frost": validation.frost_check(p25, lst_night),
+        "dry_autumn": validation.dry_check(hist.records, p25, smap),
+        "sources": ["NASA POWER (2 m air, ~50 km)", "NASA MODIS MYD11A1 night LST (1 km, area mean)",
+                    "NASA SMAP L4 root-zone soil moisture (9 km, area mean)"],
+    }
+    return body

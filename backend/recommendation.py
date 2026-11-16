@@ -68,6 +68,7 @@ def candidate_risks(
 ) -> list[CandidateRisk]:
     by_day = {r.day: r for r in records}
     years = sorted({r.day.year for r in records})
+    first, last = (min(by_day), max(by_day)) if by_day else (None, None)
     out = []
     d = _safe_date(sy, crop.sowing_start_md)
     end = _safe_date(sy, crop.sowing_end_md)
@@ -77,6 +78,10 @@ def candidate_risks(
             sow = _safe_date(h, (d.month, d.day))
             s0 = sow + timedelta(days=crop.stage_start_dap)
             s1 = sow + timedelta(days=crop.stage_end_dap)
+            # the whole sensitive stage must be inside the data: a season cut at the end of the
+            # record (e.g. soybean sown in late 2024, stage into 2025) would count as "no event"
+            if first is None or s0 < first or s1 > last:
+                continue
             n = (s1 - s0).days + 1
             ok = sum(1 for i in range(n) if _valid(by_day.get(s0 + timedelta(days=i)), crop.event_type))
             if ok < MIN_STAGE_COVERAGE * n:
@@ -188,7 +193,7 @@ def _events(records, periods, years, crop: CropProfile, sy: int, thr: Threshold,
         lo = max(lo, _safe_date(label, s_md))
         hi = min(hi, _safe_date(label + 1 if crop.season_crosses_year else label, e_md))
         n = (hi - lo).days + 1
-        if n <= 0:
+        if n <= 0 or not by_day or lo < min(by_day) or hi > max(by_day):  # window must be inside the data
             return False
         ok = sum(1 for i in range(n) if _valid(by_day.get(lo + timedelta(days=i)), crop.event_type))
         return ok >= MIN_STAGE_COVERAGE * n
