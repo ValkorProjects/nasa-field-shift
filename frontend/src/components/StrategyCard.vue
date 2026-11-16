@@ -45,8 +45,8 @@ const FIT_IC = { soil: 'erosion', water: 'drop', income: 'coin', cost: 'tool' }
 
     <div v-if="!s.fit" class="fitrow"><span>Your priorities</span><span class="nr">Not rated yet: left out of “Best for you”</span></div>
     <div v-else class="fitrow">
-      <span :title="s.fitEstimate ? 'Estimate from this plan’s data (project rules, to be validated)' : ''">Your priorities<small v-if="s.fitEstimate"> · estimate</small></span>
-      <span v-for="p in state.order" :key="p" :class="['f2', `f${FIT[s.fit[p]][0]}`]" :title="`${p}: ${s.fit[p]}`">
+      <span :title="s.fitEstimate ? 'Estimate from this plan’s data (project rules, to be validated)' : ''">Your priorities<small v-if="s.fitEstimate"> · estimate<template v-if="s.fitSlopeUnknown"> · slope unknown</template></small></span>
+      <span v-for="p in state.order" :key="p" :class="['f2', `f${FIT[s.fit[p]][0]}`]" :title="`${p}: ${s.fit[p]}${p === 'soil' && s.fitSlopeUnknown ? ' (field slope unknown: not taken into account)' : ''}`">
         <Icon :name="FIT_IC[p]" />{{ FIT[s.fit[p]][1] }}<span class="sr-only">{{ p }}: {{ s.fit[p] }}</span>
       </span>
     </div>

@@ -176,3 +176,26 @@ def test_weather_timeout():
     for key in ("weather_summary", "events", "planting"):
         assert p[key]["status"] == "unavailable" and "timed out" in p[key]["reason"]
     assert p["soil"]["status"] == "ok"
+
+
+def test_terrain_cache_avoids_a_second_call(monkeypatch):
+    import terrain
+    calls = []
+
+    def topo(points):
+        calls.append(len(points))
+        return [600.0 + i for i in range(len(points))]
+
+    monkeypatch.setattr(terrain, "get_topoData", topo)
+    a = build_field_profile(GEOM, TODAY, weather_fn=weather_ok(), soil_fn=soil_ok)["terrain"]
+    terrain._MEMO.clear()  # second call reads the disk cache
+    b = build_field_profile(GEOM, TODAY, weather_fn=weather_ok(), soil_fn=soil_ok)["terrain"]
+    assert a["status"] == b["status"] == "ok" and a["data"] == b["data"] and len(calls) == 1
+
+
+def test_terrain_failure_is_not_cached(monkeypatch):
+    import terrain
+    monkeypatch.setattr(terrain, "get_topoData", lambda pts: None)
+    assert build_field_profile(GEOM, TODAY, weather_fn=weather_ok(), soil_fn=soil_ok)["terrain"]["status"] == "unavailable"
+    monkeypatch.setattr(terrain, "get_topoData", lambda pts: [600.0] * len(pts))
+    assert build_field_profile(GEOM, TODAY, weather_fn=weather_ok(), soil_fn=soil_ok)["terrain"]["status"] == "ok"

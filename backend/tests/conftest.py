@@ -97,7 +97,10 @@ POLY = {"type": "Polygon", "coordinates": [FIELD1_RING]}
 
 
 @pytest.fixture(autouse=True)
-def no_live_terrain(monkeypatch):
-    """Tests never call OpenTopoData: the terrain block is "unavailable" unless a test injects topo_fn."""
+def no_live_terrain(monkeypatch, tmp_path):
+    """Tests never call OpenTopoData nor touch backend/data/cache: the terrain block is "unavailable"
+    unless a test injects topo_fn."""
     import terrain
     monkeypatch.setattr(terrain, "get_topoData", lambda points: None)
+    monkeypatch.setattr(terrain, "CACHE_DIR", tmp_path / "terrain-cache")
+    monkeypatch.setattr(terrain, "_MEMO", {})

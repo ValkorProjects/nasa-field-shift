@@ -192,14 +192,19 @@ function fieldSlope(data) {
   return v && !v.sample && !v.pending && !v.unavailable && !v.loading ? v.value : null
 }
 
-function rateAll(s, crop, slope) {
+function rateAll(s, crop, slope, hasClimate) {
   const noGrain = crop === 'cover' || crop === 'fallow'
   const straw = /Poaceae/.test(catalog.value?.crops?.[crop]?.family ?? '') || crop === 'corn' || crop === 'wheat'
   const tone = (icon) => s.rows.find((r) => r.icon === icon)?.tone
   const tones = [tone('rain'), tone('frost')]
   const worst = tones.includes('r') ? 'r' : tones.includes('y') ? 'y' : 'g'
-  s.fit = planFit({ noGrain, fallow: crop === 'fallow', straw, slope, rainTone: tone('rain'), worstTone: worst })
-  s.fitEstimate = true
+  // Priority fit only from real climate rows: without them it would be made of defaults and still move
+  // "Best for you" (the card then stays "Not rated yet", or keeps the sample scores of the example cards).
+  if (hasClimate) {
+    s.fit = planFit({ noGrain, fallow: crop === 'fallow', straw, slope, rainTone: tone('rain'), worstTone: worst })
+    s.fitEstimate = true
+    s.fitSlopeUnknown = slope == null // the soil score could not use the field's slope (SRTM not available)
+  }
   const cover = crop === 'cover' ? 'living' : crop === 'fallow' ? 'bare' : straw ? 'straw' : 'low'
   const set = (icon, answer, t) => { const r = s.rows.find((x) => x.icon === icon); if (r) { r.answer = answer; r.tone = t } }
   const ero = erosionWord(slope, cover)
@@ -228,7 +233,7 @@ export function withPlans(data, crops) {
   for (const [id, tag, crop, edge] of plans) {
     const [s, d] = buildPlan(data, id, tag, summer, crop, edge)
     if (counts) rate(s, crop, counts)
-    rateAll(s, crop, fieldSlope(data))
+    rateAll(s, crop, fieldSlope(data), !!counts)
     strategies.push(s)
     details[id] = d
   }
