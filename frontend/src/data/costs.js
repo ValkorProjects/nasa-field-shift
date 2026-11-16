@@ -150,8 +150,14 @@ export async function loadCosts({ field = costsField(), force = false } = {}) {
 
     // ---- screen 9: your money ----
     const m = {}
-    m.at_risk_min = leaf(fmt(income(corn.normal - corn.dry, cornP.perBag)), 'IBGE PAM + NASA POWER', 'est')
-    m.at_risk_max = leaf(fmt(income(corn.normal - corn.worst, cornP.perBag)), 'IBGE PAM + NASA POWER', 'est')
+    // Loss = income of a normal year minus a dry year. Never negative: when the dry years on record yielded
+    // as much as the normal ones (IBGE yields rise over the years) there is no loss to show. Shown low → high.
+    const lossA = Math.max(0, income(corn.normal - corn.dry, cornP.perBag))
+    const lossB = Math.max(0, income(corn.normal - corn.worst, cornP.perBag))
+    const [lossLo, lossHi] = lossA <= lossB ? [lossA, lossB] : [lossB, lossA]
+    m.at_risk_min = leaf(fmt(lossLo), 'IBGE PAM + NASA POWER', 'est')
+    m.at_risk_max = leaf(fmt(lossHi), 'IBGE PAM + NASA POWER', 'est')
+    m.no_loss = !(lossHi > 0) // NaN also lands here: no number, no claim
     m.dry_years = leaf(`${dryYears.length} of the last ${N}`, 'NASA POWER')
     m.worst_year = leaf(corn.worstYear, srcY(cornS.level))
     const inp = {}

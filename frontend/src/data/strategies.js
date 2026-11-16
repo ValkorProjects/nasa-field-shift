@@ -23,7 +23,7 @@ export function evidenceStatus({ evidence = '', origin, to }) {
       .flatMap((p) => { const [k, v] = p.split(/:(.*)/); return k === 'a e b' ? [['a', v], ['b', v]] : [[k, v]] }))
     if (parts[letter]) t = parts[letter]
   }
-  if (to === 'sorghum' && /sorgo: candidato condicional/.test(t)) return { status: 'hypothesis', note: 'Conditional candidate in the starting pairs: compare water and critical stages first' }
+  if (to === 'sorghum' && /sorgo: candidato condicional/.test(t)) return { status: 'hypothesis', note: 'Conditional candidate in the starting pairs. Compare water use and critical stages before choosing.' }
   if (/hip[oó]tese/.test(t)) return { status: 'hypothesis', note: 'Hypothesis to validate on the field (general reference)' }
   if (/brasil central/.test(t)) return { status: 'documented', note: 'Documented for central Brazil; still to validate in São Paulo' }
   if (/reforma/.test(t)) return { status: 'documented', note: 'Documented for sugarcane renewal' }
@@ -60,7 +60,7 @@ const KEY = { soy: 'soybean', corn: 'corn', beans: 'dry_bean', wheat: 'wheat', c
 // crops that have a card with RollCrop rules (id of the sample strategy to reuse)
 const TEMPLATE = { corn: 'current', wheat: 'a', cover: 'b' }
 const IMG = { soybean: '/img/soja.jpg', corn: '/img/milho.jpg', dry_bean: '/img/feijao.jpg', wheat: '/img/trigo.jpg', cover: '/img/cover.jpg', fallow: '/img/palha.jpg' }
-const LABEL = { cover: 'Cover crop', fallow: 'Fallow (left empty)', dry_bean: 'Beans' }
+const LABEL = { cover: 'Black oat (cover crop)', fallow: 'Fallow (left empty)', dry_bean: 'Beans' }
 const LEGUMES = new Set(['soybean', 'dry_bean', 'peanut']) // fix nitrogen (crop knowledge)
 const RANK = { documented_pair: 0, alt_a: 1, alt_b: 2 }
 const STATUS_TXT = { documented: 'Documented', hypothesis: 'Hypothesis to validate' }
@@ -121,7 +121,6 @@ function buildPlan(data, id, tag, summer, crop, edge) {
   const nitro = s.rows?.find((r) => r.icon === 'nitro')
   if (nitro) {
     const legumes = [summer, crop].filter((k) => LEGUMES.has(k)).map((k) => label(k))
-    if (crop === 'cover') legumes.push('sunn hemp')
     nitro.answer = { value: legumes.length ? (legumes.length > 1 ? `Yes: ${legumes.join(' and ').toLowerCase()}` : `${legumes[0]} only`) : 'No legume', sample: false, source: 'crop fact', scale: 'book' }
     nitro.tone = legumes.length > 1 ? 'g' : legumes.length ? 'y' : 'r'
   }
@@ -132,7 +131,7 @@ function buildPlan(data, id, tag, summer, crop, edge) {
   s.photos = [{ img: IMG[summer] ?? null, cap: label(summer) }, { img: IMG[crop] ?? null, cap: label(crop) }]
   s.catalog = edge
     ? { status: edge.status, statusTxt: STATUS_TXT[edge.status], note: edge.note, url: edge.url }
-    : crop === 'cover' ? { status: 'reference', statusTxt: 'Green-manure reference', note: 'Cover crop between seasons; choose the species for your window, water and pests', url: null } : null
+    : crop === 'cover' ? { status: 'reference', statusTxt: 'Green-manure reference', note: 'Black oat is a grass: it covers the soil in winter and is not a host of white mold (Sclerotinia). Check seed, sowing window and how to end it before soybean', url: null } : null
   if (s.catalog) d.why = `${d.why} <br><small>Catalog: <b>${s.catalog.statusTxt}</b> · ${s.catalog.note}${s.catalog.url ? ` · <a href="${s.catalog.url}" target="_blank" rel="noopener">reference</a>` : ''}</small>`
   return [s, d]
 }
@@ -144,6 +143,9 @@ function buildPlan(data, id, tag, summer, crop, edge) {
  *   a risk the crop does not list → "Not a key risk"; a cover crop → "No grain at risk"
  * Light and verdict come from these two rows. Thresholds: rules.js (rainWord, frostWord). */
 const DROUGHT = ['reproductive_drought', 'establishment_drought']
+// The April–May rain rule (rules.js) is calibrated for autumn-sown corn and wheat. Other crops that list a
+// drought risk (e.g. sorghum, which tolerates dry spells better than corn) are not rated with it.
+const RAIN_RULE = new Set(['corn', 'wheat'])
 const FROST_SENSITIVE = new Set(['wheat', 'oat', 'barley', 'triticale']) // winter cereals: stricter frost scale
 
 function weatherCounts(data) {
@@ -158,6 +160,7 @@ function rate(s, crop, counts) {
   const src = (word) => ({ sample: false, source: 'NASA POWER', scale: 'area', mode: counts.mode, value: word })
   const notKey = { value: 'Not a key risk', sample: false, source: 'crop catalog', scale: 'book' }
   const noGrain = { value: 'No grain at risk', sample: false, source: 'crop fact', scale: 'book' }
+  const notAssessed = { value: 'Not assessed', sample: false, unavailable: 'No April–May rain rule for this crop yet: the rule is for autumn-sown corn and wheat, and sorghum tolerates dry spells better than corn.', source: 'no rule yet', scale: 'est' }
   const risks = crop === 'cover' ? [] : catalog.value?.crops?.[crop]?.risks ?? []
   const set = (icon, answer, tone) => { const r = s.rows.find((x) => x.icon === icon); if (r) { r.answer = answer; r.tone = tone } }
   const out = {}
@@ -165,19 +168,26 @@ function rate(s, crop, counts) {
     set('rain', noGrain, 'g'); set('frost', noGrain, 'g')
   } else {
     if (risks.some((r) => DROUGHT.includes(r))) {
-      const w = rainWord(counts.rain.hit, counts.rain.total); set('rain', src(w.text), w.tone); out.rain = w
+      if (RAIN_RULE.has(crop)) { const w = rainWord(counts.rain.hit, counts.rain.total); set('rain', src(w.text), w.tone); out.rain = w }
+      else set('rain', notAssessed, 'x')
     } else set('rain', notKey, 'g')
     if (risks.includes('frost')) {
       const w = frostWord(counts.frost.hit, counts.frost.total, FROST_SENSITIVE.has(crop) ? 'wheat' : 'corn'); set('frost', src(w.text), w.tone); out.frost = w
     } else set('frost', notKey, 'g')
   }
   const tones = [out.rain?.tone, out.frost?.tone].filter(Boolean)
+  const noRule = crop !== 'cover' && crop !== 'fallow' && !tones.length // nothing could be assessed: no verdict from nothing
+  if (noRule) {
+    s.light = 'x'; s.lightTxt = 'Not rated'; s.rated = false
+    s.verdict = { value: `No risk rule for ${label(crop).toLowerCase()} in RollCrop yet. Check the reference and your agronomist.`, sample: false, source: 'crop catalog', scale: 'book' }
+    return
+  }
   s.light = tones.includes('r') ? 'r' : tones.includes('y') ? 'y' : 'g'
   s.lightTxt = { r: 'Risky', y: 'Caution', g: 'Good' }[s.light]
   const name = label(crop).toLowerCase()
   const bits = []
   if (out.rain && out.rain.tone !== 'g') bits.push(`${name} ${out.rain.tone === 'r' ? 'often' : 'sometimes'} ${name.endsWith('s') ? 'get' : 'gets'} too little rain in April–May (${ofText(counts.rain, { last: true })} years)`)
-  if (out.frost && out.frost.tone !== 'g') bits.push(`frost ${out.frost.tone === 'r' ? 'often' : 'sometimes'} hits in June–August (${ofText(counts.frost, { last: true })} years)`)
+  if (out.frost && out.frost.tone !== 'g') bits.push(`frost ${out.frost.tone === 'r' ? 'often' : 'sometimes'} hits (at least one day ≤ 3 °C in June–August in ${ofText(counts.frost, { last: true })} years)`)
   s.verdict = { value: crop === 'cover' || crop === 'fallow' ? 'No grain to lose to dry autumns or frost.'
     : bits.length ? `In the past records, ${bits.join(' and ')}.` : `Rain and frost records look fine for ${name}.`,
     sample: false, source: 'NASA POWER + crop catalog', scale: 'area' }
@@ -200,7 +210,8 @@ function rateAll(s, crop, slope, hasClimate) {
   const worst = tones.includes('r') ? 'r' : tones.includes('y') ? 'y' : 'g'
   // Priority fit only from real climate rows: without them it would be made of defaults and still move
   // "Best for you" (the card then stays "Not rated yet", or keeps the sample scores of the example cards).
-  if (hasClimate) {
+  if (s.light === 'x') s.fit = null // not rated: out of "Best for you"
+  else if (hasClimate) {
     s.fit = planFit({ noGrain, fallow: crop === 'fallow', straw, slope, rainTone: tone('rain'), worstTone: worst })
     s.fitEstimate = true
     s.fitSlopeUnknown = slope == null // the soil score could not use the field's slope (SRTM not available)
@@ -209,8 +220,8 @@ function rateAll(s, crop, slope, hasClimate) {
   const set = (icon, answer, t) => { const r = s.rows.find((x) => x.icon === icon); if (r) { r.answer = answer; r.tone = t } }
   const ero = erosionWord(slope, cover)
   if (ero) set('erosion', { value: ero.text, sample: false, source: 'NASA SRTM 30 m + crop cover', scale: 'est' }, ero.tone)
-  const bare = crop === 'cover' ? ['Never', 'g'] : crop === 'fallow' ? ['Most of the off-season', 'r'] : ['About 1 month', 'y']
-  set('bare', { value: bare[0], sample: false, source: 'crop calendar', scale: 'book' }, bare[1])
+  const bare = crop === 'cover' ? ['Never', 'g'] : crop === 'fallow' ? ['Most of the off-season', 'r'] : ['About 1–2 months', 'y']
+  set('bare', { value: bare[0], sample: false, source: 'crop calendar (rough estimate)', scale: 'est' }, bare[1])
 }
 
 /** The field data with the 3 plans rebuilt from the farmer's crops (unchanged until both are chosen). */
@@ -219,9 +230,13 @@ export function withPlans(data, crops) {
   const summer = KEY[crops.summer] ?? crops.summer
   const second = KEY[crops.second] ?? crops.second
 
+  // Team decision: Option A = wheat, Option B = cover crop (black oat); the catalog fills the gaps when the
+  // farmer already plans one of them.
+  const succ = successors(summer)
   const options = []
-  for (const e of successors(summer)) if (e.to !== second && options.length < 2) options.push([e.to, e])
-  if (options.length < 2 && second !== 'cover') options.push(['cover', null])
+  if (second !== 'wheat') options.push(['wheat', succ.find((e) => e.to === 'wheat') ?? null])
+  if (second !== 'cover') options.push(['cover', null])
+  for (const e of succ) if (options.length < 2 && e.to !== second && !options.some((o) => o[0] === e.to)) options.push([e.to, e])
   if (!catalog.value) { // no catalog: keep the sample alternatives
     options.length = 0
     options.push(['wheat', null], ['cover', null])
@@ -232,6 +247,9 @@ export function withPlans(data, crops) {
   const counts = weatherCounts(data)
   for (const [id, tag, crop, edge] of plans) {
     const [s, d] = buildPlan(data, id, tag, summer, crop, edge)
+    // The example cards cite field-scale satellite history (HLS) we do not have for this field: never show it.
+    s.evidence = { scale: 'area', source: 'NASA POWER + crop catalog', text: 'No crop history for this field. The rating uses area rain and frost records (~50 km) and crop knowledge.', n: null }
+    d.evidence = (d.evidence ?? []).filter((e) => !(e.n?.sample && /HLS/i.test(e.n.source ?? '')))
     if (counts) rate(s, crop, counts)
     rateAll(s, crop, fieldSlope(data), !!counts)
     strategies.push(s)

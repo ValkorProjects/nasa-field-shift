@@ -41,6 +41,9 @@ const PILL = { g: ['pg', 'Looks fine'], y: ['py', 'Needs attention'], r: ['pr', 
 const rejected = ref('')
 const exploreOutsideSp = computed(() => f.value && fieldScope(f.value) === 'explore' && !inSaoPauloBox(centroidOf(f.value.coords)))
 function explore() { rejected.value = ''; farm.scope = 'explore' }
+// A field this large probably is a drawing slip, and one NASA value (~50 km) hides big differences inside it.
+const BIG_HA = 1000
+const bigField = computed(() => (f.value && areaHa(f.value.coords) > BIG_HA ? fmtHa(areaHa(f.value.coords)) : ''))
 const cropName = (season) => state.data?.crops?.[season]?.find((x) => x.id === state.crops[season])?.name
 
 function select(id) {
@@ -87,6 +90,11 @@ function clearFields() {
               <button v-if="farm.scope === 'mvp'" class="btn green small" @click="explore">Explore another place in Brazil</button>
               <button class="btn ghost small" @click="rejected = ''">OK</button>
             </div>
+          </div>
+
+          <div v-if="bigField && mode !== 'draw'" class="card scopemsg" role="status">
+            <b>This field is very large ({{ bigField }} ha).</b>
+            <p class="pp">Check the shape: a corner may be in the wrong place. NASA data here is one value for a ~50 km cell, so it can hide big differences inside a field this size.</p>
           </div>
 
           <!-- drawing -->
