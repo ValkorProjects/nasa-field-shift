@@ -86,7 +86,7 @@ const questions = [
               Satellite elevation suggests:
               <b><SampleValue :v="state.data.soil.slope_sat" /></b>
               <span>(<SampleValue :v="state.data.soil.slope_pct" />% average)</span>
-              <Chip scale="field" source="NASADEM 30 m" />
+              <Chip scale="field" source="NASA SRTM 30 m" />
             </template>
           </div>
         </div>

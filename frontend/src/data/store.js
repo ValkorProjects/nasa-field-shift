@@ -1,8 +1,8 @@
 // App state: the field JSON (read-only data) + the farmer's answers (wizard state).
 // The front only reads one pre-computed JSON per field. No satellite processing here.
 import { reactive, computed, watch, shallowRef, toRaw } from 'vue'
-import { apiMode, getFieldProfile } from '@/api/index.js'
-import { farm, selected, toFeature, geomKey, areaHa, fieldScope } from './fields.js'
+import { apiMode, getFieldProfile, getValidation } from '@/api/index.js'
+import { farm, selected, toFeature, geomKey, areaHa, fieldScope, centroidOf } from './fields.js'
 import { toFieldData } from './profileAdapter.js'
 import { fieldStatus } from './rules.js'
 import { withPlans, loadCatalog } from './strategies.js'
@@ -44,7 +44,7 @@ function baseDataFor(id) {
   let profile = e?.status === 'error' ? null : e?.profile ?? null
   if (profile && !!profile.mock !== (apiMode.value === 'mock')) profile = null // profile of another mode
   return toFieldData(sample, profile, f, {
-    nextCrop: state.crops.second, crops: state.crops, areaHa: areaHa(f.coords),
+    nextCrop: state.crops.second, crops: state.crops, soil: state.soil, validation: e?.validation ?? null, areaHa: areaHa(f.coords),
     apiMode: apiMode.value, error: e?.status === 'error' ? e.error : null, loading: !e || e.status === 'loading'
   })
 }
@@ -105,9 +105,16 @@ export function ensureProfile(field, { force = false } = {}) {
     try {
       const profile = await getFieldProfile({ feature: toFeature(field), name: field.name, scope: fieldScope(field) }, { signal: ctrl.signal })
       if (profiles[field.id]?.geom !== geom) return
-      profiles[field.id] = { status: 'ready', error: null, geom, profile }
+      profiles[field.id] = { status: 'ready', error: null, geom, profile, validation: null }
       const f = farm.fields.find((x) => x.id === field.id)
       if (f && !profile.mock) f.status = fieldStatus(dataFor(f.id))
+      // validation metrics (GET /api/validation) feed "How sure are we?"; optional
+      if (!profile.mock) {
+        const c = centroidOf(field.coords)
+        getValidation(c.lat, c.lon, { signal: ctrl.signal })
+          .then((v) => { if (profiles[field.id]?.geom === geom) profiles[field.id] = { ...profiles[field.id], validation: v } })
+          .catch(() => {})
+      }
     } catch (e) {
       if (e.name === 'AbortError' || profiles[field.id]?.geom !== geom) return
       profiles[field.id] = { status: 'error', error: e.message, geom, profile: null }

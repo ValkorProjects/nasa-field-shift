@@ -133,14 +133,43 @@ export function alertTitle(a, name, crop = 'Corn') {
 }
 
 // Rules of "How sure are we?". `info` = { years, weatherOk, soilOk } derived by the adapter from the blocks.
-export function confidenceRules({ years = 0, weatherOk = false } = {}) {
+export function confidenceRules({ years = 0, weatherOk = false, terrainOk = false, agree = null, soilAnswered = false } = {}) {
   return [
     years >= 10 ? { ok: true, text: '10+ years of rain data' } : { ok: false, text: 'Less than 10 years of rain data' },
-    // NASA POWER is an area product (~50 km): the field-level check is never met by the current blocks.
-    { ok: false, text: weatherOk ? 'Some data is for the area, not the field' : 'Weather data is not available for this field' },
-    { ok: false, text: 'Only one rain source (a second source is not available yet)' },
-    { ok: false, text: 'No soil test (drainage estimated)' }
+    // field-level data: the slope from NASA SRTM 30 m inside the drawn field (weather stays ~50 km)
+    terrainOk ? { ok: true, text: 'Field-level data: slope from NASA SRTM 30 m' }
+      : { ok: false, text: weatherOk ? 'Only area data (no field-level slope yet)' : 'Weather data is not available for this field' },
+    // sources agree: 2025 cross-checks of GET /api/validation (POWER vs MODIS frost, POWER vs SMAP dryness)
+    agree === true ? { ok: true, text: 'NASA sources agree (POWER vs MODIS and SMAP, 2025)' }
+      : agree === false ? { ok: false, text: 'NASA sources disagree for 2025 (POWER vs MODIS / SMAP)' }
+        : { ok: false, text: 'No second source to cross-check here (2025 satellite area only)' },
+    soilAnswered ? { ok: true, text: 'You told us your soil' } : { ok: false, text: 'Soil estimated from public maps' }
   ]
+}
+
+/* ---------- Plan ratings (estimates) ----------
+ * Project heuristics, labelled as estimates on screen and to be validated with agronomists.
+ * Priority fit (Good / OK / Poor) of a plan from its own data:
+ *   soil   – straw of grasses (Poaceae) or a living cover protects the soil; a steep field (SRTM) lowers it
+ *   water  – exposure of the second crop to dry autumns (NASA POWER rain row); no grain = Good
+ *   income – grain to sell: Good, OK when a rain/frost row is red; cover crop or fallow: Poor
+ *   cost   – cover crop or fallow: Good; grain crops: OK
+ */
+const LOWER = { Good: 'OK', OK: 'Poor', Poor: 'Poor' }
+export function planFit({ noGrain = false, fallow = false, straw = false, slope = null, rainTone = null, worstTone = null } = {}) {
+  let soil = noGrain && !fallow ? 'Good' : straw ? 'OK' : 'Poor'
+  if (slope === 'steep') soil = LOWER[soil]
+  const water = noGrain ? 'Good' : { g: 'Good', y: 'OK', r: 'Poor' }[rainTone] ?? 'OK'
+  const income = noGrain ? 'Poor' : worstTone === 'r' ? 'OK' : 'Good'
+  const cost = noGrain ? 'Good' : 'OK'
+  return { soil, water, income, cost }
+}
+
+// Rain washing soil away: slope class (SRTM) × how much the plan covers the soil. Relative, never tons.
+export function erosionWord(slope, cover) { // cover: 'living' | 'straw' | 'low' | 'bare'
+  if (!slope) return null
+  const score = { flat: 0, gentle: 1, steep: 2 }[slope] + { living: 0, straw: 0, low: 1, bare: 2 }[cover]
+  return score <= 1 ? { text: 'Low risk', tone: 'g' } : score === 2 ? { text: 'Some risk', tone: 'y' } : { text: 'High risk', tone: 'r' }
 }
 
 // Pill of the field: r / y / g from the alert level; 'new' when there is no climate data.

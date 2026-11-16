@@ -10,6 +10,7 @@ import FieldThumb from '@/components/FieldThumb.vue'
 import SampleValue from '@/components/SampleValue.vue'
 import Icon from '@/components/Icon.vue'
 import PrePlantingAlert from '@/components/PrePlantingAlert.vue'
+import SatelliteCard from '@/components/SatelliteCard.vue'
 import { state, profileOf, ensureProfile } from '@/data/store.js'
 import { apiMode } from '@/api/index.js'
 import { fieldStatus } from '@/data/rules.js'
@@ -155,6 +156,8 @@ function clearFields() {
             <p class="pp" v-else>Find your farm anywhere in Brazil (search a town), then click <b>Draw a new field</b>. Live data only.</p>
             <button class="btn green" @click="startDraw"><Icon name="pencil" /> Draw a new field</button>
           </div>
+
+          <SatelliteCard v-if="f && mode !== 'draw'" :field="f" />
 
           <div v-if="f && !loading && !failed && d.alert.active && !d.meta.sampleOnly && mode !== 'draw'" class="alert alert-click" role="button" tabindex="0"
             @click="router.push('/farm/alert')" @keydown.enter.space.prevent="router.push('/farm/alert')">

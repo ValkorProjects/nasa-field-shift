@@ -72,7 +72,7 @@ const label = (s) => `${s.tag} · ${s.name.value}`
             <b>If you put Income first:</b> {{ alt.id !== best.id ? `${label(alt)} would be first.` : `${best.tag} would still be first.` }}
           </div>
           </template>
-          <div v-else class="k">No ranking yet: RollCrop has rules for fewer than two of these plans. Compare them with your agronomist.</div>
+          <div v-else class="k">No ranking yet: RollCrop has priority scores for fewer than two of these plans. Each card still shows its own rain and frost risk.</div>
           <div class="how">How we rank: each option gets Good / OK / Poor for each priority. Higher priorities count more (4, 3, 2, 1).</div>
         </div>
         <button class="btn green" style="margin-top:auto" :disabled="!state.orderChosen" @click="router.push(fieldPath('results'))">See results →</button>

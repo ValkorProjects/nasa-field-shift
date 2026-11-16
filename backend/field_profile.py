@@ -17,6 +17,7 @@ from recommendation import PARAMETERS, recommend
 from rules import FROST_TMIN_MAX
 from soil import SoilNoData, SoilUnavailable, get_soil, soil_payload
 from weather import WeatherUnavailable, get_weather
+from terrain import SOURCE as SRTM_SOURCE, TerrainUnavailable, field_terrain
 
 log = logging.getLogger(__name__)
 
@@ -127,14 +128,15 @@ def soil_block(geom: FieldGeometry, soil_fn=get_soil, offline_ok: bool = True) -
     return ok(payload, source)
 
 
-def terrain_block(geom: FieldGeometry) -> dict:
-    """Slot de relevo, hoje pendente. Único ponto a substituir nas issues #11/#12.
-
-    Formato sugerido de `data` quando houver fonte: {"elevation_m": {"mean", "min", "max"},
-    "slope_pct": {"mean", "max"}} mais `source` com dataset/url/resolution/mode. A classe de
-    declividade é regra de negócio e fica no frontend.
-    """
-    return not_ok("pending", TERRAIN_PENDING, TERRAIN_SOURCE)
+def terrain_block(geom: FieldGeometry, topo_fn=None) -> dict:
+    """Relevo do talhão: NASA SRTM 30 m via OpenTopoData (terrain.py). data = {"elevation_m": {"mean",
+    "min", "max"}, "slope_pct": {"mean", "max"}, "points"}. A classe de declividade fica no frontend."""
+    try:
+        data = field_terrain(geom, topo_fn)
+    except TerrainUnavailable as e:
+        return not_ok("unavailable", str(e), {**SRTM_SOURCE, "mode": None})
+    return ok(data, {**SRTM_SOURCE, "mode": "live",
+                     "method": "least-squares plane through the sampled points (mean); steepest pair (max)"})
 
 
 def _field_block(geom: FieldGeometry, location_name: str | None) -> dict:
@@ -148,7 +150,8 @@ def _field_block(geom: FieldGeometry, location_name: str | None) -> dict:
 
 
 def build_field_profile(geom: FieldGeometry, today: date, *, weather_fn=get_weather,
-                        soil_fn=get_soil, timeout: float | None = None, scope: str = "mvp") -> dict:
+                        soil_fn=get_soil, timeout: float | None = None, scope: str = "mvp",
+                        topo_fn=None) -> dict:
     """scope "mvp": cache, ao vivo e os slices offline do demo. scope "explore" (#39): só cache e ao vivo."""
     budget = BLOCK_TIMEOUT_S if timeout is None else timeout
     offline_ok = scope != "explore"
@@ -169,10 +172,17 @@ def build_field_profile(geom: FieldGeometry, today: date, *, weather_fn=get_weat
             log.warning("field profile soil failed: %s", type(exc).__name__)
             return not_ok("unavailable", UNEXPECTED, SOIL_SOURCE)
 
-    executor = ThreadPoolExecutor(max_workers=2)
+    def run_terrain():
+        try:
+            return terrain_block(geom, topo_fn)
+        except Exception as exc:
+            log.warning("field profile terrain failed: %s", type(exc).__name__)
+            return not_ok("unavailable", UNEXPECTED, {**SRTM_SOURCE, "mode": None})
+
+    executor = ThreadPoolExecutor(max_workers=3)
     deadline = time.monotonic() + budget
     try:
-        fw, fs = executor.submit(run_weather), executor.submit(run_soil)
+        fw, fs, ft = executor.submit(run_weather), executor.submit(run_soil), executor.submit(run_terrain)
         try:
             weather = fw.result(timeout=max(0.0, deadline - time.monotonic()))
         except FutureTimeout:
@@ -181,6 +191,10 @@ def build_field_profile(geom: FieldGeometry, today: date, *, weather_fn=get_weat
             soil = fs.result(timeout=max(0.0, deadline - time.monotonic()))
         except FutureTimeout:
             soil = not_ok("unavailable", TIMED_OUT, SOIL_SOURCE)
+        try:
+            terrain = ft.result(timeout=max(0.0, deadline - time.monotonic()))
+        except FutureTimeout:
+            terrain = not_ok("unavailable", TIMED_OUT, {**SRTM_SOURCE, "mode": None})
     finally:
         executor.shutdown(wait=False)
 
@@ -192,5 +206,5 @@ def build_field_profile(geom: FieldGeometry, today: date, *, weather_fn=get_weat
         "field": _field_block(geom, wsrc.get("location_name")),
         **weather,
         "soil": soil,
-        "terrain": terrain_block(geom),
+        "terrain": terrain,
     }
