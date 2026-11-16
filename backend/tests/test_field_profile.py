@@ -64,9 +64,21 @@ def test_everything_ok():
     assert "source" not in p["soil"]["data"] and p["soil"]["source"]["dataset"].startswith("SoilGrids")
 
 
-def test_terrain_pending():
+def test_terrain_unavailable_without_srtm():
     t = build_field_profile(GEOM, TODAY, weather_fn=weather_ok(), soil_fn=soil_ok)["terrain"]
-    assert t["status"] == "pending" and t["data"] is None and "#11" in t["reason"]
+    assert t["status"] == "unavailable" and t["data"] is None and "SRTM" in t["reason"]
+
+
+def test_terrain_slope_from_srtm_points():
+    # a plane that rises 5 m per 100 m to the north: slope 5 %
+    import terrain
+    def topo(points):
+        lat0 = points[0][0]
+        return [500 + (lat - lat0) * 110_574.0 * 0.05 for lat, _ in points]
+    t = build_field_profile(GEOM, TODAY, weather_fn=weather_ok(), soil_fn=soil_ok, topo_fn=topo)["terrain"]
+    assert t["status"] == "ok" and t["source"]["dataset"].startswith("NASA SRTM")
+    assert abs(t["data"]["slope_pct"]["mean"] - 5.0) < 0.2
+    assert t["data"]["points"] <= terrain.MAX_POINTS and t["data"]["elevation_m"]["min"] < t["data"]["elevation_m"]["max"]
 
 
 def test_weather_unavailable_keeps_soil():
@@ -74,7 +86,7 @@ def test_weather_unavailable_keeps_soil():
     for key in ("weather_summary", "events", "planting"):
         assert p[key]["status"] == "unavailable" and p[key]["data"] is None and p[key]["reason"]
     assert p["soil"]["status"] == "ok" and p["field"]["status"] == "ok"
-    assert p["terrain"]["status"] == "pending"
+    assert p["terrain"]["status"] == "unavailable"
 
 
 def far_poly():

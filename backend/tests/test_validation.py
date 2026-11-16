@@ -81,3 +81,10 @@ def test_api_validation_outside_study_area(isolated_dirs, monkeypatch):
     assert [s["crop"] for s in body["stability"]] == ["corn", "soybean"]
     assert body["cross_checks_2025"]["status"] == "unavailable"
     assert "≤ 10 %" in body["thresholds"]["planting_levels"]
+
+
+def test_ndvi_season_check():
+    s = [Stat(date(2025, 9, 30), 0.50), Stat(date(2025, 2, 2), 0.82), Stat(date(2025, 6, 10), 0.70)]
+    v = validation.ndvi_season_check(s)
+    assert v["consistent"] is True and v["lowest"]["date"] == "2025-09-30" and v["amplitude"] == 0.32
+    assert validation.ndvi_season_check([])["consistent"] is None

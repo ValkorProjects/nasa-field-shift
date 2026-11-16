@@ -70,8 +70,23 @@ function stabilityText(s) {
             <b>{{ st.v.cross_checks_2025.dry_autumn.agree ? 'Both say it was drier.' : 'They disagree.' }}</b></span>
           <Chip scale="area" source="POWER + SMAP" />
         </div>
+        <div v-if="st.v.cross_checks_2025.vegetation?.consistent != null" class="vrow">
+          <b>Crop season, 2025: plant cover</b>
+          <span>NDVI of the area was lowest on {{ st.v.cross_checks_2025.vegetation.lowest.date }} ({{ st.v.cross_checks_2025.vegetation.lowest.ndvi }}) and highest on {{ st.v.cross_checks_2025.vegetation.highest.date }} ({{ st.v.cross_checks_2025.vegetation.highest.ndvi }}).
+            <b>{{ st.v.cross_checks_2025.vegetation.consistent ? 'It follows a summer-crop calendar, as the plans assume.' : 'It does not follow the summer-crop calendar the plans assume.' }}</b></span>
+          <Chip scale="area" source="MODIS NDVI 250 m" />
+        </div>
       </template>
       <div v-else class="vrow"><b>2025 satellite cross-checks</b><span>{{ st.v.cross_checks_2025?.reason }}</span></div>
+      <details class="vth">
+        <summary>How we rate each plan (estimates, to be validated with agronomists)</summary>
+        <ul>
+          <li><b>Rain in April–May:</b> share of dry autumns (April + May &lt; 150 mm, NASA POWER), only if the crop lists a drought risk in our catalog: ≥ 50 % often, ≥ 20 % sometimes.</li>
+          <li><b>Frost:</b> share of years with a day ≤ 3 °C in June–August, only if the crop lists frost: corn ≥ 50 % / 20 %, winter cereals ≥ 30 % / 10 %.</li>
+          <li><b>Rain washing soil away:</b> field slope from NASA SRTM 30 m (flat &lt; 3 %, gentle &lt; 8 %, steep) × how much the plan covers the soil.</li>
+          <li><b>Priorities:</b> protect soil = straw or living cover, lower on steep fields · save water = dry-autumn exposure · income = grain to sell, lower with a red risk · low cost = cover crops are cheaper.</li>
+        </ul>
+      </details>
       <details class="vth">
         <summary>Thresholds we use (project estimates, to be validated with agronomists)</summary>
         <ul><li v-for="(t, k) in st.v.thresholds" :key="k"><b>{{ k.replace(/_/g, ' ') }}:</b> {{ t }}</li></ul>

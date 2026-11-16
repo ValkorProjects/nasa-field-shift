@@ -8,13 +8,50 @@
 // their existing cards (real NASA POWER rows when the backend answered, sample values otherwise).
 // Any other crop is "Not rated yet": no invented Good/OK/Poor, and it is left out of "Best for you".
 import { shallowRef } from 'vue'
-import { countDryAutumns, countFrostYears, rainWord, frostWord, ofText } from './rules.js'
+import { apiMode, API_BASE } from '@/api/index.js'
+import { countDryAutumns, countFrostYears, rainWord, frostWord, ofText, planFit, erosionWord } from './rules.js'
 
 export const catalog = shallowRef(null)
+
+// Evidence status of a catalog edge from the spreadsheet's Portuguese text (same rules as
+// scripts/build-crop-catalog-json.cjs, which builds the static copy).
+export function evidenceStatus({ evidence = '', origin, to }) {
+  let t = String(evidence).toLowerCase()
+  if (origin === 'alt_a' || origin === 'alt_b') {
+    const letter = origin === 'alt_a' ? 'a' : 'b'
+    const parts = Object.fromEntries(t.split(';').map((p) => p.trim()).filter((p) => /^(a|b|a e b):/.test(p))
+      .flatMap((p) => { const [k, v] = p.split(/:(.*)/); return k === 'a e b' ? [['a', v], ['b', v]] : [[k, v]] }))
+    if (parts[letter]) t = parts[letter]
+  }
+  if (to === 'sorghum' && /sorgo: candidato condicional/.test(t)) return { status: 'hypothesis', note: 'Conditional candidate in the starting pairs: compare water and critical stages first' }
+  if (/hip[oó]tese/.test(t)) return { status: 'hypothesis', note: 'Hypothesis to validate on the field (general reference)' }
+  if (/brasil central/.test(t)) return { status: 'documented', note: 'Documented for central Brazil; still to validate in São Paulo' }
+  if (/reforma/.test(t)) return { status: 'documented', note: 'Documented for sugarcane renewal' }
+  if (/descrita/.test(t)) return { status: 'documented', note: 'Described succession; benefit on your field not proven' }
+  if (/documentad|estudad/.test(t)) return { status: 'documented', note: 'Documented in another setting; to validate locally' }
+  return { status: 'hypothesis', note: 'Hypothesis to validate on the field' }
+}
+
+// api mode: the catalog comes from the backend (GET /api/crops, /api/rotations); otherwise, or if that
+// fails, from the static copy public/data/crop-catalog.json.
+async function catalogFromApi() {
+  const get = (p) => fetch(`${API_BASE}${p}`, { headers: { Accept: 'application/json' } }).then((r) => { if (!r.ok) throw new Error(r.status); return r.json() })
+  const [c, r] = await Promise.all([get('/api/crops'), get('/api/rotations')])
+  return {
+    from: 'api',
+    crops: Object.fromEntries(c.crops.map((x) => [x.key, { label: x.label, type: x.crop_type, decision: x.decision_type, family: x.family, risks: x.risk_keys ?? [] }])),
+    edges: r.rotations.map((e) => ({ from: e.from?.key ?? '', to: e.to?.key, via: e.via?.key ?? '', origin: e.origin, url: e.url,
+      ...evidenceStatus({ evidence: e.evidence_pt, origin: e.origin, to: e.to?.key }) }))
+  }
+}
+
 export async function loadCatalog() {
+  if (apiMode.value === 'api') {
+    try { catalog.value = await catalogFromApi(); return } catch { /* fall back to the static copy */ }
+  }
   try {
     const res = await fetch('/data/crop-catalog.json')
-    if (res.ok) catalog.value = await res.json()
+    if (res.ok) catalog.value = { from: 'static', ...(await res.json()) }
   } catch { /* no catalog: alternatives stay the sample ones */ }
 }
 
@@ -147,6 +184,30 @@ function rate(s, crop, counts) {
   s.rated = true
 }
 
+/* ---------- ratings every plan gets (no "Not rated") ----------
+ * Priority fit, soil erosion and bare soil from the plan's own crop, the field's slope (NASA SRTM 30 m,
+ * when the backend measured it) and the rain/frost rows. Rules in rules.js (planFit, erosionWord). */
+function fieldSlope(data) {
+  const v = data?.soil?.slope_sat
+  return v && !v.sample && !v.pending && !v.unavailable && !v.loading ? v.value : null
+}
+
+function rateAll(s, crop, slope) {
+  const noGrain = crop === 'cover' || crop === 'fallow'
+  const straw = /Poaceae/.test(catalog.value?.crops?.[crop]?.family ?? '') || crop === 'corn' || crop === 'wheat'
+  const tone = (icon) => s.rows.find((r) => r.icon === icon)?.tone
+  const tones = [tone('rain'), tone('frost')]
+  const worst = tones.includes('r') ? 'r' : tones.includes('y') ? 'y' : 'g'
+  s.fit = planFit({ noGrain, fallow: crop === 'fallow', straw, slope, rainTone: tone('rain'), worstTone: worst })
+  s.fitEstimate = true
+  const cover = crop === 'cover' ? 'living' : crop === 'fallow' ? 'bare' : straw ? 'straw' : 'low'
+  const set = (icon, answer, t) => { const r = s.rows.find((x) => x.icon === icon); if (r) { r.answer = answer; r.tone = t } }
+  const ero = erosionWord(slope, cover)
+  if (ero) set('erosion', { value: ero.text, sample: false, source: 'NASA SRTM 30 m + crop cover', scale: 'est' }, ero.tone)
+  const bare = crop === 'cover' ? ['Never', 'g'] : crop === 'fallow' ? ['Most of the off-season', 'r'] : ['About 1 month', 'y']
+  set('bare', { value: bare[0], sample: false, source: 'crop calendar', scale: 'book' }, bare[1])
+}
+
 /** The field data with the 3 plans rebuilt from the farmer's crops (unchanged until both are chosen). */
 export function withPlans(data, crops) {
   if (!data?.strategies || !crops?.summer || !crops?.second) return data
@@ -167,6 +228,7 @@ export function withPlans(data, crops) {
   for (const [id, tag, crop, edge] of plans) {
     const [s, d] = buildPlan(data, id, tag, summer, crop, edge)
     if (counts) rate(s, crop, counts)
+    rateAll(s, crop, fieldSlope(data))
     strategies.push(s)
     details[id] = d
   }

@@ -48,7 +48,8 @@ function evidenceStatus(edge) {
 
 const crops = Object.fromEntries(readCsv('crops.csv').map((c) => [c.key, {
   label: c.label_en, type: c.crop_type, decision: c.decision_type, url: c.url, quantitative: c.quantitative === '1',
-  risks: c.risk_keys ? c.risk_keys.split(';').map((r) => r.trim()).filter(Boolean) : []
+  risks: c.risk_keys ? c.risk_keys.split(';').map((r) => r.trim()).filter(Boolean) : [],
+  family: c.family
 }]))
 const covers = Object.fromEntries(readCsv('covers.csv').map((c) => [c.key, { label: c.label_en }]))
 const edges = readCsv('rotation_edges.csv').map((e) => ({

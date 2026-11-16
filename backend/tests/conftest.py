@@ -94,3 +94,10 @@ FIELD1_LATLNG = [[-23.53727, -49.23343], [-23.53639, -49.23096], [-23.54013, -49
 FIELD1_RING = [[lng, lat] for lat, lng in FIELD1_LATLNG] + [[FIELD1_LATLNG[0][1], FIELD1_LATLNG[0][0]]]
 FIELD1_AREA_HA_FRONT = 26.2443  # areaM2(coords) / 10000 calculado com a fórmula de fields.js
 POLY = {"type": "Polygon", "coordinates": [FIELD1_RING]}
+
+
+@pytest.fixture(autouse=True)
+def no_live_terrain(monkeypatch):
+    """Tests never call OpenTopoData: the terrain block is "unavailable" unless a test injects topo_fn."""
+    import terrain
+    monkeypatch.setattr(terrain, "get_topoData", lambda points: None)

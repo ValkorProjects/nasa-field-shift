@@ -478,6 +478,7 @@ def api_validation(
     try:
         lst_night = get_lst(y0, y1, "night")
         smap = get_soil_moisture(y0, y1, "rootzone")
+        ndvi = get_ndvi(y0, y1)
     except AppEEARSDataError:
         body["cross_checks_2025"] = {"status": "unavailable", "reason": APPEEARS_UNAVAILABLE_MSG}
         return body
@@ -486,7 +487,8 @@ def api_validation(
         "area": STUDY_AREA_NAME,
         "frost": validation.frost_check(p25, lst_night),
         "dry_autumn": validation.dry_check(hist.records, p25, smap),
+        "vegetation": validation.ndvi_season_check(ndvi),
         "sources": ["NASA POWER (2 m air, ~50 km)", "NASA MODIS MYD11A1 night LST (1 km, area mean)",
-                    "NASA SMAP L4 root-zone soil moisture (9 km, area mean)"],
+                    "NASA SMAP L4 root-zone soil moisture (9 km, area mean)", "NASA MODIS MOD13Q1 NDVI (250 m, area mean)"],
     }
     return body

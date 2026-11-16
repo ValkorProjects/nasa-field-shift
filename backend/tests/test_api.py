@@ -215,7 +215,7 @@ def test_profile_valid_post(isolated_dirs, monkeypatch):
     assert body["schema"] == 1
     for key in BLOCKS:
         assert set(body[key]) == {"status", "reason", "source", "data"}
-    assert [body[k]["status"] for k in BLOCKS] == ["ok"] * 5 + ["pending"]
+    assert [body[k]["status"] for k in BLOCKS] == ["ok"] * 5 + ["unavailable"]
     assert body["weather_summary"]["source"]["mode"] == "mock"
     assert body["field"]["data"]["location_name"] == "Itapeva, SP"
     assert body["scope"] == "mvp"
@@ -229,7 +229,7 @@ def test_profile_feature_without_data_is_200(isolated_dirs, monkeypatch):
     assert r.status_code == 200
     body = r.json()
     assert [body[k]["status"] for k in BLOCKS] == ["ok", "unavailable", "unavailable", "unavailable",
-                                                     "unavailable", "pending"]
+                                                     "unavailable", "unavailable"]
 
 
 @pytest.mark.parametrize("payload", [
@@ -277,7 +277,10 @@ def keys_of(value, prefix=""):
     return out
 
 
-def test_contract_file_matches_real_response(offline_real_slices):
+def test_contract_file_matches_real_response(offline_real_slices, monkeypatch):
+    import field_profile
+    monkeypatch.setattr(field_profile, "field_terrain", lambda geom, topo_fn=None: {
+        "elevation_m": {"mean": 700.0, "min": 690.0, "max": 710.0}, "slope_pct": {"mean": 4.0, "max": 7.5}, "points": 9})
     contract = json.loads((Path(__file__).parents[2] / "docs" / "contract-field-profile.json").read_text(encoding="utf-8"))
     r = client.post(PROFILE_URL, json={"field": ITAPEVA})
     assert keys_of(r.json()) == keys_of(contract)

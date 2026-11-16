@@ -124,3 +124,19 @@ def dry_check(history: list[DailyRecord], power_2025: list[DailyRecord], smap_ro
         "agree": (power_drier == smap_drier) if (rain_2025 is not None and am and rest) else None,
         "note": "Direction check only: POWER rain vs its own past mean, SMAP soil moisture (9 km) vs the rest of 2025.",
     }
+
+
+def ndvi_season_check(ndvi: list) -> dict:
+    """Does the 2025 NDVI of the area follow a summer-crop calendar? Lowest composite in July–November
+    (fallow / sowing) and highest in December–April (summer crop). Area mean, MODIS 250 m."""
+    if not ndvi:
+        return {"consistent": None}
+    lo = min(ndvi, key=lambda s: s.mean)
+    hi = max(ndvi, key=lambda s: s.mean)
+    return {
+        "lowest": {"date": lo.day.isoformat(), "ndvi": round(lo.mean, 3)},
+        "highest": {"date": hi.day.isoformat(), "ndvi": round(hi.mean, 3)},
+        "amplitude": round(hi.mean - lo.mean, 3),
+        "consistent": lo.day.month in (7, 8, 9, 10, 11) and hi.day.month in (12, 1, 2, 3, 4),
+        "note": "Area mean of the study area: shows the regional crop calendar, not this field.",
+    }
