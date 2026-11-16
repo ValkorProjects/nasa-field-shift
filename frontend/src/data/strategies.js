@@ -56,7 +56,7 @@ export async function loadCatalog() {
 }
 
 // crop ids of the wizard → catalog keys
-const KEY = { soy: 'soybean', corn: 'corn', beans: 'dry_bean', wheat: 'wheat', cover: 'cover', empty: 'fallow' }
+const KEY = { soy: 'soybean', corn: 'corn', beans: 'dry_bean', wheat: 'wheat', cover: 'cover', empty: 'fallow', oat: 'oat', sorghum: 'sorghum', sunflower: 'sunflower', peanut: 'peanut' }
 // crops that have a card with RollCrop rules (id of the sample strategy to reuse)
 const TEMPLATE = { corn: 'current', wheat: 'a', cover: 'b' }
 const IMG = { soybean: '/img/soja.jpg', corn: '/img/milho.jpg', dry_bean: '/img/feijao.jpg', wheat: '/img/trigo.jpg', cover: '/img/cover.jpg', fallow: '/img/palha.jpg' }
@@ -210,7 +210,9 @@ function rateAll(s, crop, slope, hasClimate) {
   const worst = tones.includes('r') ? 'r' : tones.includes('y') ? 'y' : 'g'
   // Priority fit only from real climate rows: without them it would be made of defaults and still move
   // "Best for you" (the card then stays "Not rated yet", or keeps the sample scores of the example cards).
-  if (s.light === 'x') s.fit = null // not rated: out of "Best for you"
+  // A grain crop with a row that could not be assessed (e.g. sorghum's rain) gets no fit: planFit would fill it with a default.
+  const unassessed = !noGrain && [tone('rain'), tone('frost')].includes('x')
+  if (s.light === 'x' || unassessed) s.fit = null // not rated: out of "Best for you"
   else if (hasClimate) {
     s.fit = planFit({ noGrain, fallow: crop === 'fallow', straw, slope, rainTone: tone('rain'), worstTone: worst })
     s.fitEstimate = true
