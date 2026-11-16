@@ -16,7 +16,7 @@ backend/    FastAPI app (NASA POWER, SoilGrids, crop catalog; see backend/README
 docs/       API contract examples, reference screens, list of sample values
 ```
 
-## Run
+## Run locally
 
 From the repository root:
 
@@ -297,3 +297,10 @@ Every block is `{ status, reason, source, data }`. `status` = `ok` · `unavailab
 - Soil `mock` mode serves a static SoilGrids slice of each demo point (`build_soil_slice`).
 - Soil demo slices: SoilGrids masks the urban-center pixel of the Itapeva and Capao Bonito demo points, so `build_soil_slice` uses curated rural pixels (`SAMPLE_OVERRIDES`: Itapeva -24.00,-48.92; Capao Bonito -24.02,-48.36), checked manually on 2026-11-15; the API reports `source.sampled_point` and `distance_km`.
 - Soil is simplified to a 0-30 cm weighted mean and a textural group; there is no drainage indicator (no sourced rule yet).
+
+## AI Usage
+
+We used Claude to write and review code, turn the tasks we gave it into GitHub issues, and streamline our development workflow. At the start of the hackathon, a team member created [AgentKit](https://github.com/GuiAlvesor/agentkit), a portable toolkit for Claude Code and the Claude Agent SDK that configures specialized agents to match the repository’s tech stack. Rather than assigning all the work to a single agent, the toolkit divides requirements analysis, architecture planning, implementation, code review, and security checks among separate agents. It also provides agents for reviewing pull requests, deploying code, and generating release notes.
+The workflow starts with requirements written by the team. The agents identify gaps, propose an architecture, and organize tasks into a backlog with dependencies and acceptance criteria. Implementation proceeds one task at a time, with reviews, progress tracking, and designated points for human approval. To keep their work aligned with what the team has already specified, the agents can consult the repository’s requirements and documentation through a built-in retrieval system (RAG).
+[AgentKit](https://github.com/GuiAlvesor/agentkit) also includes a Python security guard that runs before any action covered by the toolkit is executed. It enforces rules that do not depend on the model’s interpretation: it blocks destructive commands and attempts to write to protected files, requests human confirmation for sensitive actions such as pushing code and deploying, and logs its decisions. The toolkit includes 48 automated tests that make no external calls.
+This use of AI is focused on developing the platform, not on making agricultural decisions. [AgentKit](https://github.com/GuiAlvesor/agentkit) structures how the team plans, implements, and reviews the software. The proposed crop rotation recommendations, by contrast, are based on the field’s history, climate data, planting windows, and agronomic criteria. The evidence, risks, and data gaps for each option are presented to the farmer.
