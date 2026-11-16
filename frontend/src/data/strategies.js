@@ -59,7 +59,12 @@ export async function loadCatalog() {
 const KEY = { soy: 'soybean', corn: 'corn', beans: 'dry_bean', wheat: 'wheat', cover: 'cover', empty: 'fallow', oat: 'oat', sorghum: 'sorghum', sunflower: 'sunflower', peanut: 'peanut' }
 // crops that have a card with RollCrop rules (id of the sample strategy to reuse)
 const TEMPLATE = { corn: 'current', wheat: 'a', cover: 'b' }
-const IMG = { soybean: '/img/soja.jpg', corn: '/img/milho.jpg', dry_bean: '/img/feijao.jpg', wheat: '/img/trigo.jpg', cover: '/img/cover.jpg', fallow: '/img/palha.jpg' }
+const IMG = {
+  soybean: '/img/soja.jpg', corn: '/img/milho.jpg', dry_bean: '/img/feijao.jpg', wheat: '/img/trigo.jpg',
+  sorghum: '/img/sorgo.jpg', peanut: '/img/amendoim.jpg', sunflower: '/img/girassol.jpg', oat: '/img/aveia.jpg',
+  cover: '/img/aveia.jpg', // black oat (cover crop)
+  fallow: '/img/palha.jpg'
+}
 const LABEL = { cover: 'Black oat (cover crop)', fallow: 'Fallow (left empty)', dry_bean: 'Beans' }
 const LEGUMES = new Set(['soybean', 'dry_bean', 'peanut']) // fix nitrogen (crop knowledge)
 const RANK = { documented_pair: 0, alt_a: 1, alt_b: 2 }
