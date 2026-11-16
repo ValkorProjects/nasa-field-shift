@@ -158,3 +158,17 @@ def test_recommended_text_zero_hits_and_single_day_event():
     recs = parse_history(make_raw(START, DAYS, overrides=ov))
     ev = recommend(recs, "corn", -23.5, -49.2, "mock", TODAY, None)["events"]
     assert ev[0]["start"] == ev[0]["end"] and ev[0]["explanation"].endswith("on Jun 10.")
+
+
+def test_season_cut_by_end_of_data_is_not_counted():
+    """Soybean sown in late 2024 has its stage in 2025, after the data ends: that season must be left
+    out (not counted as a season without events), so totals use only complete seasons."""
+    from recommendation import candidate_risks
+    from rules import DETECTORS
+    recs = parse_history(make_raw(START, DAYS))
+    crop = CROPS["soybean"]
+    risks = {c.day: c for c in candidate_risks(recs, DETECTORS[crop.event_type](recs), crop, 2026)}
+    # sown 1 Sep: stage 16 Oct – 15 Nov, inside the data in every year 2015–2024
+    assert risks[date(2026, 9, 1)].total == 10
+    # sown 20 Nov: stage ends in 2025 for the 2024 season → only 9 complete seasons
+    assert risks[date(2026, 11, 20)].total == 9

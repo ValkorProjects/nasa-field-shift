@@ -118,3 +118,33 @@ export async function getFieldProfile({ feature, name, scope = 'mvp' }, { signal
     signal?.removeEventListener('abort', onAbort)
   }
 }
+
+/* ---------- other backend routes (api mode only) ---------- */
+async function getApi(path, { signal } = {}) {
+  const res = await fetch(`${API_BASE}${path}`, { signal, headers: { Accept: 'application/json' } })
+  if (!res.ok) {
+    let detail = ''
+    try { const b = await res.json(); detail = typeof b.detail === 'string' ? b.detail : '' } catch { /* no body */ }
+    const e = new Error(detail || `The backend answered ${res.status}`)
+    e.status = res.status
+    throw e
+  }
+  return res.json()
+}
+const q = (lat, lon) => `lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}`
+
+// GET /api/validation: data coverage, stability of the planting windows, 2025 cross-checks
+export const getValidation = (lat, lon, opt) => getApi(`/api/validation?${q(lat, lon)}`, opt)
+
+// 2025 NASA AppEEARS extract (Itaberá–Itapeva study area): NDVI, SMAP soil moisture, MODIS surface temperature.
+// Each one may fail on its own (404 outside the study area).
+export async function getSatellite2025(lat, lon, opt) {
+  const [ndvi, moisture, lst] = await Promise.allSettled([
+    getApi(`/api/ndvi?${q(lat, lon)}`, opt),
+    getApi(`/api/soil-moisture?${q(lat, lon)}`, opt),
+    getApi(`/api/surface-temperature?${q(lat, lon)}&min_coverage=0.5`, opt)
+  ])
+  const val = (r) => (r.status === 'fulfilled' ? r.value : null)
+  const err = [ndvi, moisture, lst].find((r) => r.status === 'rejected')?.reason ?? null
+  return { ndvi: val(ndvi), moisture: val(moisture), lst: val(lst), error: err }
+}

@@ -34,7 +34,7 @@ onMounted(() => loadCosts()) // money bar: public data (IBGE, NASA POWER)
         <div class="bstar" aria-hidden="true">★</div>
         <div>
           <b v-if="best">Best for you: {{ best.tag }}, {{ best.longName }}.</b>
-          <b v-else>No ranking yet: RollCrop has rules for fewer than two of these plans. Compare them with your agronomist.</b>
+          <b v-else>No ranking yet: RollCrop has priority scores for fewer than two of these plans. Each card still shows its own rain and frost risk.</b>
           You chose <u>{{ priorityLabel(state.order[0]) }}</u> and <u>{{ priorityLabel(state.order[1]) }}</u> first.
           <span>
             <template v-if="best && alt && state.order[0] !== 'income' && alt.id !== best.id">If Income came first, {{ alt.tag }} would be best. · </template>

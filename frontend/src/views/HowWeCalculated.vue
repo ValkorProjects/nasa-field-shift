@@ -2,6 +2,7 @@
 // Screen 8 · How we calculated
 import AppShell from '@/components/AppShell.vue'
 import Chip from '@/components/Chip.vue'
+import ValidationCard from '@/components/ValidationCard.vue'
 
 const kinds = [
   { scale: 'field', b: 'Measured on your field', s: 'Satellite pixels of 30 m. The most precise.' },
@@ -31,6 +32,7 @@ const rows = [
           <div v-for="k in kinds" :key="k.scale"><Chip :scale="k.scale" /><b>{{ k.b }}</b><span>{{ k.s }}</span></div>
         </div>
       </div>
+      <ValidationCard />
       <div class="card">
         <div class="h2">Where RollCrop works</div>
         <div class="howmodes">

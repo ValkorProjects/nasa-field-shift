@@ -1829,13 +1829,26 @@
     }
   },
   "terrain": {
-    "status": "pending",
-    "reason": "Terrain (elevation and slope) is being integrated in issues #11 (Open Topo Data) and #12 (OpenTopography).",
+    "status": "ok",
+    "reason": null,
     "source": {
-      "dataset": "NASA SRTM / NASADEM (planned)",
-      "url": null,
-      "mode": null
+      "dataset": "NASA SRTM 30 m (via OpenTopoData)",
+      "url": "https://www.opentopodata.org/datasets/srtm/",
+      "resolution": "30 m",
+      "mode": "live",
+      "method": "least-squares plane through the sampled points (mean); steepest pair (max)"
     },
-    "data": null
+    "data": {
+      "elevation_m": {
+        "mean": 702.4,
+        "min": 694.0,
+        "max": 711.0
+      },
+      "slope_pct": {
+        "mean": 3.8,
+        "max": 7.1
+      },
+      "points": 9
+    }
   }
 }

@@ -9,6 +9,7 @@ import Chip from '@/components/Chip.vue'
 import IllustrativeImg from '@/components/IllustrativeImg.vue'
 import TimelineChart from '@/components/TimelineChart.vue'
 import AgronomistNote from '@/components/AgronomistNote.vue'
+import ValidationCard from '@/components/ValidationCard.vue'
 import { getRecommendation, apiMode, PRESET_LOCATIONS, CROPS } from '@/api/index.js'
 import { farm } from '@/data/fields.js'
 import { state } from '@/data/store.js'
@@ -174,6 +175,7 @@ const cropInfo = computed(() => CROPS.find((c) => c.id === crop.value))
           <pre>{{ JSON.stringify(data, null, 2) }}</pre>
         </details>
 
+        <ValidationCard />
         <AgronomistNote />
       </template>
     </div>

@@ -94,7 +94,7 @@ export function toFieldData(sample, profile, field, ctx = {}) {
   const cls = slopeClass(slopePct)
   const slopeLeaf = (what) => {
     if (cls == null) return pending(terrain?.source?.dataset ? 'NASADEM / SRTM (in progress)' : undefined)
-    return real(what === 'pct' ? +slopePct.toFixed(1) : cls, 'NASADEM 30 m', 'field', terrain.source?.mode)
+    return real(what === 'pct' ? +slopePct.toFixed(1) : cls, 'NASA SRTM 30 m', 'field', terrain.source?.mode)
   }
   data.field.slope = slopeLeaf('class')
   data.field.slope_pct = slopeLeaf('pct')
@@ -223,15 +223,21 @@ export function toFieldData(sample, profile, field, ctx = {}) {
         e.n = wLeaf(frost && ofText(frost, { last: true }), frost)
       } else if (e.icon === 'slope') {
         e.text = 'Field slope: {n}'
-        e.n = cls == null ? pending() : real(`${cls} (${slopePct.toFixed(1)}%)`, 'NASADEM 30 m', 'field', terrain.source?.mode)
+        e.n = cls == null ? pending() : real(`${cls} (${slopePct.toFixed(1)}%)`, 'NASA SRTM 30 m', 'field', terrain.source?.mode)
       }
     }
   }
 
   // confidence
-  const rules = confidenceRules({ years: rain?.total ?? 0, weatherOk: wOk })
+  // sources agree = the 2025 cross-checks of GET /api/validation (frost agreement ≥ 80 % and same dryness)
+  const xc = ctx.validation?.cross_checks_2025
+  const agree = xc?.status === 'ok' ? (xc.frost?.agreement ?? 0) >= 0.8 && xc.dry_autumn?.agree === true : null
+  const soilAnswered = !!(ctx.soil?.texture && ctx.soil.texture !== 'idk' && ctx.soil?.drainage && ctx.soil.drainage !== 'idk')
+  const rules = confidenceRules({ years: rain?.total ?? 0, weatherOk: wOk, terrainOk: okBlock(terrain), agree, soilAnswered })
   data.confidence.rules = rules
-  data.confidence.agree_pct = missing('A second rain source is not available yet', 'second rain source', 'area')
+  data.confidence.agree_pct = xc?.status === 'ok' && xc.frost?.agreement != null
+    ? real(`${Math.round(xc.frost.agreement * 100)}`, 'POWER vs MODIS 2025', 'area')
+    : missing('A second source is available only in the 2025 satellite area', 'second source', 'area')
 
   data.profile = profile
   data.blocks = {
