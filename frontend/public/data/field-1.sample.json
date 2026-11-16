@@ -43,13 +43,20 @@
     "summer": [
       { "id": "soy", "name": "Soybean", "img": "/img/soja.jpg" },
       { "id": "corn", "name": "Corn", "img": "/img/milho.jpg" },
-      { "id": "beans", "name": "Beans", "img": "/img/feijao.jpg" }
+      { "id": "beans", "name": "Beans", "img": "/img/feijao.jpg" },
+      { "id": "peanut", "name": "Peanut", "img": null, "limited": true },
+      { "id": "sunflower", "name": "Sunflower", "img": null, "limited": true },
+      { "id": "sorghum", "name": "Sorghum", "img": null, "limited": true }
     ],
     "second": [
       { "id": "corn", "name": "Corn", "img": "/img/milho.jpg" },
       { "id": "wheat", "name": "Wheat", "img": "/img/trigo.jpg" },
       { "id": "cover", "name": "Cover crop", "img": "/img/cover.jpg" },
-      { "id": "empty", "name": "Leave it empty", "img": "/img/palha.jpg" }
+      { "id": "empty", "name": "Leave it empty", "img": "/img/palha.jpg" },
+      { "id": "oat", "name": "Oat", "img": null, "limited": true },
+      { "id": "beans", "name": "Beans", "img": "/img/feijao.jpg" },
+      { "id": "sorghum", "name": "Sorghum", "img": null, "limited": true },
+      { "id": "sunflower", "name": "Sunflower", "img": null, "limited": true }
     ],
     "defaults": { "summer": "soy", "second": "corn" }
   },

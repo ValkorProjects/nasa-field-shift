@@ -31,6 +31,7 @@ const sel = (season) => c.value[season].find((x) => x.id === state.crops[season]
               role="radio" :aria-checked="state.crops[s.id] === crop.id" @click="state.crops[s.id] = crop.id">
               <IllustrativeImg :src="crop.img" :alt="crop.name" />
               <div class="cn">{{ crop.name }}</div>
+              <small v-if="crop.limited" class="cnote" title="RollCrop has few risk rules for this crop yet. You still get the catalog evidence, but the plan may be shown as Not rated.">Limited rating</small>
             </button>
           </div>
         </template>
